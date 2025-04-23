@@ -21,7 +21,7 @@ const AdminDashboard = () => {
           <div className='rounded-xl p-6 shadow-lg w-1/2 m-4 text-center font-bold bg-green-100 p-5 m-4'>
             <div className="text-gray-600 font-bold text-center">Total Users</div>
             <div className='text-2xl font-bold m-3'>{stats.total_users}</div>
-            <Link to="/dashboard" className="btn btn-primary">All Users</Link>
+            <Link to="/admin/users" className="btn btn-primary">Manage Users</Link>
           </div>
           
         </div>

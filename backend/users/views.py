@@ -1,3 +1,24 @@
-from django.shortcuts import render
+# users/views.py
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from rest_framework.decorators import action
+from .models import User
+from .serializers import UserSerializer
 
-# Create your views here.
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    @action(detail=True, methods=['patch'])
+    def block(self, request, pk=None):
+        user = self.get_object()
+        user.is_active = False
+        user.save()
+        return Response({'status': 'user blocked'}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['patch'])
+    def unblock(self, request, pk=None):
+        user = self.get_object()
+        user.is_active = True
+        user.save()
+        return Response({'status': 'user unblocked'}, status=status.HTTP_200_OK)

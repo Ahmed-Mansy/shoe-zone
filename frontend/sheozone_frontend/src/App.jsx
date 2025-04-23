@@ -4,7 +4,9 @@ import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import ProductList from './components/ProductList';
 import ProductForm from './components/ProductForm';
-import CategoryList from './components/CategoryList'; 
+import CategoryList from './pages/CategoryList'; 
+import UserManagement from './pages/UserManagement'; 
+
 
 
 function App() {
@@ -20,6 +22,7 @@ function App() {
             <Route path="/products/add" element={<ProductForm />} />
             <Route path="/products/edit/:id" element={<ProductForm />} />
             <Route path="/categories" element={<CategoryList />} />
+            <Route path="/admin/users" element={<UserManagement />} />
             
           </Routes>
         </div>
