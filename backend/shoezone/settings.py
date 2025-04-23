@@ -163,14 +163,15 @@ REST_FRAMEWORK = {
 
     # Default permission: Only authenticated users can access
     "DEFAULT_PERMISSION_CLASSES": (
-    "rest_framework.permissions.IsAuthenticated",
+    "rest_framework.permissions.AllowAny",
     ),
 }
 
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
+    "http://localhost:5173",
     # "https://your-frontend-domain.com",
+    "http://127.0.0.1:5173"
 ]
 
 from datetime import timedelta
