@@ -1,17 +1,20 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.db.models import Sum
+from .models import User  
+from orders.models import Order
 from rest_framework.permissions import IsAdminUser
-from django.contrib.auth.models import User
-from orders.models import Order  
-from products.models import Product
+from .serializers import OrderSerializer
+from rest_framework import viewsets, status
+
 
 class AdminDashboardView(APIView):
-    #permission_classes = [IsAdminUser]
+    # permission_classes = [IsAdminUser]
 
     def get(self, request):
-        total_users = User.objects.count()
+        total_users = User.objects.filter(is_superuser=False).count()
         total_orders = Order.objects.count()
-        total_sales = sum(order.total_price for order in Order.objects.all())
+        total_sales = Order.objects.aggregate(total=Sum('total_price'))['total'] or 0
 
         data = {
             'total_users': total_users,
@@ -19,3 +22,9 @@ class AdminDashboardView(APIView):
             'total_sales': total_sales,
         }
         return Response(data)
+
+
+class OrderViewSet(viewsets.ModelViewSet):
+    queryset = Order.objects.all().order_by('-created_at')
+    serializer_class = OrderSerializer
+    # permission_classes = [IsAdminUser]

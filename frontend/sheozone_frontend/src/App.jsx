@@ -6,7 +6,7 @@ import ProductList from './components/ProductList';
 import ProductForm from './components/ProductForm';
 import CategoryList from './pages/CategoryList'; 
 import UserManagement from './pages/UserManagement'; 
-
+import OrderManagement from './pages/OrderManagement';
 
 
 function App() {
@@ -23,6 +23,7 @@ function App() {
             <Route path="/products/edit/:id" element={<ProductForm />} />
             <Route path="/categories" element={<CategoryList />} />
             <Route path="/admin/users" element={<UserManagement />} />
+            <Route path="/admin/orders" element={<OrderManagement />} />
             
           </Routes>
         </div>

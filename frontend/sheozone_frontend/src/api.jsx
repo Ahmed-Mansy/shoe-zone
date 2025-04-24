@@ -92,3 +92,17 @@ export const deleteProduct = async (productId) => {
       console.error('Error deleting product', error);
   }
 };
+
+
+const API = axios.create({
+  baseURL: '/api/orders/crud/orders',
+  // headers: {
+  //   Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+  // },
+});
+
+// Orders APIs
+export const fetchOrders = () => API.get(`${BASE_URL}orders/crud/orders/`);
+export const updateOrderStatus = (id, status) =>
+  API.patch(`${BASE_URL}orders/crud/orders/${id}/`, { status });
+export const deleteOrder = (id) => API.delete(`${BASE_URL}orders/crud/orders/${id}/`);

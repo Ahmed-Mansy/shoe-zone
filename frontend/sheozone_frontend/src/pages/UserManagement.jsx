@@ -161,8 +161,10 @@ const AdminUserManagement = () => {
   const fetchUsers = async () => {
     try {
       const response = await axios.get('http://127.0.0.1:8000/api/users/crud/users');
-      const sortedUsers = response.data.sort((a, b) => a.id - b.id);
-      setUsers(sortedUsers);
+      const filteredSortedUsers = response.data
+        .filter(user => user.is_superuser===false) // without superuser
+        .sort((a, b) => a.id - b.id);     
+      setUsers(filteredSortedUsers);
     } catch (error) {
       toast.error("Failed to load users");
     }

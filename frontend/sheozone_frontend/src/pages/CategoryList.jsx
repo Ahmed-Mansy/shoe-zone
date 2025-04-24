@@ -15,7 +15,8 @@ const CategoryList = () => {
   const fetchCategories = async () => {
     try {
       const response = await axios.get('http://127.0.0.1:8000/api/products/crud/categories/');
-      setCategories(response.data);
+      const sortedCategories = response.data.sort((a, b) => a.id - b.id);
+      setCategories(sortedCategories);
     } catch (error) {
       toast.error('Error loading categories. Please try again.');
     }

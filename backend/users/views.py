@@ -9,6 +9,9 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+    def get_queryset(self):
+        return User.objects.filter(is_superuser=False)
+
     @action(detail=True, methods=['patch'])
     def block(self, request, pk=None):
         user = self.get_object()
