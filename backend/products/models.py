@@ -2,11 +2,10 @@ from django.db import models
 from users.models import User
 
 class Category(models.Model):
+    id = models.AutoField(primary_key=True)  
     name = models.CharField(max_length=255, unique=True)
-
     def __str__(self):
         return self.name
-
 
 class Product(models.Model):
     name = models.CharField(max_length=255)
@@ -19,6 +18,16 @@ class Product(models.Model):
     average_rating = models.FloatField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    sizes = models.CharField(max_length=100, blank=True)  
+    colors = models.CharField(max_length=100, blank=True)  
+    material = models.CharField(max_length=100, blank=True)
+    
+    class Meta:
+        indexes = [
+            models.Index(fields=['name']),
+            models.Index(fields=['material']),
+            models.Index(fields=['colors']),
+        ]
 
     def __str__(self):
         return self.name
