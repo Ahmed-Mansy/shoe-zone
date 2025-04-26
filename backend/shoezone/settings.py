@@ -55,14 +55,15 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
-    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    
+    'django.middleware.security.SecurityMiddleware',
 ]
 
 ROOT_URLCONF = 'shoezone.urls'
@@ -96,7 +97,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'shoezoneDB',
         'USER': 'postgres',
-        'PASSWORD': '2020',
+        'PASSWORD': '0246813579',
         'HOST': 'localhost',
         'PORT': '5432'
     }
@@ -154,7 +155,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     # Force API to use JSON only
     "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
-    "DEFAULT_PARSER_CLASSES": ("rest_framework.parsers.JSONParser",),
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser',
+    ],
 
     # Authentication settings (JWT)
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -167,12 +172,17 @@ REST_FRAMEWORK = {
     ),
 }
 
-
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
-    # "https://your-frontend-domain.com",
-    "http://127.0.0.1:5173"
+
+    'http://127.0.0.1:5173',
+    #"https://your-frontend-domain.com",
 ]
+CORS_ALLOW_CREDENTIALS = True
 
 from datetime import timedelta
 

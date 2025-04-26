@@ -1,18 +1,38 @@
+# users/views.py
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from rest_framework.decorators import action
+from .models import User
+from .serializers import UserSerializer, DeleteAccountSerializer, UserUpdateSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
 from rest_framework.permissions import IsAuthenticated 
-from .models import User
-from .serializers import UserSerializer
 from django.contrib.auth.hashers import make_password
-from .serializers import DeleteAccountSerializer
-from .serializers import UserUpdateSerializer
 from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    def get_queryset(self):
+        return User.objects.filter(is_superuser=False)
+
+    @action(detail=True, methods=['patch'])
+    def block(self, request, pk=None):
+        user = self.get_object()
+        user.is_active = False
+        user.save()
+        return Response({'status': 'user blocked'}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['patch'])
+    def unblock(self, request, pk=None):
+        user = self.get_object()
+        user.is_active = True
+        user.save()
+        return Response({'status': 'user unblocked'}, status=status.HTTP_200_OK)
 
 
-# Create your views here.
+
 class ProfileView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request, id):
@@ -71,6 +91,3 @@ class User_Update_Delete(APIView):
             )
             
         return Response({"errors": serializer.errors},status=status.HTTP_400_BAD_REQUEST)
-    
-
-

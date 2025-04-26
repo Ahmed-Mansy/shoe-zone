@@ -1,8 +1,12 @@
-from django.contrib import admin
+# users/urls.py
 from django.urls import path, include
-from .views import *
+from rest_framework.routers import DefaultRouter
+from .views import UserViewSet
+router = DefaultRouter()
+router.register(r'users', UserViewSet)
 
 urlpatterns = [
+    path('crud/', include(router.urls)),
     path('user/<int:id>/', User_Update_Delete.as_view()),
     path('profile/<int:id>/', ProfileView.as_view(), name='user_profile'),
 ]
