@@ -1,16 +1,23 @@
 from rest_framework import serializers
-
 from .models import *
 import re
 from rest_framework.fields import ImageField
+# from django.contrib.auth.models import User 
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 class UserSerializer(serializers.ModelSerializer):
     profile_picture = serializers.ImageField(use_url=True)
+    name=serializers.SerializerMethodField(read_only=True)
+    _id=serializers.SerializerMethodField(read_only=True)
+    isAdmin=serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = User
         fields = [
             'id',
+            '_id',
+            'name',
+            'isAdmin',
             'username',
             'first_name',
             'last_name',
@@ -21,6 +28,33 @@ class UserSerializer(serializers.ModelSerializer):
             'facebook_profile',
             'country',
         ]
+        
+    def get_name(self,obj):
+        firstname=obj.first_name
+        lastname=obj.last_name
+        name=firstname+' '+lastname
+        if name=='':
+            name=obj.email[:5]
+            return name
+        return name
+    
+    def get__id(self,obj):
+        return obj.id
+
+    def get_isAdmin(self,obj):
+        return obj.is_staff
+
+class UserSerializerWithToken(UserSerializer):
+    token=serializers.SerializerMethodField(read_only=True)
+    class Meta:
+        model=User
+        fields=['id','_id','username','email','name','isAdmin','token']
+    
+    def get_token(self,obj):
+        token=RefreshToken.for_user(obj)
+        return str(token.access_token)
+
+
 
 class UserUpdateSerializer(serializers.ModelSerializer):
     def __init__(self, *args, **kwargs):
