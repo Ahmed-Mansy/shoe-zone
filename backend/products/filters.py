@@ -14,11 +14,15 @@ class ProductFilter(filters.FilterSet):
     
     def filter_by_size(self, queryset, name, value):
         sizes = [s.strip().upper() for s in value.split(',')]
-        return queryset.filter(sizes__contains=value)  # Basic implementation
+        return queryset.filter(
+    reduce(
+        operator.or_,
+        (Q(sizes__icontains=size) for size in sizes)
+    )
+)
         
     def filter_by_color(self, queryset, name, value):
         colors = [c.strip().lower() for c in value.split(',')]
-        # More advanced implementation:
         return queryset.filter(
             reduce(
                 operator.or_,
