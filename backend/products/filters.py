@@ -1,6 +1,8 @@
 from django_filters import rest_framework as filters
 from .models import Product
-
+from functools import reduce
+import operator
+from django.db.models import Q
 class ProductFilter(filters.FilterSet):
     size = filters.CharFilter(method='filter_by_size')
     color = filters.CharFilter(method='filter_by_color')
@@ -23,8 +25,3 @@ class ProductFilter(filters.FilterSet):
                 (Q(colors__icontains=color) for color in colors)
             )
         )
-
-# Add at top of file:
-from functools import reduce
-import operator
-from django.db.models import Q

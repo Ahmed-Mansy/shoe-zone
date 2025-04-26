@@ -4,7 +4,7 @@ from .models import Product, Category, ProductImage
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ['id', 'name']  # Explicitly list fields for security
+        fields = ['id', 'name'] 
 
 class ProductImageSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
@@ -17,7 +17,7 @@ class ProductImageSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = ProductImage
-        fields = ['id', 'image_url', 'image']  # Include both URL and image field
+        fields = ['id', 'image_url', 'image'] 
 
 class ProductSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
