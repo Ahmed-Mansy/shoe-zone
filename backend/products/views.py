@@ -18,22 +18,8 @@ class ProductListView(ListAPIView):
     serializer_class = ProductSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_class = ProductFilter
-    search_fields = ['name', 'description', 'material', 'colors', 'sizes']
+    search_fields = ['name', 'description', 'material', 'colors']
     
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        search_term = self.request.query_params.get('search', None)
-        
-        if search_term:
-            queryset = queryset.filter(
-                Q(name__icontains=search_term) | 
-                Q(description__icontains=search_term) |
-                Q(material__icontains=search_term) |
-                Q(colors__icontains=search_term) |
-                Q(sizes__icontains=search_term)
-            ).distinct()
-        return queryset
-
 # For product CRUD operations (if needed)
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
