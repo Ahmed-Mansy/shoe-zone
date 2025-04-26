@@ -10,4 +10,6 @@ router.register(r'categories', CategoryViewSet)
 urlpatterns = [
     path('crud/', include(router.urls)),
     path('api/products/', ProductListView.as_view(), name='product-list'), 
+    path('products/<int:product_id>/ratings/', RatingListCreateView.as_view(), name='rating-list-create'),
 ]
+
