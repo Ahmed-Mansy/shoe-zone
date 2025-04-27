@@ -11,7 +11,7 @@ router.register(r'users', UserViewSet)
 urlpatterns = [
     
     path('users/register/',views.registerUser,name="register"),
-    path('activate/<uidb64>/<token>',views.ActivateAccountView.as_view(),name='activate'),
+    path('activate/<uidb64>/<token>/',views.ActivateAccountView.as_view(),name='activate'),
     path('users/',views.getUsers,name="getUsers"),
     path('users/login/', views.MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('users/profile/',views.getUserProfiles,name="getUserProfiles"),

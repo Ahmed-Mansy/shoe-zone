@@ -35,16 +35,17 @@ def registerUser(request):
             last_name=data['last_name'],
             username=data['email'],
             email=data['email'],
-            password=make_password(data['password']),
+            password=data['password'],
             is_active=False
         )
         # Generate token for sending mail
         email_subject = "Activate Your Account"
+        domain = request.build_absolute_uri('/')[:-1]
         message = render_to_string(
             "activate.html",
             {
                 'user': user,
-                'domain': '127.0.0.1:8000',
+                'domain': domain,
                 'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                 'token': generate_token.make_token(user)
             }
@@ -52,6 +53,7 @@ def registerUser(request):
         email_message = EmailMessage(
             email_subject, message, settings.EMAIL_HOST_USER, [data['email']]
         )
+        email_message.content_subtype = "html"
         email_message.send()
         serialize = UserSerializerWithToken(user, many=False)
         return Response(serialize.data)
@@ -66,20 +68,54 @@ def registerUser(request):
 
 
 
-class ActivateAccountView(View):
-    def get(self,request,uidb64,token):
-        try:
-            uid=str(urlsafe_base64_decode(uidb64))
-            user=User.objects.get(pk=uid)
-        except Exception as identifier:
-            user=None
-        if user is not None and generate_token.check_token(user,token):
-            user.is_active=True
-            user.save()
-            return render(request,"activatesuccess.html")
-        else:
-            return render(request,"activatefail.html")   
+# class ActivateAccountView(APIView):
+#     def get(self,request,uidb64,token):
+#         try:
+#             # uid=str(urlsafe_base64_decode(uidb64))
+#             # user=User.objects.get(pk=uid)
+#             uid_bytes = urlsafe_base64_decode(uidb64)  # Returns b'16'
+#             uid_str = uid_bytes.decode('utf-8')  # Converts b'16' to "16"
+#             uid = int(uid_str)  # Converts "16" to 16
+#             user=User.objects.get(pk=uid)
+            
+#         except (TypeError, ValueError, OverflowError, User.DoesNotExist) as e:
+#             user=None
+#             print(f"Error decoding UID or retrieving user: {e}")  # Debug
+#             return Response({"detail": "Invalid user or UID"}, status=400)
+#         if user is not None and generate_token.check_token(user,token):
+#             user.is_active=True
+#             user.save()
+#             return Response({"detail": "Account activated successfully"}, status=200)
+#         else:
+#             print(f"Token validation failed for user {user}")  # Debug
+#             return Response({"detail": "Invalid or expired token"}, status=400)  
 
+
+class ActivateAccountView(APIView):
+    def get(self, request, uidb64, token):
+        user = None  # Initialize user to None
+        try:
+            # Decode uidb64 to get the user ID
+            print(f"Received uidb64: {uidb64}")  # Debug
+            uid_bytes = urlsafe_base64_decode(uidb64)  # Returns b'18'
+            print(f"Decoded uid_bytes: {uid_bytes}")  # Debug
+            uid_str = uid_bytes.decode('utf-8')  # Converts b'18' to "18"
+            print(f"Decoded uid_str: {uid_str}")  # Debug
+            uid = int(uid_str)  # Converts "18" to 18
+            print(f"Final uid: {uid}")  # Debug
+            user = User.objects.get(pk=uid)
+            print(f"Found user: {user}")  # Debug
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist) as error:
+            print(f"Error decoding UID or retrieving user: {error}")  # Debug
+            return Response({"detail": "Invalid user or UID"}, status=400)
+
+        if user is not None and generate_token.check_token(user, token):
+            user.is_active = True
+            user.save()
+            return Response({"detail": "Account activated successfully"}, status=200)
+        else:
+            print(f"Token validation failed for user {user if user is not None else 'None'}")  # Debug
+            return Response({"detail": "Invalid or expired token"}, status=400)
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
@@ -166,7 +202,7 @@ class User_Update_Delete(APIView):
                 user.email = data["email"]
             if serializer.is_valid():
                 if data.get("password", "") != "":
-                    user.password = make_password(data["password"])
+                    user.password = data["password"]
 
                 user.save()
                 serializer = UserSerializer(user, many=False)
