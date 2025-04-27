@@ -1,6 +1,5 @@
 from rest_framework import viewsets
 from rest_framework.generics import ListAPIView, RetrieveAPIView
-from rest_framework.generics import RetrieveAPIView
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from .models import Product, Category,Rating
