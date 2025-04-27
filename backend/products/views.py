@@ -1,5 +1,6 @@
 from rest_framework import viewsets
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.generics import RetrieveAPIView
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from .models import Product, Category,Rating
@@ -13,8 +14,6 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 
-
-
 # For category CRUD operations
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
@@ -26,26 +25,20 @@ class ProductListView(ListAPIView):
     serializer_class = ProductSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_class = ProductFilter
-    search_fields = ['name', 'description', 'material', 'colors', 'sizes']
+    search_fields = ['name', 'description', 'material', 'colors']
     
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        search_term = self.request.query_params.get('search', None)
-        
-        if search_term:
-            queryset = queryset.filter(
-                Q(name__icontains=search_term) | 
-                Q(description__icontains=search_term) |
-                Q(material__icontains=search_term) |
-                Q(colors__icontains=search_term) |
-                Q(sizes__icontains=search_term)
-            ).distinct()
-        return queryset
 
 # For product CRUD operations (if needed)
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+
+
+# For product details (NEW)
+class ProductDetailView(RetrieveAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    lookup_field = 'id'  # Default is 'pk', but being clear is good
 
 
 class RatingListCreateView(APIView):
