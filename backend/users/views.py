@@ -35,7 +35,7 @@ def registerUser(request):
             last_name=data['last_name'],
             username=data['email'],
             email=data['email'],
-            password=data['password'],
+            password=make_password(data['password']),
             is_active=False
         )
         # Generate token for sending mail
@@ -65,31 +65,6 @@ def registerUser(request):
         message = {'details': str(e)}
         print(e)
         return Response(message, status=status.HTTP_400_BAD_REQUEST)
-
-
-
-# class ActivateAccountView(APIView):
-#     def get(self,request,uidb64,token):
-#         try:
-#             # uid=str(urlsafe_base64_decode(uidb64))
-#             # user=User.objects.get(pk=uid)
-#             uid_bytes = urlsafe_base64_decode(uidb64)  # Returns b'16'
-#             uid_str = uid_bytes.decode('utf-8')  # Converts b'16' to "16"
-#             uid = int(uid_str)  # Converts "16" to 16
-#             user=User.objects.get(pk=uid)
-            
-#         except (TypeError, ValueError, OverflowError, User.DoesNotExist) as e:
-#             user=None
-#             print(f"Error decoding UID or retrieving user: {e}")  # Debug
-#             return Response({"detail": "Invalid user or UID"}, status=400)
-#         if user is not None and generate_token.check_token(user,token):
-#             user.is_active=True
-#             user.save()
-#             return Response({"detail": "Account activated successfully"}, status=200)
-#         else:
-#             print(f"Token validation failed for user {user}")  # Debug
-#             return Response({"detail": "Invalid or expired token"}, status=400)  
-
 
 class ActivateAccountView(APIView):
     def get(self, request, uidb64, token):
@@ -202,7 +177,7 @@ class User_Update_Delete(APIView):
                 user.email = data["email"]
             if serializer.is_valid():
                 if data.get("password", "") != "":
-                    user.password = data["password"]
+                    user.password = make_password(data["password"])
 
                 user.save()
                 serializer = UserSerializer(user, many=False)
