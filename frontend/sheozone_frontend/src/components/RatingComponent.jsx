@@ -15,6 +15,10 @@ const RatingComponent = ({ productId }) => {
         setAverageRating(response.data.avg_rating || 0); 
         setError(err.response?.data || "Error fetching ratings");
       }
+      catch (err) {
+        setError(err.response?.data || "Error fetching ratings");
+      }
+
     };
 
     fetchRatings();

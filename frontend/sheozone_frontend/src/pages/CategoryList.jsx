@@ -129,7 +129,7 @@ const CategoryList = () => {
             <span className="flex-1">{cat.name}</span>
             <div className="flex gap-2 justify-end items-center"> 
               <button
-                className="btn btn-warning px-3 py-1 "
+                className="btn btn-secondary px-3 py-1 "
                 onClick={() => handleEditCategory(cat)}
               >
                 Edit
@@ -145,13 +145,6 @@ const CategoryList = () => {
         ))}
       </ul>
 
-
-      <ToastContainer 
-        position="top-left"   //position of the toast 
-        autoClose={3000}       //auto close after 3 seconds
-        newestOnTop={false}   //show the newest toast on bottom
-        closeOnClick={true}   //close the toast on click
-      />
 
     </div>
   );

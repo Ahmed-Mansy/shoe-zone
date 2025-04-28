@@ -23,25 +23,11 @@ export const getDashboardStats = async () => {
   }
 };
 
-// const token = localStorage.getItem("accessToken");
-// const config = {
-//   headers: {
-//     Authorization: `Bearer ${token}`,
-//   },
-// };
-
-// const config = {
-//   headers: {  
-//     Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-//     'Content-Type': 'application/json',
-//   },
-// };
 const config = {
   headers: {
     'Content-Type': 'application/json',
   },
 };
-
 
 // Get categories
 export const getCategories = async () => {
@@ -52,48 +38,35 @@ export const getCategories = async () => {
       console.error('Error fetching categories', error);
   }
 };
-
+//////////////////////////////////////////////////
 // Get all products
-export const getProducts = async () => {
-  try {
-      const response = await axios.get(`${BASE_URL}products/crud/products/`, config);
-      return response.data;
-  } catch (error) {
-      console.error('Error fetching products', error);
-  }
+
+export const fetchProducts = async () => {
+  const response = await axios.get(`${API_URL}/products/crud/products/`);
+  return response.data;
 };
 
-// Create a new product
-export const createProduct = async (productData) => {
-  try {
-      const response = await axios.post(`${BASE_URL}products/crud/products/`, productData);
-      return response.data;
-  } catch (error) {
-      console.error('Error creating product', error);
-  }
+export const fetchProductDetails = async (id) => {
+  const response = await axios.get(`${API_URL}/products/crud/products/${id}/`);
+  return response.data;
 };
 
-// Update a product
-export const updateProduct = async (productId, productData) => {
-  try {
-      const response = await axios.put(`products/crud/products/${productId}/`, productData);
-      return response.data;
-  } catch (error) {
-      console.error('Error updating product', error);
-  }
+export const createProduct = async (product) => {
+  const response = await axios.post(`${API_URL}/products/crud/products/`, product);
+  return response.data;
 };
 
-// Delete a product
-export const deleteProduct = async (productId) => {
-  try {
-      const response = await axios.delete(`products/crud/products/${productId}/`);
-      return response.data;
-  } catch (error) {
-      console.error('Error deleting product', error);
-  }
+export const updateProduct = async (id, product) => {
+  const response = await axios.put(`${API_URL}/products/crud/products/${id}/`, product);
+  return response.data;
 };
 
+export const deleteProduct = async (id) => {
+  const response = await axios.delete(`${BASE_URL}products/crud/products/${id}/`);
+  return response.data;
+};
 
+///////////////////////////////////////////////////////////////
 const API = axios.create({
   baseURL: '/api/orders/crud/orders',
   // headers: {

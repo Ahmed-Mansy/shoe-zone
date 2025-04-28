@@ -18,6 +18,8 @@ class UserSerializer(serializers.ModelSerializer):
             '_id',
             'name',
             'isAdmin',
+            'is_active',
+            'is_staff',
             'username',
             'first_name',
             'last_name',

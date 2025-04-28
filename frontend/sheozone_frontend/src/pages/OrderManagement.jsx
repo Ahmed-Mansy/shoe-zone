@@ -43,7 +43,7 @@ const OrderManagement = () => {
       ? orders
       : orders.filter((order) => order.status === selectedStatus);
 
-  const statuses = ['all', 'pending', 'processing', 'shipped', 'delivered', 'canceled'];
+  const statuses = ['all', 'pending', 'shipped', 'delivered'];
 
   return (
     <div className="container p-4  ">
@@ -94,10 +94,8 @@ const OrderManagement = () => {
                   onChange={(e) => updateStatus(order.id, e.target.value)}
                 >
                   <option value="pending">Pending</option>
-                  <option value="processing">Processing</option>
                   <option value="shipped">Shipped</option>
                   <option value="delivered">Delivered</option>
-                  <option value="canceled">Canceled</option>
                 </select>
               </td>
               <td>

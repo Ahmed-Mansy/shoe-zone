@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Sum
-from .models import User  
+from users.models import User  
 from orders.models import Order
 from rest_framework.permissions import IsAdminUser
 from .serializers import OrderSerializer
@@ -9,7 +9,7 @@ from rest_framework import viewsets, status
 
 
 class AdminDashboardView(APIView):
-    # permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminUser]
 
     def get(self, request):
         total_users = User.objects.filter(is_superuser=False).count()
@@ -27,4 +27,4 @@ class AdminDashboardView(APIView):
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all().order_by('-created_at')
     serializer_class = OrderSerializer
-    # permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminUser]

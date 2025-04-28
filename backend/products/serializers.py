@@ -81,3 +81,4 @@ class RatingSerializer(serializers.ModelSerializer):
         if Rating.objects.filter(user=user, project=project).exists():
             raise serializers.ValidationError("You have already rated this project.")
         return data
+
