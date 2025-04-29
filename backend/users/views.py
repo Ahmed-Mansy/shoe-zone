@@ -303,5 +303,5 @@ def passwordResetConfirm(request):
             status=status.HTTP_400_BAD_REQUEST
         )
     except Exception as e:
-        print(e)
-        return Response({"details": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        logger.error("An unexpected error occurred during password reset confirmation.", exc_info=True)
+        return Response({"details": "An unexpected error occurred."}, status=status.HTTP_400_BAD_REQUEST)
