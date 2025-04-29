@@ -7,11 +7,18 @@ import ProductForm from './components/ProductForm';
 import CategoryList from './pages/CategoryList'; 
 import UserManagement from './pages/UserManagement'; 
 import OrderManagement from './pages/OrderManagement';
-
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return(
   <>
+  <ToastContainer 
+          position="top-left"   //position of the toast 
+          autoClose={3000}       //auto close after 3 seconds
+          newestOnTop={false}   //show the newest toast on bottom
+          closeOnClick={true}   //close the toast on click
+  />
   <div className="d-flex flex-column vh-100">
         <Navbar />
         <div className="flex-grow-1">
@@ -19,7 +26,7 @@ function App() {
             <Route path="/dashboard" element={<AdminDashboard />} />
 
             <Route path="/products" element={<ProductList />} />
-            <Route path="/products/add" element={<ProductForm />} />
+            <Route path="/products/create" element={<ProductForm />} />
             <Route path="/products/edit/:id" element={<ProductForm />} />
             <Route path="/categories" element={<CategoryList />} />
             <Route path="/admin/users" element={<UserManagement />} />
