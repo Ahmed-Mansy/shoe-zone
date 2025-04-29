@@ -247,11 +247,11 @@ def passwordResetRequest(request):
             fail_silently=False,
         )
 
-        # Return the reset URL in the response for the frontend (optional)
-        return Response({
-            "details": "Password reset email sent successfully.",
-            "reset_url": reset_url  # Optional: for frontend to display or handle
-        })
+        # Return the reset URL in the response only in non-production environments
+        response_data = {"details": "Password reset email sent successfully."}
+        if settings.DEBUG:  # Include reset_url only in development mode
+            response_data["reset_url"] = reset_url
+        return Response(response_data)
     except User.DoesNotExist:
         # Don't reveal whether the email exists for security reasons
         return Response({"details": "Password reset email sent if the email exists."})
