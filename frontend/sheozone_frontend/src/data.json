@@ -1,0 +1,196 @@
+{
+  "men": [
+    {
+      "id": "m001",
+      "badge": "new",
+      "price": 129.99,
+      "title": "Trail Running Shoes",
+      "colors": ["black", "gray", "blue"],
+      "sizes": [40, 41, 42, 43, 44, 45],
+      "productImage": "../assets/images/4.jpg"
+    },
+    {
+      "id": "m002",
+      "badge": "best",
+      "price": 149.99,
+      "title": "Leather Boots",
+      "colors": ["brown", "black"],
+      "sizes": [41, 42, 43, 44, 45, 46],
+      "productImage": "../assets/images/5.jpg"
+    },
+    {
+      "id": "m003",
+      "badge": "ReadableByteStreamController",
+      "price": 99.99,
+      "title": "Casual Sneakers",
+      "colors": ["white", "navy"],
+      "sizes": [40, 41, 42, 43, 44],
+      "productImage": "../assets/images/6.jpg"
+    },
+    {
+      "id": "m004",
+      "badge": "new",
+      "price": 119.99,
+      "title": "High-top Trainers",
+      "colors": ["black", "red"],
+      "sizes": [41, 42, 43, 44, 45],
+      "productImage": "../assets/images/4.jpg"
+    },
+    {
+      "id": "m005",
+      "badge": "best",
+      "price": 159.99,
+      "title": "Hiking Boots",
+      "colors": ["olive", "tan"],
+      "sizes": [42, 43, 44, 45, 46],
+      "productImage": "../assets/images/5.jpg"
+    },
+    {
+      "id": "m006",
+      "badge": "new",
+      "price": 89.99,
+      "title": "Slip-On Loafers",
+      "colors": ["black", "gray"],
+      "sizes": [40, 41, 42, 43],
+      "productImage": "../assets/images/6.jpg"
+    },
+    {
+      "id": "m007",
+      "badge": "ReadableByteStreamController",
+      "price": 139.99,
+      "title": "Running Sneakers",
+      "colors": ["blue", "orange"],
+      "sizes": [40, 41, 42, 43, 44, 45],
+      "productImage": "../assets/images/4.jpg"
+    },
+    {
+      "id": "m008",
+      "badge": "best",
+      "price": 179.99,
+      "title": "Dress Shoes",
+      "colors": ["black", "brown"],
+      "sizes": [41, 42, 43, 44, 45],
+      "productImage": "../assets/images/5.jpg"
+    },
+    {
+      "id": "m009",
+      "badge": "new",
+      "price": 109.99,
+      "title": "Skate Shoes",
+      "colors": ["black", "white"],
+      "sizes": [40, 41, 42, 43, 44],
+      "productImage": "../assets/images/6.jpg"
+    },
+    {
+      "id": "m010",
+      "badge": "best",
+      "price": 199.99,
+      "title": "Luxury Sneakers",
+      "colors": ["white", "gold"],
+      "sizes": [41, 42, 43, 44, 45],
+      "productImage": "../assets/images/4.jpg"
+    }
+  ],
+
+  "women": [
+    {
+      "id": "w001",
+      "badge": "new",
+      "price": 139.99,
+      "title": "Lightweight Sneakers",
+      "colors": ["white", "pink", "mint"],
+      "sizes": [36, 37, 38, 39, 40, 41],
+      "productImage": "../assets/images/3.jpg"
+    },
+    {
+      "id": "w002",
+      "badge": "best",
+      "price": 159.99,
+      "title": "Classic Heels",
+      "colors": ["black", "nude"],
+      "sizes": [36, 37, 38, 39, 40],
+      "productImage": "../assets/images/1.jpg"
+    },
+    {
+      "id": "w003",
+      "badge": "ReadableByteStreamController",
+      "price": 119.99,
+      "title": "Ballet Flats",
+      "colors": ["pink", "beige"],
+      "sizes": [35, 36, 37, 38, 39],
+      "productImage": "../assets/images/2.jpg"
+    },
+    {
+      "id": "w004",
+      "badge": "new",
+      "price": 179.99,
+      "title": "Winter Boots",
+      "colors": ["black", "gray"],
+      "sizes": [37, 38, 39, 40, 41],
+      "productImage": "../assets/images/3.jpg"
+    },
+    {
+      "id": "w005",
+      "badge": "best",
+      "price": 149.99,
+      "title": "Running Shoes",
+      "colors": ["blue", "purple"],
+      "sizes": [36, 37, 38, 39, 40],
+      "productImage": "../assets/images/1.jpg"
+    },
+    {
+      "id": "w006",
+      "badge": "new",
+      "price": 89.99,
+      "title": "Espadrille Sandals",
+      "colors": ["yellow", "white"],
+      "sizes": [36, 37, 38, 39],
+      "productImage": "../assets/images/2.jpg"
+    },
+    {
+      "id": "w007",
+      "badge": "ReadableByteStreamController",
+      "price": 129.99,
+      "title": "Loafers",
+      "colors": ["black", "navy"],
+      "sizes": [36, 37, 38, 39, 40],
+      "productImage": "../assets/images/3.jpg"
+    },
+    {
+      "id": "w008",
+      "badge": "best",
+      "price": 169.99,
+      "title": "Ankle Boots",
+      "colors": ["brown", "beige"],
+      "sizes": [36, 37, 38, 39, 40, 41],
+      "productImage": "../assets/images/1.jpg"
+    },
+    {
+      "id": "w009",
+      "badge": "new",
+      "price": 99.99,
+      "title": "Sport Sandals",
+      "colors": ["black", "pink"],
+      "sizes": [36, 37, 38, 39, 40],
+      "productImage": "../assets/images/2.jpg"
+    },
+    {
+      "id": "w010",
+      "badge": "best",
+      "price": 189.99,
+      "title": "Designer Sneakers",
+      "colors": ["white", "silver"],
+      "sizes": [37, 38, 39, 40, 41],
+      "productImage": "../assets/images/3.jpg"
+    }
+  ],
+
+  "productImages": [
+    { "id": 1, "image": "../assets/images/1.jpg" },
+    { "id": 2, "image": "../assets/images/2.jpg" },
+    { "id": 3, "image": "../assets/images/3.jpg" },
+    { "id": 4, "image": "../assets/images/4.jpg" },
+    { "id": 5, "image": "../assets/images/5.jpg" },
+    { "id": 6, "image": "../assets/images/6.jpg" }
+  ]
+}
