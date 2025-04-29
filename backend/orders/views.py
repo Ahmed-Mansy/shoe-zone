@@ -9,7 +9,7 @@ from rest_framework import viewsets, status
 
 
 class AdminDashboardView(APIView):
-    # permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminUser]
 
     def get(self, request):
         total_users = User.objects.filter(is_superuser=False).count()
@@ -27,4 +27,4 @@ class AdminDashboardView(APIView):
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all().order_by('-created_at')
     serializer_class = OrderSerializer
-    # permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminUser]

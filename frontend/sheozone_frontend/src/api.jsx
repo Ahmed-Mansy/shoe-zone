@@ -2,17 +2,6 @@ import axios from 'axios';
 
 const BASE_URL = 'http://127.0.0.1:8000/api/';
 
-// export const getDashboardStats = async () => {
-//   //const token = localStorage.getItem('accessToken');
-//   const res = await axios.get(`${BASE_URL}/orders/admin-dashboard/`)
-//   //   , {
-//   //   headers: {
-//   //     Authorization: `Bearer ${token}`,
-//   //   },
-//   // });
-//   return res.data;
-// };
-
 export const getDashboardStats = async () => {
   try {
     const res = await axios.get(`${BASE_URL}orders/admin-dashboard/`);
@@ -22,20 +11,7 @@ export const getDashboardStats = async () => {
     return null;
   }
 };
-
-// const token = localStorage.getItem("accessToken");
-// const config = {
-//   headers: {
-//     Authorization: `Bearer ${token}`,
-//   },
-// };
-
-// const config = {
-//   headers: {  
-//     Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-//     'Content-Type': 'application/json',
-//   },
-// };
+//////////////////////////////////////////////////
 const config = {
   headers: {
     'Content-Type': 'application/json',
@@ -52,8 +28,32 @@ export const getCategories = async () => {
       console.error('Error fetching categories', error);
   }
 };
-
+//////////////////////////////////////////////////////////
 // Get all products
+export const fetchProducts = async () => {
+  const response = await axios.get(`${API_URL}/products/crud/products/`);
+  return response.data;
+};
+
+export const fetchProductDetails = async (id) => {
+  const response = await axios.get(`${API_URL}/products/crud/products/${id}/`);
+  return response.data;
+};
+
+export const createProduct = async (product) => {
+  const response = await axios.post(`${API_URL}/products/crud/products/`, product);
+  return response.data;
+};
+
+export const updateProduct = async (id, product) => {
+  const response = await axios.put(`${API_URL}/products/crud/products/${id}/`, product);
+  return response.data;
+};
+
+export const deleteProduct = async (id) => {
+  const response = await axios.delete(`${BASE_URL}products/crud/products/${id}/`);
+  return response.data;
+};
 export const getProducts = async () => {
   try {
       const response = await axios.get(`${BASE_URL}products/crud/products/`, config);
@@ -64,41 +64,10 @@ export const getProducts = async () => {
 };
 
 // Create a new product
-export const createProduct = async (productData) => {
-  try {
-      const response = await axios.post(`${BASE_URL}products/crud/products/`, productData);
-      return response.data;
-  } catch (error) {
-      console.error('Error creating product', error);
-  }
-};
-
-// Update a product
-export const updateProduct = async (productId, productData) => {
-  try {
-      const response = await axios.put(`products/crud/products/${productId}/`, productData);
-      return response.data;
-  } catch (error) {
-      console.error('Error updating product', error);
-  }
-};
-
-// Delete a product
-export const deleteProduct = async (productId) => {
-  try {
-      const response = await axios.delete(`products/crud/products/${productId}/`);
-      return response.data;
-  } catch (error) {
-      console.error('Error deleting product', error);
-  }
-};
 
 
 const API = axios.create({
   baseURL: '/api/orders/crud/orders',
-  // headers: {
-  //   Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-  // },
 });
 
 // Orders APIs
