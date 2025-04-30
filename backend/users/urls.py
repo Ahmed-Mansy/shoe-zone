@@ -1,7 +1,7 @@
 # users/urls.py
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import UserViewSet
+from .views import UserViewSet , passwordResetConfirm , passwordResetRequest
 from . import views
 from rest_framework_simplejwt.views import TokenObtainPairView
 
@@ -19,6 +19,9 @@ urlpatterns = [
     path('users/crud/', include(router.urls)),
     path('users/user/<int:id>/', views.User_Update_Delete.as_view()),
     path('users/profile/<int:id>/', views.ProfileView.as_view(), name='user_profile'),
+    path('users/password-reset-request/', views.passwordResetRequest, name='password-reset-request'),
+    path('users/password-reset-confirm/', views.passwordResetConfirm, name='password-reset-confirm'),
+
 ]
 
 
