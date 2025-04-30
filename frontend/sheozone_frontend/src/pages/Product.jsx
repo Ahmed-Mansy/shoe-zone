@@ -16,6 +16,8 @@ const sizes = [
   1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
 ];
 
+const colors = ["black", "white", "gray", "red", "yellow", "blue"];
+
 const reviews = [
   {
     id: 1,
@@ -58,6 +60,7 @@ const Product = () => {
   const [rating, setRating] = useState(3);
   const [currentImage, setCurrentImage] = useState(productImages[0]);
   const [selectedSize, setSelectedSize] = useState(null);
+  const [selectedColor, setSelectedColor] = useState(null);
   let price = 150;
 
   const ratingsSum = reviews.reduce((acc, current) => {
@@ -76,9 +79,17 @@ const Product = () => {
       : setSelectedSize(clickedSize);
   };
 
+  const handleColorSelection = (color) => {
+    let clickedColor = color;
+
+    clickedColor === selectedColor
+      ? setSelectedColor(null)
+      : setSelectedColor(clickedColor);
+  };
+
   return (
-    <div className="wrapper my-24">
-      <div className="w-full flex justify-between gap-4 h-[1000px]">
+    <div className="wrapper mb-24 mt-12">
+      <div className="w-full flex justify-between gap-4">
         <div className="w-1/2 h-fit flex justify-between gap-4 sticky top-24">
           <div className="space-y-2">
             {productImages.map((image) => (
@@ -103,14 +114,14 @@ const Product = () => {
           </div>
         </div>
 
-        <div className="w-1/2 pl-8 space-y-4">
+        <div className="w-1/2 pl-8 space-y-8">
           <h2 className="font-bold text-2xl tracking-wide">{productTitle}</h2>
-          <p className="text-sm ">
+          <p className="text-md">
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo,
             veniam harum in vero exercitationem soluta libero? Quisquam soluta
             vel rerum?
           </p>
-          <p>150 EGP</p>
+          <p className="text-xl">150 EGP</p>
 
           <Rating
             style={{ maxWidth: 100 }}
@@ -118,6 +129,24 @@ const Product = () => {
             onChange={setRating}
             itemStyles={myStyles}
           />
+
+          <div className="space-y-2">
+            <span className="block text-sm font-semibold uppercase">
+              select color :
+            </span>
+            <div className="flex gap-2 flex-wrap">
+              {colors.map((color, index) => (
+                <span
+                  key={index}
+                  onClick={() => handleColorSelection(color)}
+                  className={`block w-[35px] h-[35px] rounded-full  cursor-pointer border-[1px] border-gray-400 hover:opacity-[85%] bg-[${color}] ${
+                    selectedColor === color
+                      ? "border-[3px] border-gray-400"
+                      : ""
+                  }`}></span>
+              ))}
+            </div>
+          </div>
 
           <div className="space-y-2">
             <span className="block text-sm font-semibold uppercase">
@@ -150,8 +179,8 @@ const Product = () => {
         </div>
       </div>
 
-      <div className="w-full">
-        <div className="flex flex-col items-center">
+      <div className="w-full my-20">
+        <div className="flex flex-col items-center mb-10">
           <h2 className="font-bold text-3xl tracking-wide mb-6">
             {productTitle}
           </h2>
@@ -169,12 +198,12 @@ const Product = () => {
           </div>
         </div>
 
-        <div className="divide-y-2 divide-blue-700">
+        <div className="divide-y-[1px] divide-[#EAEAEA] border-y-[1px] border-y-[#EAEAEA]">
           {reviews.length > 0 ? (
             reviews.map((review) => (
               <div
                 key={review.id}
-                className="flex items-start justify-between py-8 border-b-[1px] border-b-yellow-600">
+                className="flex items-start justify-between py-12">
                 <div className="space-y-2">
                   <Rating
                     style={{ maxWidth: 130 }}

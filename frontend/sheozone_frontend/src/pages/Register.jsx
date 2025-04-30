@@ -1,7 +1,9 @@
+import { useState } from "react";
 import Input from "../components/Input";
 import Logo from "../components/Logo";
 import ProfilePictureInput from "../components/ProfilePictureInput";
-import { useState } from "react";
+import { registerUser } from "../api";
+
 const Register = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -31,7 +33,7 @@ const Register = () => {
 
   const handleRegister = (e) => {
     e.preventDefault();
-    console.log(formData);
+    registerUser(formData);
   };
 
   return (

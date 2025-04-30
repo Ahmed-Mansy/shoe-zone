@@ -2,6 +2,7 @@ import { Link } from "react-router";
 import Input from "../components/Input";
 import Logo from "../components/Logo";
 import { useState } from "react";
+import { loginUser } from "../api";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -15,8 +16,9 @@ const Login = () => {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    console.log(formData);
+    loginUser(formData);
   };
+
   return (
     <div className="w-full h-full rounded-2xl text-secondary px-6 py-10 bg-light">
       <div className="w-full flex-center">

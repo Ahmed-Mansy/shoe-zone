@@ -17,6 +17,7 @@ import AdminDashboard from "../pages/AdminDashboard";
 import CategoryList from "../pages/CategoryList";
 import UserManagement from "../pages/UserManagement";
 import OrderManagement from "../pages/OrderManagement";
+import Checkout from "../pages/Checkout";
 // import ProductList from "../components/ProductsList";
 // import ProductForm from "../components/ProductForm";
 
@@ -30,6 +31,7 @@ const AppRouter = () => {
           <Route path="stores" element={<Stores />} />
           <Route path="profile" element={<Profile />} />
           <Route path="cart" element={<Cart />} />
+          <Route path="checkout" element={<Checkout />} />
           <Route path="collections/:collectionTitle" element={<Collection />} />
           <Route path="products/:productTitle" element={<Product />} />
 

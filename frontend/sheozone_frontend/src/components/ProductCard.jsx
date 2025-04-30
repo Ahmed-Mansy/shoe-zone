@@ -17,17 +17,13 @@ const ProductCard = ({ product, onDelete }) => {
       onMouseEnter={() => setShowMore(true)}
       onMouseLeave={() => setShowMore(false)}
       className="w-[calc(33%-12px)] relative space-y-2 cursor-pointer">
-      <Link to={`/products/${product.title}`} state={{ product }}>
+      <Link to={`/products/${name}`} state={{ product }}>
         <div className="w-full aspect-square bg-[#f5f5f5]">
-          <img
-            src={`${product.productImage}`}
-            alt={`${product.title}`}
-            className=""
-          />
+          <img src={`${images}`} alt={`${name}`} className="" />
         </div>
       </Link>
 
-      <h3 className="text-md font-semibold">{product.title}</h3>
+      <h3 className="text-md font-semibold">{name}</h3>
 
       <span className="text-gray-700 inline-block">
         {finalPrice}
