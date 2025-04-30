@@ -22,7 +22,7 @@ urlpatterns = [
     path('addresses/', AddressListView.as_view(), name='address-list'),
     path('addresses/create/', AddressCreateView.as_view(), name='address-create'),
     path('addresses/<int:pk>/', AddressDetailView.as_view(), name='address-detail'),
-    path('addresses/update/', views.update_address, name='address-update')
+    path('addresses/update/', views.update_address, name='address-update'),
     path('users/password-reset-request/', views.passwordResetRequest, name='password-reset-request'),
     path('users/password-reset-confirm/', views.passwordResetConfirm, name='password-reset-confirm'),
 
