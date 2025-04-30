@@ -1,7 +1,8 @@
 # users/urls.py
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import UserViewSet
+from .views import UserViewSet,AddressCreateView, AddressListView, AddressDetailView,update_address
+
 from . import views
 from rest_framework_simplejwt.views import TokenObtainPairView
 
@@ -19,6 +20,10 @@ urlpatterns = [
     path('users/crud/', include(router.urls)),
     path('users/user/<int:id>/', views.User_Update_Delete.as_view()),
     path('users/profile/<int:id>/', views.ProfileView.as_view(), name='user_profile'),
+    path('addresses/', AddressListView.as_view(), name='address-list'),
+    path('addresses/create/', AddressCreateView.as_view(), name='address-create'),
+    path('addresses/<int:pk>/', AddressDetailView.as_view(), name='address-detail'),
+    path('addresses/update/', views.update_address, name='address-update')
 ]
 
 

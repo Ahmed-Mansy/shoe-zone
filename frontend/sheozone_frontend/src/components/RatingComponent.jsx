@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import api from "../utils/axios"; // Axios instance
+import { getProductRatings, submitProductRating } from "../api"; 
 
 const RatingComponent = ({ productId }) => {
   const [ratings, setRatings] = useState([]);

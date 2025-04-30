@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import api from "../utils/axios"; // Axios instance
 import { useNavigate } from "react-router-dom";
-
+import { getUserProfile, updateUserProfile } from "../api";
 
 function ProfileEdit() {
   const navigate = useNavigate();
@@ -12,9 +11,9 @@ function ProfileEdit() {
     birthdate: "",
     mobile: "",
     profile_picture: null,
-    facebook_profile: ""
+    facebook_profile: "",
   });
-
+  console.log(formData);
   const [errors, setErrors] = useState({});
   const [msg, setMsg] = useState("");
 
@@ -26,9 +25,11 @@ function ProfileEdit() {
       return;
     }
 
-    api.get(`/users/profile/${userId}/`)
+    getUserProfile(userId)
       .then((res) => {
-        const user = res.data.user;
+        const user = res.user;
+        console.log("PROFILE RESPONSE:", user);
+        if (!user) throw new Error("User object is missing in response");
         setFormData({
           ...formData,
           first_name: user.first_name || "",
@@ -36,7 +37,9 @@ function ProfileEdit() {
           country: user.country || "",
           birthdate: user.birthdate || "",
           mobile: user.mobile || "",
-          facebook_profile: user.facebook_profile || ""
+          facebook_profile: user.facebook_profile || "",
+          email: user.email || "",
+          username: user.username || "",
         });
       })
       .catch((err) => {
@@ -88,42 +91,47 @@ function ProfileEdit() {
 
     const updateData = new FormData();
     for (let key in formData) {
-      if (key === "profile_picture"&& !formData[key]) {
+      if (["email", "username"].includes(key)) {
         continue;
       }
-        
+
+      if (key === "profile_picture" && !formData[key]) {
+        continue;
+      }
+
       updateData.append(key, formData[key]);
     }
 
     try {
-      await api.put(`/users/${userId}/`, updateData, {
-        headers: {
-          "Content-Type": "multipart/form-data"
-        }
-      });
+      console.log(updateData);
+      await updateUserProfile(userId, updateData);
       setMsg("Profile updated successfully!");
       navigate("/profile");
     } catch (err) {
       if (err.response?.data) {
         const backendErrors = err.response.data;
-        
-        if (backendErrors.error) { setMsg(backendErrors.error);
-        } 
-        else if (typeof backendErrors === "object" && backendErrors !== null) {
+
+        if (backendErrors.error) {
+          setMsg(backendErrors.error);
+        } else if (
+          typeof backendErrors === "object" &&
+          backendErrors !== null
+        ) {
           if (backendErrors.errors?.password) {
             setMsg(backendErrors.errors.password[0]);
           } else {
             setErrors(backendErrors.errors || {});
           }
         } else {
-          setMsg(backendErrors.message || "There was an error updating the profile.");
+          setMsg(
+            backendErrors.message || "There was an error updating the profile."
+          );
         }
       } else {
         setMsg("Something went wrong. Please try again later.");
       }
-    }    
-  }
-
+    }
+  };
 
   return (
     <div className="container py-5">
@@ -131,7 +139,11 @@ function ProfileEdit() {
         <div className="text-center">
           <h3 className="font-weight-bolder">Edit Profile</h3>
           {msg && (
-            <div className={`alert ${msg.includes("successfully") ? "alert-success" : "alert-warning"}`}>
+            <div
+              className={`alert ${
+                msg.includes("successfully") ? "alert-success" : "alert-warning"
+              }`}
+            >
               {msg}
             </div>
           )}
@@ -143,7 +155,7 @@ function ProfileEdit() {
             { label: "Country", name: "country" },
             { label: "Birthdate", name: "birthdate", type: "date" },
             { label: "Mobile", name: "mobile" },
-            { label: "Facebook Account", name: "facebook_profile" }
+            { label: "Facebook Account", name: "facebook_profile" },
           ].map(({ label, name, type = "text" }) => (
             <div className="mb-3" key={name}>
               <label className="form-label">{label}</label>
@@ -154,7 +166,11 @@ function ProfileEdit() {
                 onChange={handleChange}
                 className="form-control"
               />
-              {errors[name] && <div className="text-danger">{Array.isArray(errors[name]) ? errors[name][0] : errors[name]}</div>}
+              {errors[name] && (
+                <div className="text-danger">
+                  {Array.isArray(errors[name]) ? errors[name][0] : errors[name]}
+                </div>
+              )}
             </div>
           ))}
 
@@ -166,11 +182,16 @@ function ProfileEdit() {
               onChange={handleChange}
               className="form-control"
             />
-            {errors.profile_picture && <div className="text-danger">{errors.profile_picture}</div>}
+            {errors.profile_picture && (
+              <div className="text-danger">{errors.profile_picture}</div>
+            )}
           </div>
 
           <div className="text-center">
-            <button type="submit" className="btn btn-lg bg-gradient-primary w-100 mt-4 mb-0">
+            <button
+              type="submit"
+              className="btn btn-lg bg-gradient-primary w-100 mt-4 mb-0"
+            >
               Update
             </button>
           </div>
