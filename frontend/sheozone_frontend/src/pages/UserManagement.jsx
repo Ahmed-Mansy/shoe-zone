@@ -30,7 +30,7 @@
 //       email: user.email,
 //     });
 //   };
-  
+
 //   const handleUpdate = async () => {
 //     try {
 //       await axios.put(`http://127.0.0.1:8000/api/users/crud/users/${editUser.id}/`, formData);
@@ -117,10 +117,10 @@
 //                 <button
 //                   onClick={() => handleToggleActive(user)}
 //                   className={'btn btn-warning px-4 py-1 mx-2'}
-//                 >   
+//                 >
 //                   {user.is_active ? 'Block' : 'Unblock'}
 //                 </button>
-                
+
 //                 <button
 //                   onClick={() => handleDelete(user.id)}
 //                   className=" btn btn-danger px-4 py-1 mx-2"
@@ -140,17 +140,17 @@
 
 // export default AdminUserManagement;
 
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AdminUserManagement = () => {
   const [users, setUsers] = useState([]);
   const [editUser, setEditUser] = useState(null);
   const [formData, setFormData] = useState({
-    username: '',
-    email: '',
+    username: "",
+    email: "",
     is_staff: false,
   });
 
@@ -160,11 +160,12 @@ const AdminUserManagement = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get('http://127.0.0.1:8000/api/users/crud/users');
-      const filteredSortedUsers = response.data
-        .filter(user => user.is_superuser===false) // without superuser
-        .sort((a, b) => a.id - b.id);     
-      setUsers(filteredSortedUsers);
+      const response = await axios.get(
+        "http://127.0.0.1:8000/api/users/crud/users"
+      );
+      // const filteredUsers = response.data.filter(user => user.is_superuser===false) // without superuser
+      const sortedUsers = response.data.sort((a, b) => a.id - b.id);
+      setUsers(sortedUsers);
     } catch (error) {
       toast.error("Failed to load users");
     }
@@ -173,15 +174,18 @@ const AdminUserManagement = () => {
   const handleEdit = (user) => {
     setEditUser(user);
     setFormData({
-      username: user.username || '',
-      email: user.email || '',
+      username: user.username || "",
+      email: user.email || "",
       is_staff: !!user.is_staff,
     });
   };
 
   const handleUpdate = async () => {
     try {
-      await axios.patch(`http://127.0.0.1:8000/api/users/crud/users/${editUser.id}/`, formData);
+      await axios.patch(
+        `http://127.0.0.1:8000/api/users/crud/users/${editUser.id}/`,
+        formData
+      );
       toast.success("User updated successfully");
       fetchUsers();
       setEditUser(null);
@@ -191,7 +195,9 @@ const AdminUserManagement = () => {
   };
 
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this user?");
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this user?"
+    );
     if (!confirmDelete) return;
 
     try {
@@ -205,10 +211,15 @@ const AdminUserManagement = () => {
 
   const handleToggleActive = async (user) => {
     try {
-      await axios.patch(`http://127.0.0.1:8000/api/users/crud/users/${user.id}/`, {
-        is_active: !user.is_active,
-      });
-      toast.success(`User ${user.is_active ? 'blocked' : 'unblocked'} successfully`);
+      await axios.patch(
+        `http://127.0.0.1:8000/api/users/crud/users/${user.id}/`,
+        {
+          is_active: !user.is_active,
+        }
+      );
+      toast.success(
+        `User ${user.is_active ? "blocked" : "unblocked"} successfully`
+      );
       fetchUsers();
     } catch (error) {
       toast.error("Failed to update user status");
@@ -226,29 +237,43 @@ const AdminUserManagement = () => {
             <input
               type="text"
               placeholder="Username"
-              value={formData.username || ''}
-              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+              value={formData.username || ""}
+              onChange={(e) =>
+                setFormData({ ...formData, username: e.target.value })
+              }
               className="border p-2 rounded w-1/3 mx-2"
             />
             <input
               type="email"
               placeholder="Email"
-              value={formData.email || ''}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              value={formData.email || ""}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
               className="border p-2 rounded w-1/3 mx-2"
             />
             <label className="flex items-center space-x-2 mx-2">
               <input
                 type="checkbox"
                 checked={!!formData.is_staff}
-                onChange={(e) => setFormData({ ...formData, is_staff: e.target.checked })}
+                onChange={(e) =>
+                  setFormData({ ...formData, is_staff: e.target.checked })
+                }
               />
               <span>Is Staff</span>
             </label>
           </div>
           <div className="mt-4 space-x-2">
-            <button onClick={handleUpdate} className="btn btn-primary px-4 py-1 mx-2">Update</button>
-            <button onClick={() => setEditUser(null)} className="btn btn-danger px-4 py-1 mx-2">Cancel</button>
+            <button
+              onClick={handleUpdate}
+              className="btn btn-primary px-4 py-1 mx-2">
+              Update
+            </button>
+            <button
+              onClick={() => setEditUser(null)}
+              className="btn btn-danger px-4 py-1 mx-2">
+              Cancel
+            </button>
           </div>
         </div>
       )}
@@ -264,29 +289,26 @@ const AdminUserManagement = () => {
           </tr>
         </thead>
         <tbody>
-          {users.map(user => (
+          {users.map((user) => (
             <tr key={user.id} className="border-t text-center hover:bg-gray-50">
               <td className="p-2 text-left">{user.username}</td>
               <td className="p-2 text-left">{user.email}</td>
-              <td className="p-2">{user.is_staff ? '✅' : '❌'}</td>
-              <td className="p-2">{user.is_active ? '✅' : '❌'}</td>
+              <td className="p-2">{user.is_staff ? "✅" : "❌"}</td>
+              <td className="p-2">{user.is_active ? "✅" : "❌"}</td>
               <td className="p-2 space-x-2">
                 <button
                   onClick={() => handleEdit(user)}
-                  className="btn btn-primary px-4 py-1 mx-2"
-                >
+                  className="btn btn-primary px-4 py-1 mx-2">
                   Edit
                 </button>
                 <button
                   onClick={() => handleToggleActive(user)}
-                  className="btn btn-warning px-4 py-1 mx-2"
-                >
-                  {user.is_active ? 'Block' : 'Unblock'}
+                  className="btn btn-warning px-4 py-1 mx-2">
+                  {user.is_active ? "Block" : "Unblock"}
                 </button>
                 <button
                   onClick={() => handleDelete(user.id)}
-                  className="btn btn-danger px-4 py-1 mx-2"
-                >
+                  className="btn btn-danger px-4 py-1 mx-2">
                   Delete
                 </button>
               </td>

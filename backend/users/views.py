@@ -6,7 +6,7 @@ from .models import User,Address
 from .serializers import (UserSerializer, DeleteAccountSerializer, UserUpdateSerializer, UserSerializerWithToken,AddressSerializer,AddressUpdateSerializer)
 from django.shortcuts import get_object_or_404, render
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser , AllowAny
 from django.contrib.auth.hashers import make_password
 from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 
@@ -19,11 +19,18 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_decode,urlsafe_base64_encode
 from .utils import TokenGenerator,generate_token
-from django.utils.encoding import force_bytes, DjangoUnicodeDecodeError
+from django.utils.encoding import force_bytes, DjangoUnicodeDecodeError ,force_str
 from django.core.mail import EmailMessage
 from django.conf import settings
 from django.views.generic import View
 from smtplib import SMTPException
+import logging
+
+# Configure logger
+logger = logging.getLogger(__name__)
+
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.core.mail import send_mail
 
 
 @api_view(['POST'])
@@ -35,7 +42,7 @@ def registerUser(request):
             last_name=data['last_name'],
             username=data['email'],
             email=data['email'],
-            password=data['password'],
+            password=make_password(data['password']),
             is_active=False
         )
         # Generate token for sending mail
@@ -65,31 +72,6 @@ def registerUser(request):
         message = {'details': str(e)}
         print(e)
         return Response(message, status=status.HTTP_400_BAD_REQUEST)
-
-
-
-# class ActivateAccountView(APIView):
-#     def get(self,request,uidb64,token):
-#         try:
-#             # uid=str(urlsafe_base64_decode(uidb64))
-#             # user=User.objects.get(pk=uid)
-#             uid_bytes = urlsafe_base64_decode(uidb64)  # Returns b'16'
-#             uid_str = uid_bytes.decode('utf-8')  # Converts b'16' to "16"
-#             uid = int(uid_str)  # Converts "16" to 16
-#             user=User.objects.get(pk=uid)
-            
-#         except (TypeError, ValueError, OverflowError, User.DoesNotExist) as e:
-#             user=None
-#             print(f"Error decoding UID or retrieving user: {e}")  # Debug
-#             return Response({"detail": "Invalid user or UID"}, status=400)
-#         if user is not None and generate_token.check_token(user,token):
-#             user.is_active=True
-#             user.save()
-#             return Response({"detail": "Account activated successfully"}, status=200)
-#         else:
-#             print(f"Token validation failed for user {user}")  # Debug
-#             return Response({"detail": "Invalid or expired token"}, status=400)  
-
 
 class ActivateAccountView(APIView):
     def get(self, request, uidb64, token):
@@ -201,7 +183,7 @@ class User_Update_Delete(APIView):
 
         return Response(data={
         "errors": serializer.errors
-    }, status=status.HTTP_400_BAD_REQUEST)  
+    }, status=status.HTTP_400_BAD_REQUEST)
             
     def delete(self, request, id):
         user = User.objects.get(id=id)
@@ -222,7 +204,7 @@ class User_Update_Delete(APIView):
             )
             
         return Response({"errors": serializer.errors},status=status.HTTP_400_BAD_REQUEST)
-    
+
     # ============ Address APIs ============
 
 class AddressCreateView(generics.CreateAPIView):
@@ -261,3 +243,100 @@ def update_address(request):
             address.save()
             return Response(AddressUpdateSerializer(address).data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+    # Password Reset Request
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def passwordResetRequest(request):
+    email = request.data.get('email')
+    if not email:
+        return Response({"details": "Email is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        user = User.objects.get(email=email)
+        # Generate token and UID
+        token_generator = PasswordResetTokenGenerator()
+        token = token_generator.make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+
+        # Build the reset link
+        domain = request.build_absolute_uri('/')[:-1]  # e.g., http://127.0.0.1:8000
+        reset_url = f"{domain}/api/users/password-reset-confirm/?uid={uid}&token={token}"
+
+        # Send a plain text email
+        email_subject = "Password Reset Request"
+        email_message = (
+            f"Hello {user.email},\n\n"
+            f"You requested a password reset for your account. Use the following link to reset your password:\n"
+            f"{reset_url}\n\n"
+            f"If you did not request a password reset, please ignore this email.\n\n"
+            f"Thanks,\nThe Shoe-Zone Team"
+        )
+
+        send_mail(
+            email_subject,
+            email_message,
+            settings.EMAIL_HOST_USER,
+            [email],
+            fail_silently=False,
+        )
+
+        # Return the reset URL in the response only in non-production environments
+        response_data = {"details": "Password reset email sent successfully."}
+        if settings.DEBUG:  # Include reset_url only in development mode
+            response_data["reset_url"] = reset_url
+        return Response(response_data)
+    except User.DoesNotExist:
+        # Don't reveal whether the email exists for security reasons
+        return Response({"details": "Password reset email sent if the email exists."})
+    except SMTPException as e:
+        print(f"SMTPException: {e}")
+        return Response(
+            {"details": "Failed to send email. Please check your email configuration."},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+    except Exception as e:
+        print(e)
+        return Response({"details": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+# Password Reset Confirm
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def passwordResetConfirm(request):
+    uidb64 = request.data.get('uid')
+    token = request.data.get('token')
+    new_password = request.data.get('new_password')
+
+    if not (uidb64 and token and new_password):
+        return Response(
+            {"details": "UID, token, and new password are required."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    try:
+        # Decode the UID and get the user
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+
+        # Verify the token
+        token_generator = PasswordResetTokenGenerator()
+        if not token_generator.check_token(user, token):
+            return Response(
+                {"details": "Invalid or expired token."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Update the password
+        user.set_password(new_password)
+        user.save()
+
+        return Response({"details": "Password reset successfully."})
+    except (User.DoesNotExist, ValueError, TypeError):
+        return Response(
+            {"details": "Invalid UID or user does not exist."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    except Exception as e:
+        logger.error("An unexpected error occurred during password reset confirmation.", exc_info=True)
+        return Response({"details": "An unexpected error occurred."}, status=status.HTTP_400_BAD_REQUEST)

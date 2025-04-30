@@ -1,0 +1,50 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
+@import "tailwindcss";
+
+body {
+  font-family: "Poppins", sans-serif;
+}
+
+.wrapper {
+  @apply mx-auto px-10;
+}
+
+.flex-center {
+  @apply flex justify-center items-center;
+}
+
+.flex-between {
+  @apply flex justify-between items-center;
+}
+
+.flex-start {
+  @apply flex justify-start items-center;
+}
+
+.bg-light {
+  background-color: #ffffff;
+}
+
+.bg-light-gray {
+  background-color: #f5f5f5;
+}
+
+.bg-primary {
+  background-color: #39523f;
+}
+
+.bg-dark {
+  background-color: #212121;
+}
+
+.text-dark {
+  color: #000000;
+}
+
+.text-light {
+  color: #ffffff;
+}
+
+.text-primary {
+  color: #39523f;
+}
