@@ -43,21 +43,18 @@ const ProductList = () => {
             <p className="mb-1">
               Price: <span className="font-medium">{product.price} EGP</span>
             </p>
-            <div className="flex items-center gap-1 mb-1">
-              <span className="text-sm font-medium text-gray-800">
-                {product.average_rating?.toFixed(1) || "0.0"}
-              </span>
 
+            <div className="flex items-center gap-2">
               <div className="flex items-center">
                 {[1, 2, 3, 4, 5].map((i) => (
                   <svg
                     key={i}
-                    width="12"
-                    height="12"
+                    width="16"
+                    height="16"
                     xmlns="http://www.w3.org/2000/svg"
-                    className={`w-4 h-4 ml-0.5 ${
+                    className={`w-4 h-4 ${
                       i <= Math.floor(product.average_rating)
-                        ? "text-yellow-400"
+                        ? "text-orange-500"
                         : "text-gray-300"
                     }`}
                     fill={i <= product.average_rating ? "currentColor" : "none"}
@@ -69,6 +66,10 @@ const ProductList = () => {
                   </svg>
                 ))}
               </div>
+
+              <span className="text-sm font-medium text-gray-800">
+                {product.average_rating?.toFixed(1) || "0.0"}
+              </span>
             </div>
 
             <p className="mb-2 text-sm text-gray-500">
