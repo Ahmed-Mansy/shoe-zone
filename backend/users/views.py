@@ -24,6 +24,10 @@ from django.core.mail import EmailMessage
 from django.conf import settings
 from django.views.generic import View
 from smtplib import SMTPException
+import logging
+
+# Configure logger
+logger = logging.getLogger(__name__)
 
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.core.mail import send_mail
