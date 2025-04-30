@@ -1,0 +1,8 @@
+{% autoescape off %}
+
+Hi {{user.name}}
+<p>Please click the link below to activate your account:</p>
+<a href="{{ domain }}/api/activate/{{ uid }}/{{ token }}/">Activate Account</a>
+
+{% endautoescape %}
+

@@ -1,6 +1,6 @@
 import { Link } from "react-router";
-import Input from "./Input";
 import { useState } from "react";
+import Input from "./Input";
 
 const footerLinks = [
   {
@@ -91,7 +91,7 @@ const Footer = () => {
             />
             <button
               onClick={handleSignUp}
-              className="bg-primary text-light px-4 py-2 uppercase font-semibold cursor-pointer">
+              className="bg-primary text-light px-4 py-2 uppercase font-semibold cursor-pointer hover:bg-gray-400">
               sign up
             </button>
           </div>

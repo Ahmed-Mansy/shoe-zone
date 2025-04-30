@@ -1,5 +1,6 @@
 import AnnouncementBar from "./AnnouncementBar";
 import NavBar from "./NavBar";
+
 const Header = () => {
   return (
     <>

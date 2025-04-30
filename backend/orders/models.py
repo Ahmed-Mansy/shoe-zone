@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings  # Import settings to use AUTH_USER_MODEL
 from products.models import Product 
 
 ORDER_STATUS_CHOICES = [
@@ -9,7 +9,7 @@ ORDER_STATUS_CHOICES = [
 ]
 
 class Order(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='orders')
     status = models.CharField(max_length=20, choices=ORDER_STATUS_CHOICES, default='pending')
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     shipping_address = models.TextField(max_length=255, default='')
@@ -46,5 +46,3 @@ class OrderItem(models.Model):
     def delete(self, *args, **kwargs):
         super().delete(*args, **kwargs)
         self.order.calculate_total()
-
-

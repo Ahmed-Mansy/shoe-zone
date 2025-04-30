@@ -1,12 +1,10 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import AppRouter from "./routes/AppRouter.jsx";
-import "./App.css";
-import "@smastrom/react-rating/style.css";
+import App from "./App.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <AppRouter />
+    <App />
   </StrictMode>
 );
 
