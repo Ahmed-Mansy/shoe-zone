@@ -54,7 +54,9 @@ class ViewCartView(APIView):
     def get(self, request):
         cart, _ = Cart.objects.get_or_create(user=request.user)
         cart_items = cart.items.select_related('product').all()
-
+        if not cart_items.exists():
+            return Response({"message":"Your cart is empty !"},status=200)
+        
         items = []
         total_price = 0
 
