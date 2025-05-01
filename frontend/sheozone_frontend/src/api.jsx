@@ -100,6 +100,7 @@ export const registerUser = async (userData) => {
   }
 };
 
+//Login User
 export const loginUser = async (userData) => {
   try {
     const response = await axios.post(`${BASE_URL}users/login/`, userData);

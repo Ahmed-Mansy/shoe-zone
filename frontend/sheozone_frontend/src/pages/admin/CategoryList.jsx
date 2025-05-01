@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 
 const CategoryList = () => {
   const [categories, setCategories] = useState([]);
@@ -100,26 +100,81 @@ const CategoryList = () => {
   };
 
   return (
-    <div className="container p-5 ">
-      <h2 className="font-bold m-4 p-4 ">All Categories</h2>
+    // <div className="container p-5 ">
+    //   <h2 className="font-bold m-4 p-4 ">All Categories</h2>
 
-      <form onSubmit={handleSaveCategory} className="mx-5 ">
+    //   <form onSubmit={handleSaveCategory} className="mx-5 ">
+    //     <input
+    //       type="text"
+    //       value={newCategory}
+    //       onChange={(e) => setNewCategory(e.target.value)}
+    //       placeholder="Enter category name"
+    //       className="border p-2 rounded w-25 mx-4"
+    //     />
+    //     <button
+    //       type="submit"
+    //       className={`btn btn-primary px-4 py-2 mx-2 ${isEditing}`}>
+    //       {isEditing ? "Update" : "Add Category"}
+    //     </button>
+    //     {isEditing && (
+    //       <button
+    //         type="button"
+    //         className="btn btn-danger px-4 py-2"
+    //         onClick={() => {
+    //           setNewCategory("");
+    //           setEditingCategoryId(null);
+    //         }}>
+    //         Cancel
+    //       </button>
+    //     )}
+    //   </form>
+
+    //   <ul className="w-50 m-3 p-5">
+    //     {categories.map((cat) => (
+    //       <li
+    //         key={cat.id}
+    //         className="d-flex justify-content-between align-items-center border p-3 rounded shadow-sm m-2">
+    //         <span className="flex-1">{cat.name}</span>
+    //         <div className="flex gap-2 justify-end items-center">
+    //           <button
+    //             className="btn btn-secondary px-3 py-1 "
+    //             onClick={() => handleEditCategory(cat)}>
+    //             Edit
+    //           </button>
+    //           <button
+    //             className="btn btn-danger px-3 py-1 mx-2"
+    //             onClick={() => handleDeleteCategory(cat.id)}>
+    //             Delete
+    //           </button>
+    //         </div>
+    //       </li>
+    //     ))}
+    //   </ul>
+    // </div>
+    <div className="wrapper py-8">
+      <h2 className="text-2xl font-bold mb-4">All Categories</h2>
+
+      <form
+        onSubmit={handleSaveCategory}
+        className="flex flex-col md:flex-row items-center gap-4 mb-8">
         <input
           type="text"
           value={newCategory}
           onChange={(e) => setNewCategory(e.target.value)}
           placeholder="Enter category name"
-          className="border p-2 rounded w-25 mx-4"
+          className="border p-2 rounded-xs w-full md:w-1/4"
         />
         <button
           type="submit"
-          className={`btn btn-primary px-4 py-2 mx-2 ${isEditing}`}>
+          className={`bg-blue-600 text-white rounded-xs px-6 py-2 cursor-pointer hover:bg-blue-700 transition ${
+            isEditing ? "bg-green-600 hover:bg-green-700" : ""
+          }`}>
           {isEditing ? "Update" : "Add Category"}
         </button>
         {isEditing && (
           <button
             type="button"
-            className="btn btn-danger px-4 py-2"
+            className="bg-red-600 text-white rounded-xs px-6 py-2 hover:bg-red-700 transition"
             onClick={() => {
               setNewCategory("");
               setEditingCategoryId(null);
@@ -129,20 +184,20 @@ const CategoryList = () => {
         )}
       </form>
 
-      <ul className="w-50 m-3 p-5">
+      <ul className="w-full md:w-1/2 space-y-4">
         {categories.map((cat) => (
           <li
             key={cat.id}
-            className="d-flex justify-content-between align-items-center border p-3 rounded shadow-sm m-2">
+            className="flex justify-between items-center border p-4 rounded-xs shadow-sm">
             <span className="flex-1">{cat.name}</span>
-            <div className="flex gap-2 justify-end items-center">
+            <div className="flex gap-2">
               <button
-                className="btn btn-secondary px-3 py-1 "
+                className="bg-gray-500 text-white rounded-xs px-3 w-[80px] py-2 hover:bg-gray-600 transition cursor-pointer"
                 onClick={() => handleEditCategory(cat)}>
                 Edit
               </button>
               <button
-                className="btn btn-danger px-3 py-1 mx-2"
+                className="bg-red-600 text-white rounded-xs px-3 w-[80px] py-2 hover:bg-red-700 transition cursor-pointer"
                 onClick={() => handleDeleteCategory(cat.id)}>
                 Delete
               </button>

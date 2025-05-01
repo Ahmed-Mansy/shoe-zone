@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { productImages } from "../data.json";
+import { productImages } from "../../data.json";
 import { useParams } from "react-router";
 import { Rating, Star } from "@smastrom/react-rating";
 
@@ -88,14 +88,16 @@ const Product = () => {
   };
 
   return (
-    <div className="wrapper mb-24 mt-12">
-      <div className="w-full flex justify-between gap-4">
-        <div className="w-1/2 h-fit flex justify-between gap-4 sticky top-24">
-          <div className="space-y-2">
+    <div className="wrapper mb-24 mt-10">
+      <div className="w-full flex flex-col lg:flex-row justify-between gap-16 lg:gap-4">
+        <div className="w-full lg:w-1/2 h-fit flex flex-col-reverse lg:flex-row justify-between gap-4 lg:sticky lg:top-24">
+          <div className="flex flex-row lg:flex-col gap-2">
             {productImages.map((image) => (
               <div
                 key={image.id}
-                className={`w-[70px] h-[70px] bg-[#f5f5f5] ${
+                className={`w-[calc(100%/${
+                  productImages.length
+                })] lg:w-[70px] aspect-auto bg-[#f5f5f5] ${
                   image.image === currentImage.image
                     ? "border-[2px] border-gray-700 rounded-xs"
                     : ""
@@ -103,7 +105,7 @@ const Product = () => {
                 <img
                   src={image.image}
                   alt=""
-                  className="w-full cursor-pointer"
+                  className="w-full h-full cursor-pointer"
                   onClick={() => setCurrentImage(image)}
                 />
               </div>
@@ -114,7 +116,7 @@ const Product = () => {
           </div>
         </div>
 
-        <div className="w-1/2 pl-8 space-y-8">
+        <div className="w-full lg:w-1/2 pl-0 lg:pl-8 space-y-8">
           <h2 className="font-bold text-2xl tracking-wide">{productTitle}</h2>
           <p className="text-md">
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo,

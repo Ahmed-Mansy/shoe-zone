@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Input from "../components/Input";
+import Input from "../../components/Input";
 import { Link } from "react-router";
 
 const ResetPassword = () => {

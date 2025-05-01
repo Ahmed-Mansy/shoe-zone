@@ -1,7 +1,7 @@
 import { Link, useParams } from "react-router";
-import CollectionSidebar from "../components/CollectionSidebar";
-import ProductsList from "../components/ProductsList";
-import data from "../data.json";
+import CollectionSidebar from "../../components/CollectionSidebar";
+import ProductsList from "../../components/ProductsList";
+import data from "../../data.json";
 
 const Collection = () => {
   const { collectionTitle } = useParams();
