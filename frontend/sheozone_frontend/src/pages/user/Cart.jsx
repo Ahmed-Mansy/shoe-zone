@@ -41,13 +41,13 @@ const Cart = () => {
       {cartItems.length > 0 ? (
         <div className="my-12">
           <h2 className="text-4xl font-semibold">Cart</h2>
-          <div className="flex flex-col md:flex-row justify-between items-start mt-10 divide-y-[1px]  md:divide-x-[1px] divide-[#EAEAEA]">
-            <div className="w-full md:w-2/3 divide-y-[1px] divide-[#EAEAEA]">
+          <div className="flex flex-col lg:flex-row justify-between items-start mt-10 divide-y-[1px]  lg:divide-x-[1px] divide-[#EAEAEA]">
+            <div className="w-full lg:w-2/3 divide-y-[1px] divide-[#EAEAEA]">
               {cartItems.map((item) => (
                 <CartItem key={item.id} item={item} />
               ))}
             </div>
-            <div className="w-1/2 self-end md:self-auto md:w-1/3 px-6 py-8 space-y-8">
+            <div className="w-1/2 self-end lg:self-auto lg:w-1/3 px-6 py-8 space-y-8">
               <div className="text-xl font-semibold flex-between px-2">
                 <h4>Subtotal:</h4>
                 <h4>500 EGP</h4>

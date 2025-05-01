@@ -25,7 +25,7 @@ const Home = () => {
   const [showButton, setShowButton] = useState(false);
 
   return (
-    <div className="pt-4">
+    <div>
       <div className="w-full">
         <img
           src="/assets/images/banner.jpg"
