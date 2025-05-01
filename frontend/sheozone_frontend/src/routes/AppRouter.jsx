@@ -6,7 +6,6 @@ import Register from "../pages/Register";
 import AuthLayout from "../layouts/AuthLayout";
 import MainLayout from "../layouts/MainLayout";
 import Stores from "../pages/Stores";
-import Profile from "../pages/Profile";
 import Cart from "../pages/Cart";
 import Collection from "../pages/Collection";
 import ResetPassword from "../pages/ResetPassword";
@@ -18,6 +17,10 @@ import CategoryList from "../pages/CategoryList";
 import UserManagement from "../pages/UserManagement";
 import OrderManagement from "../pages/OrderManagement";
 import Checkout from "../pages/Checkout";
+import ProfilePage from "../pages/ProfilePage.jsx";
+import ProfileEdit from "../pages/ProfileEdit.jsx";
+import EditAddress from "../pages/EditAddress.jsx";
+import AccountDelete from "../pages/AccountDelete.jsx";
 // import ProductList from "../components/ProductsList";
 // import ProductForm from "../components/ProductForm";
 
@@ -29,12 +32,14 @@ const AppRouter = () => {
           <Route index element={<Home />} />
           <Route path="about" element={<About />} />
           <Route path="stores" element={<Stores />} />
-          <Route path="profile" element={<Profile />} />
           <Route path="cart" element={<Cart />} />
           <Route path="checkout" element={<Checkout />} />
           <Route path="collections/:collectionTitle" element={<Collection />} />
           <Route path="products/:productTitle" element={<Product />} />
-
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/profile/update-address" element={<EditAddress />} />
+          <Route path="/profile/edit" element={<ProfileEdit />} />
+          <Route path="/profile/delete" element={<AccountDelete />} />
           <Route path="/dashboard" element={<AdminDashboard />} />
           {/* <Route path="/products" element={<ProductList />} /> */}
           {/* <Route path="/products/create" element={<ProductForm />} /> */}

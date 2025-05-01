@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../utils/axios"; // Axios instance
+import { deleteUserAccount } from "../api";
 
 function AccountDelete() {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ function AccountDelete() {
       };
 
       console.log("Sending:", { password, user_id: userId });
-      await api.delete(`/users/${userId}/`, { data: { password } });
+      await deleteUserAccount(userId, password);
       setMsg("Account deleted successfully.");
       localStorage.clear(); // Clear localStorage after account deletion
       navigate("/login");

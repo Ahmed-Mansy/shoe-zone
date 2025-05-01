@@ -4,6 +4,7 @@ import re
 from rest_framework.fields import ImageField
 # from django.contrib.auth.models import User 
 from rest_framework_simplejwt.tokens import RefreshToken
+from .models import Address
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -11,6 +12,7 @@ class UserSerializer(serializers.ModelSerializer):
     name=serializers.SerializerMethodField(read_only=True)
     _id=serializers.SerializerMethodField(read_only=True)
     isAdmin=serializers.SerializerMethodField(read_only=True)
+    addresses = serializers.SerializerMethodField()
     class Meta:
         model = User
         fields = [
@@ -27,6 +29,7 @@ class UserSerializer(serializers.ModelSerializer):
             'birthdate',
             'facebook_profile',
             'country',
+            'addresses',
         ]
         
     def get_name(self,obj):
@@ -43,6 +46,10 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_isAdmin(self,obj):
         return obj.is_staff
+    
+    def get_addresses(self, obj):
+        addresses = Address.objects.filter(user=obj)
+        return AddressSerializer(addresses, many=True).data
 
 class UserSerializerWithToken(UserSerializer):
     token=serializers.SerializerMethodField(read_only=True)
@@ -133,3 +140,18 @@ class DeleteAccountSerializer(serializers.Serializer):
             raise serializers.ValidationError({"password": "Incorrect password."})
 
         return attrs
+
+class AddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Address
+        fields = '__all__'
+
+class AddressUpdateSerializer(serializers.ModelSerializer):
+    country = serializers.CharField(source='country')
+    city = serializers.CharField(source='city')
+    street = serializers.CharField(source='address_line_1')
+    postcode = serializers.CharField(source='postcode')
+
+    class Meta:
+        model = Address
+        fields = ['country', 'city', 'street', 'postcode']
