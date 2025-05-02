@@ -1,13 +1,9 @@
 from django.db import models
-<<<<<<< HEAD
-from django.db import models
-from django.db import models
+
 from django.conf import settings
 from products.models import Product, Category
-=======
 from django.conf import settings
 from products.models import Product
->>>>>>> 430e1e5bdfc6ce1d5bf8f88cdc9af07ad2550d36
 # Create your models here.
 
 
