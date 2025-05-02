@@ -42,11 +42,10 @@ const Login = () => {
           onChange={handleInputChange}
         />
         <p className="text-md -mt-3">
-<<<<<<< HEAD
           Don&apos;t have an account?{" "}
-=======
+
           Don&apos;t have an account?
->>>>>>> main
+
           <Link to="/register" className="text-blue-600">
             Register
           </Link>
