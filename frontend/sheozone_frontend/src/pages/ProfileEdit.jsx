@@ -13,7 +13,6 @@ function ProfileEdit() {
     profile_picture: null,
     facebook_profile: "",
   });
-  console.log(formData);
   const [errors, setErrors] = useState({});
   const [msg, setMsg] = useState("");
 
@@ -28,7 +27,6 @@ function ProfileEdit() {
     getUserProfile(userId)
       .then((res) => {
         const user = res.user;
-        console.log("PROFILE RESPONSE:", user);
         if (!user) throw new Error("User object is missing in response");
         setFormData({
           ...formData,
@@ -94,23 +92,19 @@ function ProfileEdit() {
       if (["email", "username"].includes(key)) {
         continue;
       }
-
       if (key === "profile_picture" && !formData[key]) {
         continue;
       }
-
       updateData.append(key, formData[key]);
     }
 
     try {
-      console.log(updateData);
       await updateUserProfile(userId, updateData);
       setMsg("Profile updated successfully!");
       navigate("/profile");
     } catch (err) {
       if (err.response?.data) {
         const backendErrors = err.response.data;
-
         if (backendErrors.error) {
           setMsg(backendErrors.error);
         } else if (
@@ -134,70 +128,86 @@ function ProfileEdit() {
   };
 
   return (
-    <div className="container py-5">
-      <div className="col-md-8 card shadow-lg p-4 mt-5 mx-auto">
-        <div className="text-center">
-          <h3 className="font-weight-bolder">Edit Profile</h3>
-          {msg && (
-            <div
-              className={`alert ${
-                msg.includes("successfully") ? "alert-success" : "alert-warning"
-              }`}
-            >
-              {msg}
-            </div>
-          )}
-        </div>
-        <form onSubmit={handleSubmit} encType="multipart/form-data">
-          {[
-            { label: "First Name", name: "first_name" },
-            { label: "Last Name", name: "last_name" },
-            { label: "Country", name: "country" },
-            { label: "Birthdate", name: "birthdate", type: "date" },
-            { label: "Mobile", name: "mobile" },
-            { label: "Facebook Account", name: "facebook_profile" },
-          ].map(({ label, name, type = "text" }) => (
-            <div className="mb-3" key={name}>
-              <label className="form-label">{label}</label>
-              <input
-                type={type}
-                name={name}
-                value={formData[name] || ""}
-                onChange={handleChange}
-                className="form-control"
-              />
-              {errors[name] && (
-                <div className="text-danger">
-                  {Array.isArray(errors[name]) ? errors[name][0] : errors[name]}
+    
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div style={{ width: "800px" }} className=" rounded-2xl overflow-hidden shadow-lg bg-white border border-gray-200 p-6">
+          <h2 className="text-2xl font-bold mb-2">
+            <div className="text-center mb-5">
+              <h3 className="text-2xl font-bold mb-3">Edit Profile</h3>
+              {msg && (
+                <div
+                  className={`p-3 rounded ${
+                    msg.includes("successfully")
+                      ? "bg-green-100 text-green-800"
+                      : "bg-yellow-100 text-yellow-800"
+                  }`}
+                >
+                  {msg}
                 </div>
               )}
             </div>
-          ))}
-
-          <div className="mb-3">
-            <label className="form-label">Avatar</label>
-            <input
-              type="file"
-              name="profile_picture"
-              onChange={handleChange}
-              className="form-control"
-            />
-            {errors.profile_picture && (
-              <div className="text-danger">{errors.profile_picture}</div>
-            )}
-          </div>
-
-          <div className="text-center">
-            <button
-              type="submit"
-              className="btn btn-lg bg-gradient-primary w-100 mt-4 mb-0"
+          </h2>
+          <p className="text-gray-700 text-base mb-4">
+            <form
+              onSubmit={handleSubmit}
+              encType="multipart/form-data"
+              className="space-y-4"
             >
-              Update
-            </button>
-          </div>
-        </form>
+              {[
+                { label: "First Name", name: "first_name" },
+                { label: "Last Name", name: "last_name" },
+                { label: "Country", name: "country" },
+                { label: "Birthdate", name: "birthdate", type: "date" },
+                { label: "Mobile", name: "mobile" },
+                { label: "Facebook Account", name: "facebook_profile" },
+              ].map(({ label, name, type = "text" }) => (
+                <div key={name}>
+                  <label className="block mb-1 font-medium">{label}</label>
+                  <input
+                    type={type}
+                    name={name}
+                    value={formData[name] || ""}
+                    onChange={handleChange}
+                    className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  {errors[name] && (
+                    <p className="text-red-600 text-sm mt-1">
+                      {Array.isArray(errors[name])
+                        ? errors[name][0]
+                        : errors[name]}
+                    </p>
+                  )}
+                </div>
+              ))}
+
+              <div>
+                <label className="block mb-1 font-medium">Avatar</label>
+                <input
+                  type="file"
+                  name="profile_picture"
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                {errors.profile_picture && (
+                  <p className="text-red-600 text-sm mt-1">
+                    {errors.profile_picture}
+                  </p>
+                )}
+              </div>
+
+              <div className="text-center">
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                >
+                  Update
+                </button>
+              </div>
+            </form>
+          </p>
+        </div>
       </div>
-    </div>
+
   );
 }
 

@@ -10,17 +10,19 @@ function AccountDelete() {
 
   const handleDelete = async (e) => {
     e.preventDefault();
-    const confirmDelete = window.confirm("Are you sure you want to delete your account?");
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete your account?"
+    );
     if (!confirmDelete) return;
 
     try {
       const userId = localStorage.getItem("userId");
-    
+
       if (!userId) {
         console.error("User ID not found. Please log in.");
         setErrors("User ID not found. Please log in.");
         return;
-      };
+      }
 
       console.log("Sending:", { password, user_id: userId });
       await deleteUserAccount(userId, password);
@@ -37,51 +39,58 @@ function AccountDelete() {
       }
     }
   };
-      
-  return (
-    <section className="page-header section-height-100">
-      <div className="container">
-        <div className="row">
-          <div className="col-xl-4 col-lg-5 col-md-7 d-flex flex-column mx-lg-0 mx-auto">
-            <div className="card card-plain">
-              <div className="card-header pb-0 text-left">
-                <h4 className="font-weight-bolder">Confirm password to delete your account</h4>
-                {msg && <div className="alert alert-warning">{msg}</div>}
-                {errors && <p className="text-danger">{errors}</p>}
-              </div>
-              <div className="card-body">
-                <form onSubmit={handleDelete}>
-                  <div className="mb-3">
-                    <input
-                      type="password"
-                      name="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="form-control"
-                      placeholder="Enter your password"
-                      required
-                    />
-                  </div>
 
-                  <div className="text-center">
-                    <button type="submit" className="btn btn-lg bg-danger w-100 mt-4 mb-0">
-                      Delete
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-lg bg-primary w-100 mt-3"
-                      onClick={() => navigate("/profile")}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </form>
-              </div>
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div
+        style={{ width: "800px" }}
+        className="rounded-2xl overflow-hidden shadow-lg bg-white border border-gray-200 p-6"
+      >
+        <h2 className="text-center text-2xl font-bold mb-6">Delete Account</h2>
+
+        <div className="pb-4 text-left">
+          <h4 className="text-lg font-semibold mb-2">
+            Confirm password to delete your account
+          </h4>
+          {msg && (
+            <div className="bg-yellow-100 text-yellow-800 p-2 rounded mb-2">
+              {msg}
             </div>
-          </div>
+          )}
+          {errors && <p className="text-red-600">{errors}</p>}
         </div>
+
+        <form onSubmit={handleDelete} className="space-y-4">
+          <div>
+            <input
+              type="password"
+              name="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your password"
+              required
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400"
+            />
+          </div>
+
+          <div className="flex gap-2">
+            <button
+              type="submit"
+              className="w-1/2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+            >
+              Delete
+            </button>
+            <button
+              type="button"
+              className="w-1/2 border border-blue-500 text-blue-500 px-4 py-2 rounded hover:bg-blue-50 transition"
+              onClick={() => navigate("/profile")}
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
       </div>
-    </section>
+    </div>
   );
 }
 
