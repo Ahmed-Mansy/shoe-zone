@@ -8,7 +8,7 @@ const ProfilePictureInput = ({
   label = "Profile Picture",
 }) => {
   return (
-    <div className="flex-start gap-14">
+    <div className="flex items-center gap-[15%]">
       <label
         htmlFor="profilePicture"
         className="block text-sm font-medium text-gray-700">
@@ -16,7 +16,7 @@ const ProfilePictureInput = ({
       </label>
 
       <div className="relative">
-        <div className="relative w-24 h-24 rounded-full overflow-hidden bg-gray-100 border border-gray-300">
+        <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-100 border border-gray-300">
           {previewUrl ? (
             <img
               src={previewUrl}

@@ -1,58 +1,61 @@
 import { BrowserRouter, Routes, Route } from "react-router";
-import Home from "../pages/Home";
-import About from "../pages/About";
-import Login from "../pages/Login";
-import Register from "../pages/Register";
+// Layouts
 import AuthLayout from "../layouts/AuthLayout";
 import MainLayout from "../layouts/MainLayout";
-import Stores from "../pages/Stores";
-import Cart from "../pages/Cart";
-import Collection from "../pages/Collection";
-import ResetPassword from "../pages/ResetPassword";
-import Error from "../pages/Error";
-import Product from "../pages/Product";
 
-import AdminDashboard from "../pages/AdminDashboard";
-import CategoryList from "../pages/CategoryList";
-import UserManagement from "../pages/UserManagement";
-import OrderManagement from "../pages/OrderManagement";
-import Checkout from "../pages/Checkout";
-import ProfilePage from "../pages/ProfilePage.jsx";
-import ProfileEdit from "../pages/ProfileEdit.jsx";
-import EditAddress from "../pages/EditAddress.jsx";
-import AccountDelete from "../pages/AccountDelete.jsx";
-// import ProductList from "../components/ProductsList";
-// import ProductForm from "../components/ProductForm";
+// Auth Pages
+import Login from "../pages/auth/Login";
+import Register from "../pages/auth/Register";
+import ResetPassword from "../pages/auth/ResetPassword";
+
+// Admin Pages
+import AdminDashboard from "../pages/admin/AdminDashboard";
+import UserManagement from "../pages/admin/UserManagement";
+import OrderManagement from "../pages/admin/OrderManagement";
+import ProductList from "../pages/admin/ProductList";
+import ProductForm from "../pages/admin/ProductForm";
+import CategoryList from "../pages/admin/CategoryList";
+
+// User Pages
+import Home from "../pages/user/Home";
+import About from "../pages/user/About";
+import Profile from "../pages/ProfilePage";
+import Cart from "../pages/user/Cart";
+import Checkout from "../pages/user/Checkout";
+import Collection from "../pages/user/Collection";
+import Product from "../pages/user/Product";
+
+import Error from "../pages/user/Error";
+// import ProductDetail from "../components/ProductDetail";
 
 const AppRouter = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<MainLayout />}>
-          <Route index element={<Home />} />
-          <Route path="about" element={<About />} />
-          <Route path="stores" element={<Stores />} />
-          <Route path="cart" element={<Cart />} />
-          <Route path="checkout" element={<Checkout />} />
-          <Route path="collections/:collectionTitle" element={<Collection />} />
-          <Route path="products/:productTitle" element={<Product />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/profile/update-address" element={<EditAddress />} />
-          <Route path="/profile/edit" element={<ProfileEdit />} />
-          <Route path="/profile/delete" element={<AccountDelete />} />
-          <Route path="/dashboard" element={<AdminDashboard />} />
-          {/* <Route path="/products" element={<ProductList />} /> */}
-          {/* <Route path="/products/create" element={<ProductForm />} /> */}
-          {/* <Route path="/products/edit/:id" element={<ProductForm />} /> */}
-          <Route path="/categories" element={<CategoryList />} />
-          <Route path="/admin/users" element={<UserManagement />} />
-          <Route path="/admin/orders" element={<OrderManagement />} />
-        </Route>
-
         <Route element={<AuthLayout />}>
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
           <Route path="reset-password" element={<ResetPassword />} />
+        </Route>
+
+        <Route path="/" element={<MainLayout />}>
+          {/* Admin Routes */}
+          <Route path="/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/users" element={<UserManagement />} />
+          <Route path="/admin/orders" element={<OrderManagement />} />
+          <Route path="/products" element={<ProductList />} />
+          <Route path="/products/create" element={<ProductForm />} />
+          <Route path="/products/edit/:id" element={<ProductForm />} />
+          <Route path="/categories" element={<CategoryList />} />
+
+          {/* User Routes */}
+          <Route index element={<Home />} />
+          <Route path="about" element={<About />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="cart" element={<Cart />} />
+          <Route path="checkout" element={<Checkout />} />
+          <Route path="collections/:collectionTitle" element={<Collection />} />
+          <Route path="products/:productTitle" element={<Product />} />
         </Route>
 
         <Route path="*" element={<Error />} />

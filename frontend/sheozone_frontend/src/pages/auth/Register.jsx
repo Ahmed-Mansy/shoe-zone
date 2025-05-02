@@ -1,21 +1,23 @@
 import { useState } from "react";
-import Input from "../components/Input";
-import Logo from "../components/Logo";
-import ProfilePictureInput from "../components/ProfilePictureInput";
-import { registerUser } from "../api";
+import Input from "../../components/Input";
+import ProfilePictureInput from "../../components/ProfilePictureInput";
+import { registerUser } from "../../api";
+import { useNavigate } from "react-router";
 
 const Register = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
 
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    first_name: "",
+    last_name: "",
     email: "",
     password: "",
     confirmPassword: "",
     profilePicture: null,
   });
+
+  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -31,17 +33,16 @@ const Register = () => {
     }
   };
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    registerUser(formData);
+    await registerUser(formData);
+    navigate("/login");
   };
 
   return (
     <div className="w-full h-full rounded-2xl text-secondary px-6 py-10 bg-light">
-      <div className="w-full flex-center">
-        <Logo goHome={false} />
-      </div>
-      <h2 className="my-6 text-2xl font-bold">Register</h2>
+      <h2 className="w-full text-center mb-14 text-2xl font-bold">Register</h2>
+
       <form className="space-y-6" onSubmit={handleRegister}>
         <ProfilePictureInput
           handleImageChange={handleImageChange}
@@ -51,15 +52,15 @@ const Register = () => {
         <Input
           label="First Name"
           type="text"
-          name="firstName"
-          value={formData.firstName}
+          name="first_name"
+          value={formData.first_name}
           onChange={handleInputChange}
         />
         <Input
           label="Last Name"
           type="text"
-          name="lastName"
-          value={formData.lastName}
+          name="last_name"
+          value={formData.last_name}
           onChange={handleInputChange}
         />
         <Input
@@ -85,7 +86,7 @@ const Register = () => {
         />
         <button
           type="submit"
-          className="w-full rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+          className="w-full py-3 rounded-xs bg-primary text-light font-semibold hover:bg-dark transition-all cursor-pointer hover:opacity-90">
           Register
         </button>
       </form>

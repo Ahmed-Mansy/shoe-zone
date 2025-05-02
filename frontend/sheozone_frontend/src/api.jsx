@@ -33,18 +33,18 @@ export const getCategories = async () => {
 //////////////////////////////////////////////////////////
 // Get all products
 export const fetchProducts = async () => {
-  const response = await axios.get(`${API_URL}/products/crud/products/`);
+  const response = await axios.get(`${BASE_URL}/products/crud/products/`);
   return response.data;
 };
 
 export const fetchProductDetails = async (id) => {
-  const response = await axios.get(`${API_URL}/products/crud/products/${id}/`);
+  const response = await axios.get(`${BASE_URL}/products/crud/products/${id}/`);
   return response.data;
 };
 
 export const createProduct = async (product) => {
   const response = await axios.post(
-    `${API_URL}/products/crud/products/`,
+    `${BASE_URL}/products/crud/products/`,
     product
   );
   return response.data;
@@ -52,7 +52,7 @@ export const createProduct = async (product) => {
 
 export const updateProduct = async (id, product) => {
   const response = await axios.put(
-    `${API_URL}/products/crud/products/${id}/`,
+    `${BASE_URL}/products/crud/products/${id}/`,
     product
   );
   return response.data;
@@ -94,15 +94,18 @@ export const deleteOrder = (id) =>
 export const registerUser = async (userData) => {
   try {
     const response = await axios.post(`${BASE_URL}users/register/`, userData);
+    console.log(response.data);
     return response.data;
   } catch (error) {
     throw error.response.data;
   }
 };
 
+//Login User
 export const loginUser = async (userData) => {
   try {
     const response = await axios.post(`${BASE_URL}users/login/`, userData);
+    console.log(response.data);
     return response.data;
   } catch (error) {
     throw error.response.data;
@@ -124,22 +127,19 @@ export const getUserProfile = async (userId) => {
 };
 
 export const updateUserProfile = async (userId, updateData) => {
-    const response = await axios.put(
-      `${BASE_URL}users/user/${userId}/`,
-      updateData,
-    );
-    return response.data;
+  const response = await axios.put(
+    `${BASE_URL}users/user/${userId}/`,
+    updateData
+  );
+  return response.data;
 };
 
 // Delete user account
 export const deleteUserAccount = async (userId, password) => {
   try {
-    const response = await axios.delete(
-      `${BASE_URL}users/user/${userId}/`,
-      {
-        data: { password },
-      }
-    );
+    const response = await axios.delete(`${BASE_URL}users/user/${userId}/`, {
+      data: { password },
+    });
     return response.data;
   } catch (error) {
     console.error("Error deleting account:", error);
@@ -149,14 +149,15 @@ export const deleteUserAccount = async (userId, password) => {
 
 export const getProductRatings = async (productId) => {
   try {
-    const response = await axios.get(`${BASE_URL}/products/${productId}/ratings/`);
+    const response = await axios.get(
+      `${BASE_URL}/products/${productId}/ratings/`
+    );
     return response.data;
   } catch (error) {
     console.error("Error fetching product ratings:", error);
     throw error;
   }
 };
-
 
 export const submitProductRating = async (productId, score) => {
   try {

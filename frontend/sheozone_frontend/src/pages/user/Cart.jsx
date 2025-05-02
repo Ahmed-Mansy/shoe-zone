@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router";
+import CartItem from "../../components/CartItem";
 
 const cartItems = [
   {
@@ -8,6 +9,7 @@ const cartItems = [
     color: "yellow",
     sizes: 41,
     productImage: "../assets/images/3.jpg",
+    quantity: 1,
   },
   {
     id: "w002",
@@ -17,6 +19,7 @@ const cartItems = [
     color: "black",
     sizes: 38,
     productImage: "../assets/images/1.jpg",
+    quantity: 2,
   },
   {
     id: "w003",
@@ -26,62 +29,25 @@ const cartItems = [
     color: "red",
     sizes: 35,
     productImage: "../assets/images/2.jpg",
+    quantity: 4,
   },
 ];
 
 const Cart = () => {
   const navigate = useNavigate();
-  const handleQuantity = (e) => {
-    console.log(e.target.value);
-  };
 
   return (
     <div className="wrapper">
       {cartItems.length > 0 ? (
         <div className="my-12">
           <h2 className="text-4xl font-semibold">Cart</h2>
-          <div className="flex justify-between items-start mt-10 divide-x-[1px] divide-[#EAEAEA]">
-            <div className="w-2/3 divide-y-[1px] divide-[#EAEAEA]">
+          <div className="flex flex-col lg:flex-row justify-between items-start mt-10 divide-y-[1px]  lg:divide-x-[1px] divide-[#EAEAEA]">
+            <div className="w-full lg:w-2/3 divide-y-[1px] divide-[#EAEAEA]">
               {cartItems.map((item) => (
-                <div key={item.id} className="p-4 flex gap-3">
-                  <div className="w-[150px] aspect-auto bg-light-gray">
-                    <img
-                      src={item.productImage}
-                      alt={item.title}
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-
-                  <div className="py-4 px-2 flex-between w-[calc(100%-200px)]">
-                    <div className="flex flex-col items-start gap-4">
-                      <h2 className="font-semibold text-lg">{item.title}</h2>
-
-                      <p>{item.price}</p>
-
-                      <button
-                        type="button"
-                        className="block text-red-700 font-light cursor-pointer hover:text-red-600">
-                        Remove
-                      </button>
-                    </div>
-
-                    <div className="flex-center gap-2">
-                      <h3>Quantity: </h3>
-                      <select
-                        name="quantity"
-                        className="w-[50px] text-center"
-                        onChange={handleQuantity}>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              ))}{" "}
+                <CartItem key={item.id} item={item} />
+              ))}
             </div>
-            <div className="w-1/3 px-6 py-8 space-y-8">
+            <div className="w-1/2 self-end lg:self-auto lg:w-1/3 px-6 py-8 space-y-8">
               <div className="text-xl font-semibold flex-between px-2">
                 <h4>Subtotal:</h4>
                 <h4>500 EGP</h4>
