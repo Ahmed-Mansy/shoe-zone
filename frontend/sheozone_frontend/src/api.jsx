@@ -94,6 +94,7 @@ export const deleteOrder = (id) =>
 export const registerUser = async (userData) => {
   try {
     const response = await axios.post(`${BASE_URL}users/register/`, userData);
+    console.log(response.data);
     return response.data;
   } catch (error) {
     throw error.response.data;
@@ -104,6 +105,7 @@ export const registerUser = async (userData) => {
 export const loginUser = async (userData) => {
   try {
     const response = await axios.post(`${BASE_URL}users/login/`, userData);
+    console.log(response.data);
     return response.data;
   } catch (error) {
     throw error.response.data;
