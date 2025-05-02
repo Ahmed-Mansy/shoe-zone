@@ -18,7 +18,8 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    await loginUser(formData);
+    let respone = await loginUser(formData);
+
     navigate("/");
   };
 
@@ -42,11 +43,7 @@ const Login = () => {
           onChange={handleInputChange}
         />
         <p className="text-md -mt-3">
-<<<<<<< HEAD
-          Don&apos;t have an account?{" "}
-=======
           Don&apos;t have an account?
->>>>>>> main
           <Link to="/register" className="text-blue-600">
             Register
           </Link>

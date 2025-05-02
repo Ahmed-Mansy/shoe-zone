@@ -1,8 +1,8 @@
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import Logo from "./Logo";
 import { FiSearch, FiUser, FiShoppingCart } from "react-icons/fi";
-import { IoIosMenu, IoMdClose } from "react-icons/io";
-import { useState } from "react";
+import { IoIosMenu, IoMdClose, IoIosLogOut } from "react-icons/io";
+import { useEffect, useState } from "react";
 
 const navLinks = [
   { id: 1, title: "men" },
@@ -12,13 +12,21 @@ const navLinks = [
 ];
 
 const Navbar = () => {
-  const isAdmin = localStorage.getItem("userRole") === "admin";
-  // const isAdmin = false;
+  let isAdmin = localStorage.getItem("userRole") === "admin";
+  const isAuthenticated = localStorage.getItem("userId") ? true : false;
 
-  const isLoggedIn = false;
+  const navigate = useNavigate();
+
   const cartItems = 3;
 
   const [showDrawer, setShowDrawer] = useState(false);
+
+  const handleLogOut = () => {
+    localStorage.removeItem("userId");
+    localStorage.removeItem("userRole");
+    navigate("/");
+    window.location.reload();
+  };
 
   return (
     <>
@@ -38,19 +46,26 @@ const Navbar = () => {
       </div>
       <div className="wrapper flex-between shadow-md h-[60px] sticky top-0 bg-light z-10 py-2">
         {isAdmin ? (
-          <nav className="w-full">
-            <Link to="/products" className=" hover:text-[#39523f] mx-2">
-              Products
-            </Link>
-            <Link to="/categories" className=" hover:text-[#39523f] mx-2">
-              Manage Categories
-            </Link>
-            <Link to="/admin/orders" className=" hover:text-[#39523f] mx-2">
-              Manage Orders
-            </Link>
-            <Link to="/dashboard" className=" hover:text-[#39523f] mx-2">
-              Dashboard
-            </Link>
+          <nav className="w-full flex-between">
+            <div className="flex items-center gap-4">
+              <Link to="/products" className=" hover:text-[#39523f]">
+                Products
+              </Link>
+              <Link to="/categories" className=" hover:text-[#39523f]">
+                Manage Categories
+              </Link>
+              <Link to="/admin/orders" className=" hover:text-[#39523f]">
+                Manage Orders
+              </Link>
+              <Link to="/dashboard" className=" hover:text-[#39523f]">
+                Dashboard
+              </Link>
+            </div>
+            <IoIosLogOut
+              size={24}
+              className="hover:text-[#39523f] cursor-pointer "
+              onClick={handleLogOut}
+            />
           </nav>
         ) : (
           <div className="relative w-full flex-between">
@@ -89,9 +104,6 @@ const Navbar = () => {
                 <FiSearch size={24} className="hover:text-[#39523f]" />
               </Link>
               {/* //TODO Route will depends on the user's authentication status */}
-              <Link to={isLoggedIn ? "/profile" : "/login"}>
-                <FiUser size={24} className="hover:text-[#39523f]" />
-              </Link>
               <div className="relative">
                 <Link to="/cart">
                   <FiShoppingCart
@@ -103,6 +115,17 @@ const Navbar = () => {
                   {cartItems}
                 </span>
               </div>
+              {isAuthenticated ? (
+                <IoIosLogOut
+                  size={24}
+                  className="hover:text-[#39523f] cursor-pointer"
+                  onClick={handleLogOut}
+                />
+              ) : (
+                <Link to={isAuthenticated ? "/profile" : "/login"}>
+                  <FiUser size={24} className="hover:text-[#39523f]" />
+                </Link>
+              )}
             </div>
           </div>
         )}
