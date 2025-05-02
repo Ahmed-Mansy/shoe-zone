@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import api from "../utils/axios"; // Axios instance
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { getUserProfile, updateUserProfile } from "../api";
 
 function ProfileEdit() {
   const navigate = useNavigate();
@@ -13,7 +13,7 @@ function ProfileEdit() {
     profile_picture: null,
     facebook_profile: "",
   });
-
+  console.log(formData);
   const [errors, setErrors] = useState({});
   const [msg, setMsg] = useState("");
 
@@ -25,10 +25,11 @@ function ProfileEdit() {
       return;
     }
 
-    api
-      .get(`/users/profile/${userId}/`)
+    getUserProfile(userId)
       .then((res) => {
-        const user = res.data.user;
+        const user = res.user;
+        console.log("PROFILE RESPONSE:", user);
+        if (!user) throw new Error("User object is missing in response");
         setFormData({
           ...formData,
           first_name: user.first_name || "",
@@ -37,6 +38,8 @@ function ProfileEdit() {
           birthdate: user.birthdate || "",
           mobile: user.mobile || "",
           facebook_profile: user.facebook_profile || "",
+          email: user.email || "",
+          username: user.username || "",
         });
       })
       .catch((err) => {
@@ -88,6 +91,10 @@ function ProfileEdit() {
 
     const updateData = new FormData();
     for (let key in formData) {
+      if (["email", "username"].includes(key)) {
+        continue;
+      }
+
       if (key === "profile_picture" && !formData[key]) {
         continue;
       }
@@ -96,11 +103,8 @@ function ProfileEdit() {
     }
 
     try {
-      await api.put(`/users/${userId}/`, updateData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      console.log(updateData);
+      await updateUserProfile(userId, updateData);
       setMsg("Profile updated successfully!");
       navigate("/profile");
     } catch (err) {
@@ -138,7 +142,8 @@ function ProfileEdit() {
             <div
               className={`alert ${
                 msg.includes("successfully") ? "alert-success" : "alert-warning"
-              }`}>
+              }`}
+            >
               {msg}
             </div>
           )}
@@ -185,7 +190,8 @@ function ProfileEdit() {
           <div className="text-center">
             <button
               type="submit"
-              className="btn btn-lg bg-gradient-primary w-100 mt-4 mb-0">
+              className="btn btn-lg bg-gradient-primary w-100 mt-4 mb-0"
+            >
               Update
             </button>
           </div>

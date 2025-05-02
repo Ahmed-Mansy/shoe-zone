@@ -33,18 +33,18 @@ export const getCategories = async () => {
 //////////////////////////////////////////////////////////
 // Get all products
 export const fetchProducts = async () => {
-  const response = await axios.get(`${API_URL}/products/crud/products/`);
+  const response = await axios.get(`${BASE_URL}/products/crud/products/`);
   return response.data;
 };
 
 export const fetchProductDetails = async (id) => {
-  const response = await axios.get(`${API_URL}/products/crud/products/${id}/`);
+  const response = await axios.get(`${BASE_URL}/products/crud/products/${id}/`);
   return response.data;
 };
 
 export const createProduct = async (product) => {
   const response = await axios.post(
-    `${API_URL}/products/crud/products/`,
+    `${BASE_URL}/products/crud/products/`,
     product
   );
   return response.data;
@@ -52,7 +52,7 @@ export const createProduct = async (product) => {
 
 export const updateProduct = async (id, product) => {
   const response = await axios.put(
-    `${API_URL}/products/crud/products/${id}/`,
+    `${BASE_URL}/products/crud/products/${id}/`,
     product
   );
   return response.data;
@@ -107,5 +107,71 @@ export const loginUser = async (userData) => {
     return response.data;
   } catch (error) {
     throw error.response.data;
+  }
+};
+
+// Get user profile
+export const getUserProfile = async (userId) => {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}users/profile/${userId}/`,
+      config
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    return null;
+  }
+};
+
+export const updateUserProfile = async (userId, updateData) => {
+  const response = await axios.put(
+    `${BASE_URL}users/user/${userId}/`,
+    updateData
+  );
+  return response.data;
+};
+
+// Delete user account
+export const deleteUserAccount = async (userId, password) => {
+  try {
+    const response = await axios.delete(`${BASE_URL}users/user/${userId}/`, {
+      data: { password },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting account:", error);
+    throw error;
+  }
+};
+
+export const getProductRatings = async (productId) => {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}/products/${productId}/ratings/`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching product ratings:", error);
+    throw error;
+  }
+};
+
+export const submitProductRating = async (productId, score) => {
+  try {
+    const token = localStorage.getItem("access");
+    const response = await axios.post(
+      `${BASE_URL}/products/${productId}/ratings/`,
+      { score },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error submitting product rating:", error);
+    throw error;
   }
 };

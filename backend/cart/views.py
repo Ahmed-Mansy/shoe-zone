@@ -1,10 +1,18 @@
+<<<<<<< HEAD
+=======
+from django.shortcuts import render
+>>>>>>> 430e1e5bdfc6ce1d5bf8f88cdc9af07ad2550d36
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from .models import Product, Cart, CartItem
+<<<<<<< HEAD
 # Create your views here.
+=======
+
+>>>>>>> 430e1e5bdfc6ce1d5bf8f88cdc9af07ad2550d36
 
 class AddToCartView(APIView):
     permission_classes = [IsAuthenticated]
@@ -53,7 +61,10 @@ class ViewCartView(APIView):
     def get(self, request):
         cart, _ = Cart.objects.get_or_create(user=request.user)
         cart_items = cart.items.select_related('product').all()
+<<<<<<< HEAD
 
+=======
+>>>>>>> 430e1e5bdfc6ce1d5bf8f88cdc9af07ad2550d36
         if not cart_items.exists():
             return Response({"message":"Your cart is empty !"},status=200)
         

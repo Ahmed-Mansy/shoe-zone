@@ -1,9 +1,9 @@
 # users/views.py
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, generics
 from rest_framework.response import Response
 from rest_framework.decorators import action, api_view, permission_classes
-from .models import User
-from .serializers import UserSerializer, DeleteAccountSerializer, UserUpdateSerializer, UserSerializerWithToken
+from .models import User,Address
+from .serializers import (UserSerializer, DeleteAccountSerializer, UserUpdateSerializer, UserSerializerWithToken,AddressSerializer,AddressUpdateSerializer)
 from django.shortcuts import get_object_or_404, render
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser , AllowAny
@@ -24,6 +24,10 @@ from django.core.mail import EmailMessage
 from django.conf import settings
 from django.views.generic import View
 from smtplib import SMTPException
+import logging
+
+# Configure logger
+logger = logging.getLogger(__name__)
 
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.core.mail import send_mail
@@ -148,12 +152,12 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class ProfileView(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     def get(self, request, id):
         user = get_object_or_404(User, id=id)
 
-        if request.user.id != user.id:
-            return Response({"error": "You are not authorized to view this profile."}, status=status.HTTP_403_FORBIDDEN)
+        # if request.user.id != user.id:
+        #     return Response({"error": "You are not authorized to view this profile."}, status=status.HTTP_403_FORBIDDEN)
 
         user_data = UserSerializer(user).data
 
@@ -162,29 +166,21 @@ class ProfileView(APIView):
         }, status=status.HTTP_200_OK)
     
 class User_Update_Delete(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def put(self, request, id):
         user = get_object_or_404(User, id=id)
-        data = request.data
 
         serializer = UserUpdateSerializer(instance=user, data=request.data)
 
-        if user:
-            if request.user.id == user.id:
-                user.username = data["username"]
-                user.email = data["email"]
-            if serializer.is_valid():
-                if data.get("password", "") != "":
-                    user.password = make_password(data["password"])
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
-                user.save()
-                serializer = UserSerializer(user, many=False)
-                message = {"details": "User Successfully Updated.", "user": serializer.data}
-                return Response(message, status=status.HTTP_200_OK)
-            else:
-                return Response({"details": "Permission Denied."}, status.status.HTTP_403_FORBIDDEN)
+        return Response(data={
+        "errors": serializer.errors
+    }, status=status.HTTP_400_BAD_REQUEST)
             
     def delete(self, request, id):
         user = User.objects.get(id=id)
@@ -205,8 +201,47 @@ class User_Update_Delete(APIView):
             )
             
         return Response({"errors": serializer.errors},status=status.HTTP_400_BAD_REQUEST)
-    
-    
+
+    # ============ Address APIs ============
+
+class AddressCreateView(generics.CreateAPIView):
+    queryset = Address.objects.all()
+    serializer_class = AddressSerializer
+
+
+class AddressListView(generics.ListAPIView):
+    queryset = Address.objects.all()
+    serializer_class = AddressSerializer
+
+
+class AddressDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Address.objects.all()
+    serializer_class = AddressSerializer
+
+@api_view(['PUT'])
+# @permission_classes([IsAuthenticated])
+def update_address(request):
+    try:
+        address = Address.objects.get(user=request.user)
+    except Address.DoesNotExist:
+        return Response({'error': 'Address not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = AddressUpdateSerializer(address)
+        return Response(serializer.data)
+
+    if request.method == 'PUT':
+        serializer = AddressUpdateSerializer(address, data=request.data)
+        if serializer.is_valid():
+            address.country = serializer.validated_data.get('country')
+            address.city = serializer.validated_data.get('city')
+            address.address_line_1 = serializer.validated_data.get('street')
+            address.postcode = serializer.validated_data.get('postcode')
+            address.save()
+            return Response(AddressUpdateSerializer(address).data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
     # Password Reset Request
 @api_view(['POST'])
 @permission_classes([AllowAny])

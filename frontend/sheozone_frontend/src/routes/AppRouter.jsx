@@ -19,7 +19,7 @@ import CategoryList from "../pages/admin/CategoryList";
 // User Pages
 import Home from "../pages/user/Home";
 import About from "../pages/user/About";
-import Profile from "../pages/user/Profile";
+import Profile from "../pages/ProfilePage";
 import Cart from "../pages/user/Cart";
 import Checkout from "../pages/user/Checkout";
 import Collection from "../pages/user/Collection";
