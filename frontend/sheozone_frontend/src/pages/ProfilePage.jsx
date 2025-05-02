@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getUserProfile } from "../api";
 
@@ -48,8 +48,7 @@ const ProfilePage = () => {
                 fontSize: "1.125rem",
                 fontWeight: "600",
                 color: "black",
-              }}
-            >
+              }}>
               {user.first_name} {user.last_name}
             </h4>
             <p style={{ fontSize: "0.875rem", color: "black" }}>{user.email}</p>
@@ -57,12 +56,10 @@ const ProfilePage = () => {
               <a
                 href={user.facebook_profile || "#"}
                 target="_blank"
-                rel="noopener noreferrer"
-              >
+                rel="noopener noreferrer">
                 <i
                   className="fa-brands fa-facebook mx-1 text-xl"
-                  style={{ color: "#1877F2" }}
-                ></i>
+                  style={{ color: "#1877F2" }}></i>
               </a>
             </div>
           </div>
@@ -70,24 +67,21 @@ const ProfilePage = () => {
             <li className="py-2 px-4">
               <Link
                 to="/profile/edit"
-                className="text-blue-600 hover:underline inline-block"
-              >
+                className="text-blue-600 hover:underline inline-block">
                 Edit Profile
               </Link>
             </li>
             <li className="py-2 px-4">
               <Link
                 to="/profile/update-address"
-                className="text-blue-600 hover:underline inline-block"
-              >
+                className="text-blue-600 hover:underline inline-block">
                 Edit Address
               </Link>
             </li>
             <li className="py-2 px-4">
               <Link
                 to="/profile/delete"
-                className="text-red-600 hover:underline inline-block"
-              >
+                className="text-red-600 hover:underline inline-block">
                 Delete Account
               </Link>
             </li>
@@ -97,8 +91,7 @@ const ProfilePage = () => {
           <div className="w-full md:w-3/4">
             <div
               className="w-3/4 mx-auto shadow-lg text-black rounded px-5 py-4 flex flex-col items-center"
-              style={{ backgroundColor: "#d0ebff" }}
-            >
+              style={{ backgroundColor: "#d0ebff" }}>
               <h3 className="mb-4 text-xl font-bold">Profile Details</h3>
             </div>
             <div className="w-3/4 mx-auto mt-4 text-gray-800 space-y-2">
@@ -125,8 +118,7 @@ const ProfilePage = () => {
           <div className="w-full md:w-3/4 mt-8">
             <div
               className="w-3/4 mx-auto shadow-lg text-black rounded px-5 py-4 flex flex-col items-center"
-              style={{ backgroundColor: "#d0ebff" }}
-            >
+              style={{ backgroundColor: "#d0ebff" }}>
               <h3 className="mb-4 text-center w-full text-xl font-bold">
                 Home Address
               </h3>
@@ -136,8 +128,7 @@ const ProfilePage = () => {
               addresses.map((address) => (
                 <div
                   key={address.id}
-                  className="text-start px-4 mt-3 text-black w-3/4 mx-auto"
-                >
+                  className="text-start px-4 mt-3 text-black w-3/4 mx-auto">
                   {address.country && (
                     <p>
                       <strong>Country:</strong> {address.country}
