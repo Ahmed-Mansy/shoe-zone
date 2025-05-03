@@ -132,7 +132,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         return instance
     
 class DeleteAccountSerializer(serializers.Serializer):
-    user_id = serializers.IntegerField()
+    # user_id = serializers.IntegerField()
     password = serializers.CharField(write_only=True)
     def validate(self, attrs):
         password = attrs.get('password')
@@ -150,11 +150,10 @@ class AddressSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class AddressUpdateSerializer(serializers.ModelSerializer):
-    country = serializers.CharField(source='country')
-    city = serializers.CharField(source='city')
     street = serializers.CharField(source='address_line_1')
-    postcode = serializers.CharField(source='postcode')
 
     class Meta:
         model = Address
         fields = ['country', 'city', 'street', 'postcode']
+
+

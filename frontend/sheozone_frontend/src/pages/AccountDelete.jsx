@@ -1,42 +1,59 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { deleteUserAccount } from "../api";
+import axios from "axios";
+import Swal from "sweetalert2";
+
+const BASE_URL = "http://127.0.0.1:8000/api/";
 
 function AccountDelete() {
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [msg, setMsg] = useState("");
   const [errors, setErrors] = useState("");
 
   const handleDelete = async (e) => {
     e.preventDefault();
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete your account?"
-    );
-    if (!confirmDelete) return;
+
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "Do you really want to delete your account?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel'
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
-      const userId = localStorage.getItem("userId");
+      const response = await axios.post(
+        `${BASE_URL}users/delete-account/`,
+        {
+          email: email,
+          password: password,
+        }
+      );
 
-      if (!userId) {
-        console.error("User ID not found. Please log in.");
-        setErrors("User ID not found. Please log in.");
-        return;
-      }
+      await Swal.fire(
+        'Deleted!',
+        'Your account has been deleted successfully.',
+        'success'
+      );
 
-      console.log("Sending:", { password, user_id: userId });
-      await deleteUserAccount(userId, password);
-      setMsg("Account deleted successfully.");
-      localStorage.clear(); // Clear localStorage after account deletion
       navigate("/login");
+
     } catch (err) {
-      if (err.response?.data?.errors?.password) {
-        setMsg(err.response.data.errors.password[0]);
-      } else if (err.response?.data?.error) {
-        setMsg(err.response.data.error);
-      } else {
-        setMsg("Failed to delete account.");
+      let errorMessage = "Failed to delete account. Please try again.";
+      if (err.response?.data?.error) {
+        errorMessage = err.response.data.error;
       }
+      Swal.fire(
+        'Error!',
+        errorMessage,
+        'error'
+      );
     }
   };
 
@@ -48,30 +65,33 @@ function AccountDelete() {
       >
         <h2 className="text-center text-2xl font-bold mb-6">Delete Account</h2>
 
-        <div className="pb-4 text-left">
-          <h4 className="text-lg font-semibold mb-2">
-            Confirm password to delete your account
-          </h4>
-          {msg && (
-            <div className="bg-yellow-100 text-yellow-800 p-2 rounded mb-2">
-              {msg}
-            </div>
-          )}
-          {errors && <p className="text-red-600">{errors}</p>}
-        </div>
-
         <form onSubmit={handleDelete} className="space-y-4">
           <div>
+            <label className="block mb-1 font-semibold">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              required
+              className="w-full border border-gray-300 rounded px-3 py-2"
+            />
+          </div>
+
+          <div>
+            <label className="block mb-1 font-semibold">Password</label>
             <input
               type="password"
-              name="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
               required
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400"
+              autoComplete="new-password"
+              className="w-full border border-gray-300 rounded px-3 py-2"
             />
           </div>
+
+          {errors && <p className="text-red-600">{errors}</p>}
 
           <div className="flex gap-2">
             <button
