@@ -29,15 +29,31 @@ const Register = () => {
       setSelectedImage(file);
       const imageUrl = URL.createObjectURL(file);
       setPreviewUrl(imageUrl);
-      setFormData({ ...formData, profilePicture: imageUrl });
+      setFormData({ ...formData, profilePicture: file });
     }
   };
 
+  // const handleRegister = async (e) => {
+  //   e.preventDefault();
+  //   await registerUser(formData);
+  //   navigate("/login");
+  // };
+
   const handleRegister = async (e) => {
     e.preventDefault();
-    await registerUser(formData);
+  
+    const formDataToSend = new FormData();
+    formDataToSend.append("first_name", formData.first_name);
+    formDataToSend.append("last_name", formData.last_name);
+    formDataToSend.append("email", formData.email);
+    formDataToSend.append("password", formData.password);
+    formDataToSend.append("profile_picture", formData.profilePicture);
+  
+    await registerUser(formDataToSend);
     navigate("/login");
   };
+  
+
 
   return (
     <div className="w-full h-full rounded-2xl text-secondary px-6 py-10 bg-light">
