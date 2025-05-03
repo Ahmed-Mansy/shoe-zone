@@ -18,8 +18,7 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    let respone = await loginUser(formData);
-
+    await loginUser(formData);
     navigate("/");
   };
 

@@ -30,6 +30,19 @@ export const getCategories = async () => {
     console.error("Error fetching categories", error);
   }
 };
+
+// Get subcategories
+export const getSubCategories = async (categoryTitle) => {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}products/categories/type/${categoryTitle}/`,
+      config
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching categories", error);
+  }
+};
 //////////////////////////////////////////////////////////
 // Get all products
 export const fetchProducts = async () => {
@@ -114,14 +127,13 @@ export const loginUser = async (userData) => {
     localStorage.setItem("accessToken", access);
     localStorage.setItem("refreshToken", refresh);
     // localStorage.setItem("is_staff", is_staff);
-    // localStorage.setItem("is_active", is_active); 
+    // localStorage.setItem("is_active", is_active);
 
     return response.data;
   } catch (error) {
     throw error.response?.data || { detail: "Login failed" };
   }
 };
-
 
 // Get user profile
 export const getUserProfile = async (userId) => {
@@ -185,6 +197,35 @@ export const submitProductRating = async (productId, score) => {
     return response.data;
   } catch (error) {
     console.error("Error submitting product rating:", error);
+    throw error;
+  }
+};
+
+//////////////////////////////////
+// add to cart
+export const addToCart = async (product_id, quantity = 1) => {
+  try {
+    const response = await axios.post(`${BASE_URL}cart/add`, {
+      product_id: product_id,
+      quantity: quantity,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching product ratings:", error);
+    throw error;
+  }
+};
+
+export const getCartItems = async () => {
+  try {
+    const response = await axios.get(`http://127.0.0.1:8000/api/cart/view/`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+    return response.data.items.length > 0 ? response.data.items : [];
+  } catch (error) {
+    console.error("Error adding to cart:", error);
     throw error;
   }
 };

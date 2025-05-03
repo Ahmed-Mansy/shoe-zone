@@ -1,17 +1,36 @@
 import { Link, useParams } from "react-router";
 import CollectionSidebar from "../../components/CollectionSidebar";
 import ProductsList from "../../components/ProductsList";
-import data from "../../data.json";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const Collection = () => {
-  const { id } = useParams();
+  const { type, title } = useParams();
+  const [products, setProducts] = useState(null);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:8000/api/products/type/women/${title}/`
+        );
+        setProducts(response.data);
+        return response.data;
+      } catch (error) {
+        console.error("Error fetching products", error);
+      }
+    };
+
+    fetchProducts();
+  }, [title]);
 
   return (
     <div className="wrapper py-10">
       <div className="flex-between pb-2">
         <div className="text-xs font-medium capitalize">
           <span>Home / </span>
-          <span>{id} / </span>
+          <span>{type} / </span>
+          <span>{title}</span>
         </div>
         {/* <div className="border border-gray-300 rounded-full p-[2px] uppercase flex-center gap-1">
           <span
@@ -29,8 +48,8 @@ const Collection = () => {
         </div> */}
       </div>
       <div className="flex justify-between items-start gap-10">
-        <CollectionSidebar collectionTitle={collectionTitle} />
-        <ProductsList products={data[collectionTitle]} />
+        <CollectionSidebar collectionTitle={title} />
+        <ProductsList products={products} />
       </div>
     </div>
   );

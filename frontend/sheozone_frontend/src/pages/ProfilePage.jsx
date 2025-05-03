@@ -15,6 +15,7 @@ const ProfilePage = () => {
           return;
         }
         const data = await getUserProfile(userId);
+        console.log(userId);
         setProfile(data);
       } catch (error) {
         console.error("Error fetching profile data:", error);
