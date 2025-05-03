@@ -1,11 +1,15 @@
 from rest_framework import serializers
-from .models import Order , OrderItem
+from .models import Order
+from .models import OrderItem
 
 class OrderSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()
     class Meta:
         model = Order
         fields = '__all__'
+
+from rest_framework import serializers
+from .models import Order, OrderItem
 
 class OrderItemSerializer(serializers.ModelSerializer):
     product_name = serializers.CharField(source='product.name', read_only=True)
@@ -20,3 +24,4 @@ class UserOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ['id', 'status', 'total_price', 'shipping_address', 'is_paid', 'created_at', 'items']
+
