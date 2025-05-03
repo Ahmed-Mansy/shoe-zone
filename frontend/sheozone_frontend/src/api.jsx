@@ -110,6 +110,8 @@ export const loginUser = async (userData) => {
     localStorage.setItem("userId", id);
     localStorage.setItem("accessToken", access);
     localStorage.setItem("refreshToken", refresh);
+    // localStorage.setItem("is_staff", is_staff);
+    // localStorage.setItem("is_active", is_active); 
 
     return response.data;
   } catch (error) {
