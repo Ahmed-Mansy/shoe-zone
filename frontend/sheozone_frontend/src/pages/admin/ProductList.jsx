@@ -16,7 +16,7 @@ export default function ProductList() {
       const response = await axios.get(
         `http://127.0.0.1:8000/api/products/api/products/`
       );
-  
+
       const sortedProducts = response.data.sort((a, b) => a.id - b.id);
       setProducts(sortedProducts);
     } catch (error) {
@@ -45,8 +45,8 @@ export default function ProductList() {
         try {
           const config = {
             headers: {
-              "Content-Type": "application/json", 
-              Authorization: `Bearer ${token}`,  
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
             },
           };
           await axios.delete(

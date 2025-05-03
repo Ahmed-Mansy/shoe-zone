@@ -76,6 +76,7 @@
     --tracking-wider: 0.05em;
     --tracking-widest: 0.1em;
     --radius-xs: 0.125rem;
+    --radius-sm: 0.25rem;
     --radius-md: 0.375rem;
     --radius-lg: 0.5rem;
     --radius-xl: 0.75rem;
@@ -544,6 +545,9 @@
   .w-\[50px\] {
     width: 50px;
   }
+  .w-\[70px\] {
+    width: 70px;
+  }
   .w-\[80px\] {
     width: 80px;
   }
@@ -805,6 +809,9 @@
   .rounded-none {
     border-radius: 0;
   }
+  .rounded-sm {
+    border-radius: var(--radius-sm);
+  }
   .rounded-xl {
     border-radius: var(--radius-xl);
   }
@@ -855,6 +862,9 @@
   }
   .border-\[\#EAEAEA\] {
     border-color: #EAEAEA;
+  }
+  .border-black {
+    border-color: var(--color-black);
   }
   .border-blue-400 {
     border-color: var(--color-blue-400);
