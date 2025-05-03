@@ -52,5 +52,5 @@ class UserOrderHistoryView(APIView):
     def get(self, request):
         user = request.user
         orders = Order.objects.filter(user=user).order_by('-created_at')
-        serializer = OrderItemSerializer(orders, many=True)
+        serializer = OrderSerializer(orders, many=True)
         return Response(serializer.data)
