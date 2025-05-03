@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom"; 
+import { Link } from "react-router";
+// import { getDashboardStats } from "../../api";
+import Loading from "../../components/Loading";
 import axios from "axios";
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState(null);
-  const [error, setError] = useState(null); 
+  const [error, setError] = useState(null);
 
-  const authToken = localStorage.getItem("accessToken"); 
+  const authToken = localStorage.getItem("accessToken");
 
   useEffect(() => {
- 
     if (!authToken) {
       setError("Unauthorized access. Please log in.");
       return;
@@ -17,20 +18,23 @@ const AdminDashboard = () => {
 
     const getDashboardStats = async () => {
       try {
-        const res = await axios.get("http://127.0.0.1:8000/api/orders/admin/dashboard", {
-          headers: {
-            Authorization: `Bearer ${authToken}`, 
-          },
-        });
+        const res = await axios.get(
+          "http://127.0.0.1:8000/api/orders/admin/dashboard",
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          }
+        );
 
-        setStats(res.data);    
+        setStats(res.data);
       } catch (error) {
         console.error("Error fetching dashboard stats:", error);
         setError("Error fetching data. Please try again later.");
       }
     };
 
-    const userRole = localStorage.getItem("userRole"); 
+    const userRole = localStorage.getItem("userRole");
     if (userRole !== "admin") {
       setError("Access denied. You are not authorized to view this page.");
       return;
@@ -39,8 +43,9 @@ const AdminDashboard = () => {
     getDashboardStats();
   }, [authToken]);
 
-  if (error) return <div>{error}</div>; 
-  if (!stats) return <div>Loading...</div>;  
+  if (error) return <div>{error}</div>;
+  if (!stats) return <Loading />;
+
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4 text-center">Admin Dashboard</h1>
@@ -52,7 +57,9 @@ const AdminDashboard = () => {
               Total Users
             </div>
             <div className="text-2xl font-bold m-3">{stats.total_users}</div>
-            <Link to="/admin/users" className="bg-blue-500 text-white py-2 px-4 rounded ">
+            <Link
+              to="/admin/users"
+              className="bg-blue-500 text-white py-2 px-4 rounded ">
               Manage Users
             </Link>
           </div>
@@ -64,7 +71,9 @@ const AdminDashboard = () => {
               Total Orders
             </div>
             <div className="text-2xl font-bold m-3">{stats.total_orders}</div>
-            <Link to="/admin/orders" className="bg-blue-500 text-white py-2 px-4 rounded">
+            <Link
+              to="/admin/orders"
+              className="bg-blue-500 text-white py-2 px-4 rounded">
               All Orders
             </Link>
           </div>

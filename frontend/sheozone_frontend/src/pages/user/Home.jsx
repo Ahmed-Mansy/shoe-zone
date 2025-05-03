@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router";
 
 const categories = [
   {
@@ -23,6 +24,7 @@ const categories = [
 
 const Home = () => {
   const [showButton, setShowButton] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <div>
@@ -56,6 +58,7 @@ const Home = () => {
               <div>
                 <button
                   type="button"
+                  onClick={() => navigate(`/collections/${category.id}`)}
                   className={`uppercase cursor-pointer bg-white text-black hover:bg-black hover:text-white font-medium text-medium tracking-wider rounded-xs px-6 py-2 transform duration-500 ${
                     showButton ? "" : "hidden"
                   }`}>

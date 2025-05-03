@@ -1,9 +1,11 @@
-import { useState, useEffect } from "react";
-import { productImages } from "../../data.json";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { Rating, Star } from "@smastrom/react-rating";
-import axios from "axios"; // تأكدي انك مستوردة axios
-import { toast } from "react-toastify"; // لو بتستخدمي toast
+import Loading from "../../components/Loading";
+import axios from "axios";
+import ProductReviews from "../../components/ProductReviews";
+import { useCart } from "../../context/CartContext";
+import { toast } from "react-toastify"; 
 
 const myStyles = {
   itemShapes: Star,
@@ -14,47 +16,86 @@ const myStyles = {
   inactiveStrokeColor: "#212121",
 };
 
-const sizes = [
-  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-];
-
-const colors = ["black", "white", "gray", "red", "yellow", "blue"];
-
 const Product = () => {
-  const [rating, setRating] = useState(3);
-  const [currentImage, setCurrentImage] = useState(productImages[0]);
+  const { id } = useParams();
+  const [product, setProduct] = useState(null);
+  const [rating, setRating] = useState(0);
+  const [currentImage, setCurrentImage] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
+  const { fetchCartItems } = useCart();
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:8000/api/products/products/${id}/`
+        );
+        setProduct(response.data);
+        setCurrentImage(response.data.images[0]?.image || null);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchProduct();
+  }, [id]);
+
+  if (!product) {
+    return <Loading />;
+  }
+
+  const {
+    name,
+    description,
+    price,
+    discount_price,
+    images,
+    available_sizes,
+    available_colors,
+    reviews,
+  } = product;
+
+  const finalPrice = discount_price || price;
+
+  const handleSizeSelection = (size) => {
+    setSelectedSize(size === selectedSize ? null : size);
+
   const [reviews, setReviews] = useState([]);
   const [newReview, setNewReview] = useState({
     rating: "",
     comment: "",
   });
 
-  let price = 150;
-
-  const ratingsSum = reviews.reduce((acc, current) => {
-    return acc + current.rating;
-  }, 0);
-  const ratingsAverage = Math.round(ratingsSum / reviews.length) || 0;
-
-  //TODO Replace title with ID
-  const { productTitle } = useParams();
-
-  const handleSizeSelection = (e) => {
-    let clickedSize = +e.target.innerHTML;
-
-    clickedSize === selectedSize
-      ? setSelectedSize(null)
-      : setSelectedSize(clickedSize);
+  const handleColorSelection = (color) => {
+    setSelectedColor(color === selectedColor ? null : color);
   };
 
-  const handleColorSelection = (color) => {
-    let clickedColor = color;
+  const averageRating =
+    reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length ||
+    0;
 
-    clickedColor === selectedColor
-      ? setSelectedColor(null)
-      : setSelectedColor(clickedColor);
+  const addToCart = async (product_id, quantity = 1) => {
+    try {
+      const response = await axios.post(
+        `http://127.0.0.1:8000/api/cart/add/`,
+        {
+          product_id,
+          quantity,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        }
+      );
+      fetchCartItems();
+
+      return response.data;
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      throw error;
+    }
   };
 
   const handleReviewChange = (e) => {
@@ -120,48 +161,59 @@ const Product = () => {
 
   return (
     <div className="wrapper mb-24 mt-10">
-      <div className="w-full flex flex-col lg:flex-row justify-between gap-16 lg:gap-4">
+      <div
+        className={`w-full flex flex-col lg:flex-row justify-between lg:gap-4 ${
+          images.length <= 1 ? "gap-4" : "gap-16 "
+        }`}>
         <div className="w-full lg:w-1/2 h-fit flex flex-col-reverse lg:flex-row justify-between gap-4 lg:sticky lg:top-24">
           <div className="flex flex-row lg:flex-col gap-2">
-            {productImages.map((image) => (
+            {images.map((image) => (
               <div
                 key={image.id}
+                onClick={() => setCurrentImage(image.image)}
                 className={`w-[calc(100%/${
-                  productImages.length
+                  images.length
                 })] lg:w-[70px] aspect-auto bg-[#f5f5f5] ${
-                  image.image === currentImage.image
+                  image.image === currentImage
                     ? "border-[2px] border-gray-700 rounded-xs"
                     : ""
                 }`}
               >
                 <img
-                  src={image.image}
+                  src={`http://127.0.0.1:8000/${image.image}`}
                   alt=""
                   className="w-full h-full cursor-pointer"
-                  onClick={() => setCurrentImage(image)}
                 />
               </div>
             ))}
           </div>
           <div className="w-full bg-[#f5f5f5]">
-            <img src={currentImage.image} alt="" className="w-full" />
+            <img
+              src={`http://127.0.0.1:8000/${currentImage}`}
+              alt=""
+              className="w-full"
+            />
           </div>
         </div>
 
         <div className="w-full lg:w-1/2 pl-0 lg:pl-8 space-y-8">
-          <h2 className="font-bold text-2xl tracking-wide">{productTitle}</h2>
-          <p className="text-md">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo,
-            veniam harum in vero exercitationem soluta libero? Quisquam soluta
-            vel rerum?
+          <h2 className="font-bold text-3xl tracking-wide capitalize">
+            {name}
+          </h2>
+          <p className="text-md">{description}</p>
+          <p className="text-lg space-x-3">
+            <span className="font-semibold">{finalPrice} EGP</span>
+            {discount_price && (
+              <span className="text-gray-600 line-through">{price} EGP</span>
+            )}
           </p>
-          <p className="text-xl">150 EGP</p>
 
           <Rating
             style={{ maxWidth: 100 }}
-            value={rating}
+            value={averageRating}
             onChange={setRating}
             itemStyles={myStyles}
+            readOnly={true}
           />
 
           <div className="space-y-2">
@@ -169,11 +221,12 @@ const Product = () => {
               select color :
             </span>
             <div className="flex gap-2 flex-wrap">
-              {colors.map((color, index) => (
+              {available_colors.map((color, index) => (
                 <span
                   key={index}
+                  style={{ backgroundColor: color }}
                   onClick={() => handleColorSelection(color)}
-                  className={`block w-[35px] h-[35px] rounded-full  cursor-pointer border-[1px] border-gray-400 hover:opacity-[85%] bg-[${color}] ${
+                  className={`block w-[35px] h-[35px] rounded-full cursor-pointer border-[1px] border-gray-400 hover:opacity-[85%] ${
                     selectedColor === color
                       ? "border-[3px] border-gray-400"
                       : ""
@@ -188,10 +241,10 @@ const Product = () => {
               select size :
             </span>
             <div className="flex gap-2 flex-wrap">
-              {sizes.map((size, index) => (
+              {available_sizes.map((size, index) => (
                 <span
                   key={index}
-                  onClick={handleSizeSelection}
+                  onClick={() => handleSizeSelection(size)}
                   className={`block w-[50px] h-[50px] rounded-xs text-[#212121] border-[1px] border-[#212121] flex-center cursor-pointer hover:bg-gray-400 transition-all duration-300 ${
                     size === selectedSize ? "bg-dark text-light" : ""
                   }`}
@@ -204,9 +257,10 @@ const Product = () => {
 
           <button
             type="button"
-            className={`w-full h-[50px] bg-dark text-light uppercase font-medium text-lg tracking-wider rounded-xs transition-colors duration-300 ${
+            onClick={() => addToCart(id)}
+            className={`w-full h-[50px] text-light uppercase font-medium text-lg tracking-wider rounded-xs transition-colors duration-300 ${
               selectedSize
-                ? "cursor-pointer hover:bg-gray-500"
+                ? "cursor-pointer bg-dark hover:bg-gray-500"
                 : "cursor-not-allowed bg-gray-400 text-yellow-600"
             }`}
             disabled={!selectedSize}
@@ -216,6 +270,11 @@ const Product = () => {
         </div>
       </div>
 
+      <ProductReviews
+        name={name}
+        averageRating={averageRating}
+        reviews={reviews}
+      />
       <div className="w-full my-20">
         <div className="flex flex-col items-center mb-10">
           <h2 className="font-bold text-3xl tracking-wide mb-6">

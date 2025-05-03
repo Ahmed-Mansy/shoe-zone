@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getUserProfile } from "../api";
+import Loading from "../components/Loading";
 
 const ProfilePage = () => {
   const [profile, setProfile] = useState(null);
@@ -14,6 +15,7 @@ const ProfilePage = () => {
           return;
         }
         const data = await getUserProfile(userId);
+        console.log(userId);
         setProfile(data);
       } catch (error) {
         console.error("Error fetching profile data:", error);
@@ -22,8 +24,7 @@ const ProfilePage = () => {
     fetchProfile();
   }, []);
 
-  if (!profile || !profile.user)
-    return <div className="text-center py-4">Loading...</div>;
+  if (!profile || !profile.user) return <Loading />;
 
   const user = profile.user;
   const addresses = user.addresses || [];
