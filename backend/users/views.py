@@ -9,11 +9,13 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser , AllowAny
 from django.contrib.auth.hashers import make_password
 from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
-
+from django.contrib.auth import authenticate
+from django.contrib.auth import get_user_model
 # from django.contrib.auth.models import User
 # from .serializers import SignUpSerializer,UserSerializer
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.decorators import parser_classes
 
 # for sending mails and generate token
 from django.template.loader import render_to_string
@@ -33,9 +35,12 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.core.mail import send_mail
 
 
+
 @api_view(['POST'])
+@parser_classes([MultiPartParser, FormParser])
 def registerUser(request):
     data = request.data
+    profile_picture = request.FILES.get('profile_picture')
     try:
         user = User.objects.create(
             first_name=data['first_name'],
@@ -43,6 +48,7 @@ def registerUser(request):
             username=data['email'],
             email=data['email'],
             password=make_password(data['password']),
+            profile_picture=profile_picture,
             is_active=False
         )
         # Generate token for sending mail
@@ -191,28 +197,24 @@ class User_Update_Delete(APIView):
         "errors": serializer.errors
     }, status=status.HTTP_400_BAD_REQUEST)
             
-    def delete(self, request, id):
-        user = User.objects.get(id=id)
-        
-        if request.user.id != user.id:
-            return Response(
-                {"error": "You are not authorized to delete this account."},
-                status=status.HTTP_403_FORBIDDEN
-            )
+class DeleteByEmailAndPassword(APIView):
+    def post(self, request):
+        email = request.data.get('email')
+        password = request.data.get('password')
 
-        serializer = DeleteAccountSerializer(data=request.data, context={'request': request})
-        
-        if serializer.is_valid():
-            user.delete()
-            return Response(
-                {"message": "Account deleted successfully."},
-                status=status.HTTP_200_OK
-            )
-            
-        return Response({"errors": serializer.errors},status=status.HTTP_400_BAD_REQUEST)
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        if not user.check_password(password):
+            return Response({'error': 'Incorrect password.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.delete()
+        return Response({'message': 'Account deleted successfully.'}, status=status.HTTP_200_OK)
+
 
     # ============ Address APIs ============
-
 class AddressCreateView(generics.CreateAPIView):
     queryset = Address.objects.all()
     serializer_class = AddressSerializer
@@ -228,27 +230,32 @@ class AddressDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = AddressSerializer
 
 @api_view(['PUT'])
-# @permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated])
 def update_address(request):
     try:
         address = Address.objects.get(user=request.user)
-    except Address.DoesNotExist:
-        return Response({'error': 'Address not found'}, status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'GET':
-        serializer = AddressUpdateSerializer(address)
-        return Response(serializer.data)
-
-    if request.method == 'PUT':
         serializer = AddressUpdateSerializer(address, data=request.data)
-        if serializer.is_valid():
-            address.country = serializer.validated_data.get('country')
-            address.city = serializer.validated_data.get('city')
-            address.address_line_1 = serializer.validated_data.get('street')
-            address.postcode = serializer.validated_data.get('postcode')
-            address.save()
-            return Response(AddressUpdateSerializer(address).data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except Address.DoesNotExist:
+        address = Address(user=request.user)
+        serializer = AddressUpdateSerializer(address, data=request.data)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(AddressUpdateSerializer(address).data)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_my_address(request):
+    try:
+        address = Address.objects.get(user=request.user)
+        serializer = AddressSerializer(address)
+        return Response(serializer.data)
+    except Address.DoesNotExist:
+        return Response({"detail": "No address found."}, status=status.HTTP_404_NOT_FOUND)
+
 
 
     # Password Reset Request

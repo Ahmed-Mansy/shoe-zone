@@ -16,6 +16,9 @@ function ProfileEdit() {
   const [errors, setErrors] = useState({});
   const [msg, setMsg] = useState("");
 
+  // ✅ حالة جديدة مخصوص للصورة الحالية
+  const [profilePictureUrl, setProfilePictureUrl] = useState("");
+
   useEffect(() => {
     const userId = localStorage.getItem("userId");
     if (!userId) {
@@ -39,11 +42,17 @@ function ProfileEdit() {
           email: user.email || "",
           username: user.username || "",
         });
+
+        // ✅ نحط رابط الصورة في الحالة الجديدة
+        if (user.profile_picture) {
+          setProfilePictureUrl(`http://127.0.0.1:8000/${user.profile_picture}`);
+        }
       })
       .catch((err) => {
         console.error("Error fetching profile:", err);
         setMsg("Error fetching profile data.");
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleChange = (e) => {
@@ -65,11 +74,9 @@ function ProfileEdit() {
     if (!formData.first_name || formData.first_name.trim() === "") {
       newErrors.first_name = "First name is required.";
     }
-
     if (!formData.last_name || formData.last_name.trim() === "") {
       newErrors.last_name = "Last name is required.";
     }
-
     if (!formData.mobile || formData.mobile.trim() === "") {
       newErrors.mobile = "Mobile field is required.";
     }
@@ -107,19 +114,14 @@ function ProfileEdit() {
         const backendErrors = err.response.data;
         if (backendErrors.error) {
           setMsg(backendErrors.error);
-        } else if (
-          typeof backendErrors === "object" &&
-          backendErrors !== null
-        ) {
+        } else if (typeof backendErrors === "object" && backendErrors !== null) {
           if (backendErrors.errors?.password) {
             setMsg(backendErrors.errors.password[0]);
           } else {
             setErrors(backendErrors.errors || {});
           }
         } else {
-          setMsg(
-            backendErrors.message || "There was an error updating the profile."
-          );
+          setMsg(backendErrors.message || "There was an error updating the profile.");
         }
       } else {
         setMsg("Something went wrong. Please try again later.");
@@ -131,78 +133,92 @@ function ProfileEdit() {
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div
         style={{ width: "800px" }}
-        className=" rounded-2xl overflow-hidden shadow-lg bg-white border border-gray-200 p-6">
-        <h2 className="text-2xl font-bold mb-2">
-          <div className="text-center mb-5">
-            <h3 className="text-2xl font-bold mb-3">Edit Profile</h3>
-            {msg && (
-              <div
-                className={`p-3 rounded ${
-                  msg.includes("successfully")
-                    ? "bg-green-100 text-green-800"
-                    : "bg-yellow-100 text-yellow-800"
-                }`}>
-                {msg}
-              </div>
-            )}
-          </div>
-        </h2>
-        <p className="text-gray-700 text-base mb-4">
-          <form
-            onSubmit={handleSubmit}
-            encType="multipart/form-data"
-            className="space-y-4">
-            {[
-              { label: "First Name", name: "first_name" },
-              { label: "Last Name", name: "last_name" },
-              { label: "Country", name: "country" },
-              { label: "Birthdate", name: "birthdate", type: "date" },
-              { label: "Mobile", name: "mobile" },
-              { label: "Facebook Account", name: "facebook_profile" },
-            ].map(({ label, name, type = "text" }) => (
-              <div key={name}>
-                <label className="block mb-1 font-medium">{label}</label>
-                <input
-                  type={type}
-                  name={name}
-                  value={formData[name] || ""}
-                  onChange={handleChange}
-                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                {errors[name] && (
-                  <p className="text-red-600 text-sm mt-1">
-                    {Array.isArray(errors[name])
-                      ? errors[name][0]
-                      : errors[name]}
-                  </p>
-                )}
-              </div>
-            ))}
+        className="rounded-2xl overflow-hidden shadow-lg bg-white border border-gray-200 p-6"
+      >
+        <div className="text-center mb-5">
+          <h3 className="text-2xl font-bold mb-3">Edit Profile</h3>
+          {msg && (
+            <div
+              className={`p-3 rounded ${
+                msg.includes("successfully")
+                  ? "bg-green-100 text-green-800"
+                  : "bg-yellow-100 text-yellow-800"
+              }`}
+            >
+              {msg}
+            </div>
+          )}
+        </div>
 
-            <div>
-              <label className="block mb-1 font-medium">Avatar</label>
+        <form
+          onSubmit={handleSubmit}
+          encType="multipart/form-data"
+          className="space-y-4"
+        >
+          {/* صورة البروفايل الحالية */}
+          {profilePictureUrl && (
+            <div className="mb-4 flex justify-center">
+              <img
+                src={profilePictureUrl}
+                alt="Current Profile"
+                className="w-24 h-24 object-cover border-2 border-blue-400 shadow rounded-full"
+              />
+            </div>
+          )}
+
+
+
+          {[
+            { label: "First Name", name: "first_name" },
+            { label: "Last Name", name: "last_name" },
+            { label: "Country", name: "country" },
+            { label: "Birthdate", name: "birthdate", type: "date" },
+            { label: "Mobile", name: "mobile" },
+            { label: "Facebook Account", name: "facebook_profile" },
+          ].map(({ label, name, type = "text" }) => (
+            <div key={name}>
+              <label className="block mb-1 font-medium">{label}</label>
               <input
-                type="file"
-                name="profile_picture"
+                type={type}
+                name={name}
+                value={formData[name] || ""}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-              {errors.profile_picture && (
+              {errors[name] && (
                 <p className="text-red-600 text-sm mt-1">
-                  {errors.profile_picture}
+                  {Array.isArray(errors[name])
+                    ? errors[name][0]
+                    : errors[name]}
                 </p>
               )}
             </div>
+          ))}
 
-            <div className="text-center">
-              <button
-                type="submit"
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
-                Update
-              </button>
-            </div>
-          </form>
-        </p>
+          <div>
+            <label className="block mb-1 font-medium">Avatar</label>
+            <input
+              type="file"
+              name="profile_picture"
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            {errors.profile_picture && (
+              <p className="text-red-600 text-sm mt-1">
+                {errors.profile_picture}
+              </p>
+            )}
+          </div>
+
+          <div className="text-center">
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+            >
+              Update
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

@@ -5,6 +5,7 @@ import Loading from "../../components/Loading";
 import axios from "axios";
 import ProductReviews from "../../components/ProductReviews";
 import { useCart } from "../../context/CartContext";
+import { toast } from "react-toastify"; 
 
 const myStyles = {
   itemShapes: Star,
@@ -59,7 +60,12 @@ const Product = () => {
 
   const handleSizeSelection = (size) => {
     setSelectedSize(size === selectedSize ? null : size);
-  };
+
+  const [reviews, setReviews] = useState([]);
+  const [newReview, setNewReview] = useState({
+    rating: "",
+    comment: "",
+  });
 
   const handleColorSelection = (color) => {
     setSelectedColor(color === selectedColor ? null : color);
@@ -92,6 +98,67 @@ const Product = () => {
     }
   };
 
+  const handleReviewChange = (e) => {
+    setNewReview({
+      ...newReview,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const fetchReviews = async () => {
+    try {
+      const response = await axios.get(
+        `http://127.0.0.1:8000/api/reviews/products/${productTitle}/reviews/`
+      );
+      setReviews(response.data);
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchReviews();
+  }, []);
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+
+    const token = localStorage.getItem("access");
+
+    if (!token) {
+      toast.error("Please login first.");
+      return;
+    }
+
+    try {
+      await axios.post(
+        `http://127.0.0.1:8000/api/reviews/products/${productTitle}/reviews/`,
+        {
+          rating: newReview.rating,
+          comment: newReview.comment,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      toast.success("Review submitted successfully.");
+
+      setNewReview({
+        rating: "",
+        comment: "",
+      });
+
+      fetchReviews();
+    } catch (error) {
+      console.error("Error submitting review:", error);
+      toast.error("Failed to submit review.");
+    }
+  };
+
   return (
     <div className="wrapper mb-24 mt-10">
       <div
@@ -110,7 +177,8 @@ const Product = () => {
                   image.image === currentImage
                     ? "border-[2px] border-gray-700 rounded-xs"
                     : ""
-                }`}>
+                }`}
+              >
                 <img
                   src={`http://127.0.0.1:8000/${image.image}`}
                   alt=""
@@ -162,7 +230,8 @@ const Product = () => {
                     selectedColor === color
                       ? "border-[3px] border-gray-400"
                       : ""
-                  }`}></span>
+                  }`}
+                ></span>
               ))}
             </div>
           </div>
@@ -178,7 +247,8 @@ const Product = () => {
                   onClick={() => handleSizeSelection(size)}
                   className={`block w-[50px] h-[50px] rounded-xs text-[#212121] border-[1px] border-[#212121] flex-center cursor-pointer hover:bg-gray-400 transition-all duration-300 ${
                     size === selectedSize ? "bg-dark text-light" : ""
-                  }`}>
+                  }`}
+                >
                   {size}
                 </span>
               ))}
@@ -193,8 +263,9 @@ const Product = () => {
                 ? "cursor-pointer bg-dark hover:bg-gray-500"
                 : "cursor-not-allowed bg-gray-400 text-yellow-600"
             }`}
-            disabled={!selectedSize}>
-            {selectedSize ? `add to cart - ${finalPrice} egp` : "select a size"}
+            disabled={!selectedSize}
+          >
+            {selectedSize ? `add to cart - ${price} egp` : "select a size"}
           </button>
         </div>
       </div>
@@ -204,6 +275,86 @@ const Product = () => {
         averageRating={averageRating}
         reviews={reviews}
       />
+      <div className="w-full my-20">
+        <div className="flex flex-col items-center mb-10">
+          <h2 className="font-bold text-3xl tracking-wide mb-6">
+            {productTitle}
+          </h2>
+          <div className="flex items-center justify-center gap-2">
+            <h3 className="text-6xl font-semibold">{ratingsAverage}</h3>
+            <div className="flex flex-col items-start gap-1">
+              <Rating
+                style={{ maxWidth: 130 }}
+                value={ratingsAverage}
+                itemStyles={myStyles}
+                readOnly
+              />
+              <p className="font-light text-sm">168 Reviews</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="divide-y-[1px] divide-[#EAEAEA] border-y-[1px] border-y-[#EAEAEA]">
+          {reviews.length > 0 ? (
+            reviews.map((review) => (
+              <div
+                key={review.id}
+                className="flex items-start justify-between py-12"
+              >
+                <div className="space-y-2">
+                  <Rating
+                    style={{ maxWidth: 130 }}
+                    value={review.rating}
+                    itemStyles={myStyles}
+                    readOnly
+                  />
+                  <p className="mt-6">{review.comment}</p>
+                </div>
+                <div className="font-semibold text-md bg-[#f5f5f5] w-1/4 h-[50px] px-6 flex items-center">
+                  {review.user_name} {/* اسم المستخدم لو حابب تعرضه */}
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="text-lg text-center mt-6 text-gray-500">
+              No reviews yet. Be the first to write one!
+            </p>
+          )}
+
+          {/* Form to add new review */}
+          <form onSubmit={handleReviewSubmit} className="space-y-4 py-8">
+            <h3 className="text-xl font-semibold">Add a Review</h3>
+
+            <input
+              type="number"
+              name="rating"
+              placeholder="Rating (1-5)"
+              value={newReview.rating}
+              onChange={handleReviewChange}
+              min="1"
+              max="5"
+              required
+              className="w-full border rounded px-3 py-2"
+            />
+
+            <textarea
+              name="comment"
+              placeholder="Your Comment"
+              value={newReview.comment}
+              onChange={handleReviewChange}
+              required
+              className="w-full border rounded px-3 py-2"
+            />
+
+            <button
+              type="submit"
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              Submit Review
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
   );
 };
