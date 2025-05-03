@@ -46,3 +46,4 @@ class OrderItem(models.Model):
     def delete(self, *args, **kwargs):
         super().delete(*args, **kwargs)
         self.order.calculate_total()
+

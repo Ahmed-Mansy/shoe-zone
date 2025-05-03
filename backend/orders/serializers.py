@@ -32,6 +32,8 @@ class OrderItemSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True)
     user = serializers.StringRelatedField(read_only=True)
+    payment_method = serializers.ChoiceField(choices=['cod', 'online'])
+
 
     class Meta:
         model = Order
