@@ -33,7 +33,8 @@ const Navbar = () => {
       <div
         className={`${
           showDrawer ? "block" : "hidden"
-        } w-screen h-full absolute top-[100px] left-0 bg-light border-t-[1px] border-[#E5E5E5] shadow-lg z-20`}>
+        } w-screen h-full absolute top-[100px] left-0 bg-light border-t-[1px] border-[#E5E5E5] shadow-lg z-20`}
+      >
         <ul className="flex flex-col uppercase font-semibold text-xl divide-y-[1px] divide-[#EAEAEA] border-b-[1px] border-[#EAEAEA]">
           {navLinks.map((link) => (
             <Link key={link.id} to={`products/${link.title}`}>
@@ -116,11 +117,16 @@ const Navbar = () => {
                 </span>
               </div>
               {isAuthenticated ? (
-                <IoIosLogOut
-                  size={24}
-                  className="hover:text-[#39523f] cursor-pointer"
-                  onClick={handleLogOut}
-                />
+                <div className="flex gap-6">
+                  <Link to={"/profile"}>
+                    <FiUser size={24} className="hover:text-[#39523f]" />
+                  </Link>
+                  <IoIosLogOut
+                    size={24}
+                    className="hover:text-[#39523f] cursor-pointer"
+                    onClick={handleLogOut}
+                  />
+                </div>
               ) : (
                 <Link to={isAuthenticated ? "/profile" : "/login"}>
                   <FiUser size={24} className="hover:text-[#39523f]" />
