@@ -104,17 +104,19 @@ export const registerUser = async (userData) => {
 export const loginUser = async (userData) => {
   try {
     const response = await axios.post(`${BASE_URL}users/login/`, userData);
+    const { isAdmin, id, access, refresh } = response.data;
 
-    response.data.isAdmin === true
-      ? localStorage.setItem("userRole", "admin")
-      : localStorage.setItem("userRole", "user");
+    localStorage.setItem("userRole", isAdmin ? "admin" : "user");
+    localStorage.setItem("userId", id);
+    localStorage.setItem("accessToken", access);
+    localStorage.setItem("refreshToken", refresh);
 
-    localStorage.setItem("userId", response.data.id);
     return response.data;
   } catch (error) {
-    throw error.response.data;
+    throw error.response?.data || { detail: "Login failed" };
   }
 };
+
 
 // Get user profile
 export const getUserProfile = async (userId) => {

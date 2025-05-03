@@ -10,7 +10,7 @@ from .serializers import RatingSerializer
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser, AllowAny
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
 
@@ -19,8 +19,14 @@ from rest_framework.parsers import MultiPartParser, FormParser
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
 
+    def get_permissions(self):
+        if self.action == 'list' or self.action == 'retrieve':  # GET requests
+            permission_classes = [AllowAny] 
+        else:
+            permission_classes = [IsAuthenticated, IsAdminUser]  
+        return [permission() for permission in permission_classes]  
+    
 # For product search and filtering ONLY
 class ProductListView(ListAPIView):
     queryset = Product.objects.all()
@@ -34,7 +40,7 @@ class ProductListView(ListAPIView):
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]  # Only a  dmin can create, update, delete products and all users can view products
+    permission_classes = [IsAuthenticated,IsAdminUser]  # Only a  dmin can create, update, delete products and all users can view products
     parser_classes = [MultiPartParser, FormParser]
 
     def perform_create(self, serializer):

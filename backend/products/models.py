@@ -4,7 +4,11 @@ from users.models import User
 class Category(models.Model):
     id = models.AutoField(primary_key=True)  
     name = models.CharField(max_length=255, unique=True)
-    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='subcategories')
+    # parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='subcategories')
+    type = models.CharField(max_length=50, choices=[
+        ('women', 'Women'),
+        ('men', 'Men'),
+    ], default='women')
 
     def __str__(self):
         return self.name
