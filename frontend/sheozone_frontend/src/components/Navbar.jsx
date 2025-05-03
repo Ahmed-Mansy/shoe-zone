@@ -3,7 +3,7 @@ import Logo from "./Logo";
 import { FiSearch, FiUser, FiShoppingCart } from "react-icons/fi";
 import { IoIosMenu, IoMdClose, IoIosLogOut } from "react-icons/io";
 import { useEffect, useRef, useState } from "react";
-import { getCartItems, getSubCategories } from "../api";
+import { getSubCategories } from "../api";
 import { useCart } from "../context/CartContext";
 
 const navLinks = [

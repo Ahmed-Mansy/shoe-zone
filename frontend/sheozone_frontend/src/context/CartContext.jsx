@@ -7,11 +7,6 @@ const CartContext = createContext();
 export const CartProvider = ({ children }) => {
   const [cartCount, setCartCount] = useState(0);
 
-  //   const fetchCartItems = async () => {
-  //     const items = await getCartItems();
-  //     setCartCount(items.length || 0);
-  //   };
-
   const fetchCartItems = async () => {
     try {
       const items = await getCartItems();
