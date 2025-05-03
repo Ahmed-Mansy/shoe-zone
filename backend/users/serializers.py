@@ -30,6 +30,7 @@ class UserSerializer(serializers.ModelSerializer):
             'facebook_profile',
             'country',
             'addresses',
+            'is_staff','is_active'
         ]
         
     def get_name(self,obj):
@@ -55,7 +56,7 @@ class UserSerializerWithToken(UserSerializer):
     token=serializers.SerializerMethodField(read_only=True)
     class Meta:
         model=User
-        fields=['id','_id','username','email','name','isAdmin','token']
+        fields=['id','_id','username','email','name','isAdmin','token','is_staff','is_active']
     
     def get_token(self,obj):
         token=RefreshToken.for_user(obj)
@@ -79,6 +80,8 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             'birthdate',
             'facebook_profile',
             'country',
+            'is_staff',
+            'is_active',
         ]
         extra_kwargs = {
             'profile_picture': {'required': False, 'allow_null': True},
