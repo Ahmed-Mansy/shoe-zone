@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { productImages } from "../../data.json";
 import { useParams } from "react-router";
 import { Rating, Star } from "@smastrom/react-rating";
+import axios from "axios"; // تأكدي انك مستوردة axios
+import { toast } from "react-toastify"; // لو بتستخدمي toast
 
 const myStyles = {
   itemShapes: Star,
@@ -18,49 +20,17 @@ const sizes = [
 
 const colors = ["black", "white", "gray", "red", "yellow", "blue"];
 
-const reviews = [
-  {
-    id: 1,
-    rating: 5,
-    title: "Love these! Very comfortable and",
-    description: "Love these! Very comfortable and stylish!",
-    reviewerName: "Haylee C.",
-  },
-  {
-    id: 2,
-    rating: 4,
-    title: "Really good shoes!",
-    description: "They fit perfectly and feel great during long walks.",
-    reviewerName: "Michael B.",
-  },
-  {
-    id: 3,
-    rating: 5,
-    title: "Best purchase ever",
-    description: "Amazing quality and very comfortable. Highly recommend!",
-    reviewerName: "Sarah P.",
-  },
-  {
-    id: 4,
-    rating: 3,
-    title: "Good but not perfect",
-    description: "The design is nice, but I expected better cushioning.",
-    reviewerName: "David L.",
-  },
-  {
-    id: 5,
-    rating: 4,
-    title: "Stylish and comfy",
-    description: "Very stylish shoes, and comfortable for daily use.",
-    reviewerName: "Emma R.",
-  },
-];
-
 const Product = () => {
   const [rating, setRating] = useState(3);
   const [currentImage, setCurrentImage] = useState(productImages[0]);
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [newReview, setNewReview] = useState({
+    rating: "",
+    comment: "",
+  });
+
   let price = 150;
 
   const ratingsSum = reviews.reduce((acc, current) => {
@@ -87,6 +57,67 @@ const Product = () => {
       : setSelectedColor(clickedColor);
   };
 
+  const handleReviewChange = (e) => {
+    setNewReview({
+      ...newReview,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const fetchReviews = async () => {
+    try {
+      const response = await axios.get(
+        `http://127.0.0.1:8000/api/reviews/products/${productTitle}/reviews/`
+      );
+      setReviews(response.data);
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchReviews();
+  }, []);
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+
+    const token = localStorage.getItem("access");
+
+    if (!token) {
+      toast.error("Please login first.");
+      return;
+    }
+
+    try {
+      await axios.post(
+        `http://127.0.0.1:8000/api/reviews/products/${productTitle}/reviews/`,
+        {
+          rating: newReview.rating,
+          comment: newReview.comment,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      toast.success("Review submitted successfully.");
+
+      setNewReview({
+        rating: "",
+        comment: "",
+      });
+
+      fetchReviews();
+    } catch (error) {
+      console.error("Error submitting review:", error);
+      toast.error("Failed to submit review.");
+    }
+  };
+
   return (
     <div className="wrapper mb-24 mt-10">
       <div className="w-full flex flex-col lg:flex-row justify-between gap-16 lg:gap-4">
@@ -101,7 +132,8 @@ const Product = () => {
                   image.image === currentImage.image
                     ? "border-[2px] border-gray-700 rounded-xs"
                     : ""
-                }`}>
+                }`}
+              >
                 <img
                   src={image.image}
                   alt=""
@@ -145,7 +177,8 @@ const Product = () => {
                     selectedColor === color
                       ? "border-[3px] border-gray-400"
                       : ""
-                  }`}></span>
+                  }`}
+                ></span>
               ))}
             </div>
           </div>
@@ -161,7 +194,8 @@ const Product = () => {
                   onClick={handleSizeSelection}
                   className={`block w-[50px] h-[50px] rounded-xs text-[#212121] border-[1px] border-[#212121] flex-center cursor-pointer hover:bg-gray-400 transition-all duration-300 ${
                     size === selectedSize ? "bg-dark text-light" : ""
-                  }`}>
+                  }`}
+                >
                   {size}
                 </span>
               ))}
@@ -175,7 +209,8 @@ const Product = () => {
                 ? "cursor-pointer hover:bg-gray-500"
                 : "cursor-not-allowed bg-gray-400 text-yellow-600"
             }`}
-            disabled={!selectedSize}>
+            disabled={!selectedSize}
+          >
             {selectedSize ? `add to cart - ${price} egp` : "select a size"}
           </button>
         </div>
@@ -205,7 +240,8 @@ const Product = () => {
             reviews.map((review) => (
               <div
                 key={review.id}
-                className="flex items-start justify-between py-12">
+                className="flex items-start justify-between py-12"
+              >
                 <div className="space-y-2">
                   <Rating
                     style={{ maxWidth: 130 }}
@@ -213,19 +249,51 @@ const Product = () => {
                     itemStyles={myStyles}
                     readOnly
                   />
-                  <h2 className="text-xl font-semibold">{review.title}</h2>
-                  <p className="mt-6">{review.description}</p>
+                  <p className="mt-6">{review.comment}</p>
                 </div>
                 <div className="font-semibold text-md bg-[#f5f5f5] w-1/4 h-[50px] px-6 flex items-center">
-                  {review.reviewerName}
+                  {review.user_name} {/* اسم المستخدم لو حابب تعرضه */}
                 </div>
               </div>
             ))
           ) : (
-            <h2 className="text-3xl font-medium text-center mt-6">
-              There is no reviews to show.
-            </h2>
+            <p className="text-lg text-center mt-6 text-gray-500">
+              No reviews yet. Be the first to write one!
+            </p>
           )}
+
+          {/* Form to add new review */}
+          <form onSubmit={handleReviewSubmit} className="space-y-4 py-8">
+            <h3 className="text-xl font-semibold">Add a Review</h3>
+
+            <input
+              type="number"
+              name="rating"
+              placeholder="Rating (1-5)"
+              value={newReview.rating}
+              onChange={handleReviewChange}
+              min="1"
+              max="5"
+              required
+              className="w-full border rounded px-3 py-2"
+            />
+
+            <textarea
+              name="comment"
+              placeholder="Your Comment"
+              value={newReview.comment}
+              onChange={handleReviewChange}
+              required
+              className="w-full border rounded px-3 py-2"
+            />
+
+            <button
+              type="submit"
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              Submit Review
+            </button>
+          </form>
         </div>
       </div>
     </div>
