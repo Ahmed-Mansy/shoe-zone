@@ -33,18 +33,21 @@ export const getCategories = async () => {
 //////////////////////////////////////////////////////////
 // Get all products
 export const fetchProducts = async () => {
-  const response = await axios.get(`${BASE_URL}/products/crud/products/`);
+  const response = await axios.get(
+    `${BASE_URL}products/crud/products/`,
+    config
+  );
   return response.data;
 };
 
 export const fetchProductDetails = async (id) => {
-  const response = await axios.get(`${BASE_URL}/products/crud/products/${id}/`);
+  const response = await axios.get(`${BASE_URL}products/crud/products/${id}/`);
   return response.data;
 };
 
 export const createProduct = async (product) => {
   const response = await axios.post(
-    `${BASE_URL}/products/crud/products/`,
+    `${BASE_URL}products/crud/products/`,
     product
   );
   return response.data;
@@ -52,7 +55,7 @@ export const createProduct = async (product) => {
 
 export const updateProduct = async (id, product) => {
   const response = await axios.put(
-    `${BASE_URL}/products/crud/products/${id}/`,
+    `${BASE_URL}products/crud/products/${id}/`,
     product
   );
   return response.data;
@@ -154,7 +157,7 @@ export const deleteUserAccount = async (userId, password) => {
 export const getProductRatings = async (productId) => {
   try {
     const response = await axios.get(
-      `${BASE_URL}/products/${productId}/ratings/`
+      `${BASE_URL}products/${productId}/ratings/`
     );
     return response.data;
   } catch (error) {
@@ -167,7 +170,7 @@ export const submitProductRating = async (productId, score) => {
   try {
     const token = localStorage.getItem("access");
     const response = await axios.post(
-      `${BASE_URL}/products/${productId}/ratings/`,
+      `${BASE_URL}products/${productId}/ratings/`,
       { score },
       {
         headers: {

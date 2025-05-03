@@ -484,11 +484,20 @@
   .h-\[70px\] {
     height: 70px;
   }
+  .h-\[100\%\] {
+    height: 100%;
+  }
   .h-\[150\%\] {
     height: 150%;
   }
   .h-\[200px\] {
     height: 200px;
+  }
+  .h-\[500px\] {
+    height: 500px;
+  }
+  .h-dvh {
+    height: 100dvh;
   }
   .h-fit {
     height: fit-content;
@@ -516,6 +525,12 @@
   }
   .w-1\/4 {
     width: calc(1/4 * 100%);
+  }
+  .w-1\/5 {
+    width: calc(1/5 * 100%);
+  }
+  .w-1\/6 {
+    width: calc(1/6 * 100%);
   }
   .w-2 {
     width: calc(var(--spacing) * 2);
@@ -565,11 +580,23 @@
   .w-\[70px\] {
     width: 70px;
   }
+  .w-\[80\%\] {
+    width: 80%;
+  }
   .w-\[80px\] {
     width: 80px;
   }
+  .w-\[85\%\] {
+    width: 85%;
+  }
+  .w-\[90\%\] {
+    width: 90%;
+  }
   .w-\[90px\] {
     width: 90px;
+  }
+  .w-\[95\%\] {
+    width: 95%;
   }
   .w-\[150px\] {
     width: 150px;
@@ -737,6 +764,13 @@
       --tw-space-x-reverse: 0;
       margin-inline-start: calc(calc(var(--spacing) * 2) * var(--tw-space-x-reverse));
       margin-inline-end: calc(calc(var(--spacing) * 2) * calc(1 - var(--tw-space-x-reverse)));
+    }
+  }
+  .space-x-3 {
+    :where(& > :not(:last-child)) {
+      --tw-space-x-reverse: 0;
+      margin-inline-start: calc(calc(var(--spacing) * 3) * var(--tw-space-x-reverse));
+      margin-inline-end: calc(calc(var(--spacing) * 3) * calc(1 - var(--tw-space-x-reverse)));
     }
   }
   .divide-x-\[1px\] {
@@ -1038,6 +1072,9 @@
   }
   .pt-8 {
     padding-top: calc(var(--spacing) * 8);
+  }
+  .pt-16 {
+    padding-top: calc(var(--spacing) * 16);
   }
   .pb-0 {
     padding-bottom: calc(var(--spacing) * 0);

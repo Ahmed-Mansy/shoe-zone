@@ -10,6 +10,7 @@ const CategoryList = () => {
 
   useEffect(() => {
     fetchCategories();
+    console.log(categories);
   }, []);
 
   const fetchCategories = async () => {

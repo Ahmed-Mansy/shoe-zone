@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { getDashboardStats } from "../../api";
+import Loading from "../../components/Loading";
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState(null);
@@ -9,7 +10,7 @@ const AdminDashboard = () => {
     getDashboardStats().then((data) => setStats(data));
   }, []);
 
-  if (!stats) return <div>Loading...</div>;
+  if (!stats) return <Loading />;
 
   return (
     <div className=" p-6 ">

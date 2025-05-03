@@ -3,6 +3,7 @@ import Logo from "./Logo";
 import { FiSearch, FiUser, FiShoppingCart } from "react-icons/fi";
 import { IoIosMenu, IoMdClose, IoIosLogOut } from "react-icons/io";
 import { useEffect, useState } from "react";
+import { getCategories } from "../api";
 
 const navLinks = [
   { id: 1, title: "men" },
@@ -28,6 +29,11 @@ const Navbar = () => {
     window.location.reload();
   };
 
+  useEffect(() => {
+    const categories = getCategories();
+    // console.log(categories);
+  }, []);
+
   return (
     <>
       <div
@@ -47,7 +53,7 @@ const Navbar = () => {
       <div className="wrapper flex-between shadow-md h-[60px] sticky top-0 bg-light z-10 py-2">
         {isAdmin ? (
           <nav className="w-full flex-between">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-6 font-medium text-lg">
               <Link to="/products" className=" hover:text-[#39523f]">
                 Products
               </Link>
@@ -63,17 +69,17 @@ const Navbar = () => {
             </div>
             <IoIosLogOut
               size={24}
-              className="hover:text-[#39523f] cursor-pointer "
+              className="hover:text-[#39523f] cursor-pointer"
               onClick={handleLogOut}
             />
           </nav>
         ) : (
           <div className="relative w-full flex-between">
             <nav className="lg:w-1/3 hidden lg:block">
-              <ul className="flex items-center justify-start gap-6 uppercase font-semibold text-sm">
+              <ul className="flex items-center justify-start gap-10 uppercase font-semibold text-sm">
                 {navLinks.map((link) => (
                   <Link key={link.id} to={`products/${link.title}`}>
-                    <li className="py-4 px-10 hover:underline hover:text-[#39523f]">
+                    <li className="hover:underline hover:text-[#39523f]">
                       {link.title}
                     </li>
                   </Link>
@@ -103,7 +109,6 @@ const Navbar = () => {
               <Link to="">
                 <FiSearch size={24} className="hover:text-[#39523f]" />
               </Link>
-              {/* //TODO Route will depends on the user's authentication status */}
               <div className="relative">
                 <Link to="/cart">
                   <FiShoppingCart
@@ -115,16 +120,16 @@ const Navbar = () => {
                   {cartItems}
                 </span>
               </div>
-              {isAuthenticated ? (
+              <Link to={isAuthenticated ? "/profile" : "/login"}>
+                <FiUser size={24} className="hover:text-[#39523f]" />
+              </Link>
+
+              {isAuthenticated && (
                 <IoIosLogOut
                   size={24}
                   className="hover:text-[#39523f] cursor-pointer"
                   onClick={handleLogOut}
                 />
-              ) : (
-                <Link to={isAuthenticated ? "/profile" : "/login"}>
-                  <FiUser size={24} className="hover:text-[#39523f]" />
-                </Link>
               )}
             </div>
           </div>

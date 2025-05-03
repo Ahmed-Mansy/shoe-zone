@@ -26,7 +26,6 @@ import Collection from "../pages/user/Collection";
 import Product from "../pages/user/Product";
 
 import Error from "../pages/user/Error";
-// import ProductDetail from "../components/ProductDetail";
 
 const AppRouter = () => {
   return (
@@ -54,8 +53,8 @@ const AppRouter = () => {
           <Route path="profile" element={<Profile />} />
           <Route path="cart" element={<Cart />} />
           <Route path="checkout" element={<Checkout />} />
-          <Route path="collections/:collectionTitle" element={<Collection />} />
-          <Route path="products/:productTitle" element={<Product />} />
+          <Route path="collections/:id" element={<Collection />} />
+          <Route path="products/:id" element={<Product />} />
         </Route>
 
         <Route path="*" element={<Error />} />
