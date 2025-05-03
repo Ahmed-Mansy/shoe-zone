@@ -16,13 +16,3 @@ ProductsList.propTypes = {
 };
 
 export default ProductsList;
-
-// {
-//       "id": "m001",
-//       "badge": "new",
-//       "price": 129.99,
-//       "title": "Men's Trail Running Shoes",
-//       "colors": ["black", "gray", "blue"],
-//       "sizes": [40, 41, 42, 43, 44, 45],
-//       "productImage": "https://example.com/images/mens-trail-running-shoes.jpg"
-//     },

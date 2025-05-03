@@ -59,7 +59,7 @@ const ProfilePage = () => {
                 rel="noopener noreferrer">
                 <i
                   className="fa-brands fa-facebook mx-1 text-xl"
-                  style={{ color: "#1877F2" }}></i>
+                  style={{ color: "black" }}></i>
               </a>
             </div>
           </div>

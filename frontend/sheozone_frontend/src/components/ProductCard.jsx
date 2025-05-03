@@ -17,7 +17,7 @@ const ProductCard = ({ product, onDelete }) => {
     <div
       onMouseEnter={() => setShowMore(true)}
       onMouseLeave={() => setShowMore(false)}
-      className="w-[calc(33%-12px)] relative space-y-2 cursor-pointer">
+      className="w-[calc(33%-12px)] relative space-y-2 cursor-pointer mx-2  my-4">
       <Link to={`/products/${name}`} state={{ product }}>
         <div className="w-full aspect-square bg-[#f5f5f5]">
           <img src={images} alt={name} className="" />

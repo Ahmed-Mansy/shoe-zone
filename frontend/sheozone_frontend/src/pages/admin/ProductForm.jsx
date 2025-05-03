@@ -21,30 +21,70 @@ const ProductForm = ({ existingProduct }) => {
   );
 
   const [categories, setCategories] = useState([]);
+  const [filteredCategories, setFilteredCategories] = useState([]);
+  const [selectedType, setSelectedType] = useState("");
   const { id } = useParams();
   const navigate = useNavigate();
 
+  const token = localStorage.getItem("accessToken");
+
   useEffect(() => {
+    if (!token) {
+      toast.error("Unauthorized: Please login as admin.");
+      navigate("/login");
+      return;
+    }
+
     if (id) {
       const fetchProduct = async () => {
-        const response = await fetch(
-          `http://127.0.0.1:8000/api/products/crud/products/${id}`
-        );
-        const data = await response.json();
-        setProduct(data);
+        try {
+          const response = await fetch(
+            `http://127.0.0.1:8000/api/products/crud/products/${id}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          const data = await response.json();
+          setProduct(data);
+          setSelectedType(data.category_type || "");
+        } catch (error) {
+          toast.error("Failed to load product data.");
+          console.error(error);
+        }
       };
       fetchProduct();
     }
 
     const fetchCategories = async () => {
-      const response = await fetch(
-        "http://127.0.0.1:8000/api/products/crud/categories/"
-      );
-      const data = await response.json();
-      setCategories(data);
+      try {
+        const response = await fetch(
+          "http://127.0.0.1:8000/api/products/crud/categories/",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const data = await response.json();
+        setCategories(data);
+      } catch (error) {
+        toast.error("Failed to load categories.");
+        console.error(error);
+      }
     };
     fetchCategories();
-  }, [id]);
+  }, [id, navigate, token]);
+
+  useEffect(() => {
+    if (selectedType) {
+      const filtered = categories.filter((cat) => cat.type === selectedType);
+      setFilteredCategories(filtered);
+    } else {
+      setFilteredCategories([]);
+    }
+  }, [selectedType, categories]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -52,6 +92,12 @@ const ProductForm = ({ existingProduct }) => {
       ...product,
       [name]: value,
     });
+  };
+
+  const handleTypeChange = (e) => {
+    const type = e.target.value;
+    setSelectedType(type);
+    setProduct({ ...product, category_id: "" });
   };
 
   const handleFileChange = (e) => {
@@ -63,7 +109,12 @@ const ProductForm = ({ existingProduct }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
+  
+    if (!token) {
+      toast.error("Unauthorized: Please login as admin.");
+      return;
+    }
+  
     const formData = new FormData();
     Object.keys(product).forEach((key) => {
       if (key === "images") {
@@ -72,192 +123,36 @@ const ProductForm = ({ existingProduct }) => {
         formData.append(key, product[key]);
       }
     });
-
-    const url = existingProduct
-      ? `http://127.0.0.1:8000/api/products/crud/products/${existingProduct.id}/`
+  
+    const url = id
+      ? `http://127.0.0.1:8000/api/products/crud/products/${id}/`
       : "http://127.0.0.1:8000/api/products/crud/products/";
-    const method = existingProduct ? "put" : "post";
-
+  
+    const method = id ? "patch" : "post";
+  
     axios({
       method,
       url,
       data: formData,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
     })
       .then((response) => {
-        // handle success
         toast.success(
-          `${
-            existingProduct ? "Product updated" : "Product added"
-          } successfully!`
+          `${id ? "Product updated" : "Product added"} successfully!`
         );
         navigate("/products");
       })
       .catch((error) => {
-        // handle error
         toast.error("Error submitting form");
         console.error(error);
       });
   };
-
+  
+  
   return (
-    // <form
-    //   onSubmit={handleSubmit}
-    //   className="wrapper p-4 w-1/2 mx-auto my-5 shadow-lg bg-white rounded">
-    //   <h1 className="text-center mb-4 p-3">
-    //     {id ? "Edit Product" : "Add Product"}
-    //   </h1>
-    //   <div className="mb-3">
-    //     <label htmlFor="name" className="form-label">
-    //       Product Name
-    //     </label>
-    //     <input
-    //       type="text"
-    //       id="name"
-    //       name="name"
-    //       value={product.name}
-    //       onChange={handleChange}
-    //       className="form-control"
-    //       placeholder="Enter product name"
-    //       required
-    //     />
-    //   </div>
-    //   <div className="mb-3">
-    //     <label htmlFor="description" className="form-label">
-    //       Description
-    //     </label>
-    //     <textarea
-    //       id="description"
-    //       name="description"
-    //       value={product.description}
-    //       onChange={handleChange}
-    //       className="form-control"
-    //       placeholder="Enter product description"
-    //       required
-    //     />
-    //   </div>
-    //   <div className="mb-3">
-    //     <label htmlFor="price" className="form-label">
-    //       Price
-    //     </label>
-    //     <input
-    //       type="number"
-    //       id="price"
-    //       name="price"
-    //       value={product.price}
-    //       onChange={handleChange}
-    //       className="form-control"
-    //       placeholder="Enter price"
-    //       required
-    //     />
-    //   </div>
-    //   <div className="mb-3">
-    //     <label htmlFor="discount_price" className="form-label">
-    //       Discount Price
-    //     </label>
-    //     <input
-    //       type="number"
-    //       id="discount_price"
-    //       name="discount_price"
-    //       value={product.discount_price || ""}
-    //       onChange={handleChange}
-    //       className="form-control"
-    //       placeholder="Enter discount price"
-    //     />
-    //   </div>
-    //   <div className="mb-3">
-    //     <label htmlFor="category_id" className="form-label">
-    //       Category
-    //     </label>
-    //     <select
-    //       id="category_id"
-    //       name="category_id"
-    //       value={product.category_id}
-    //       onChange={handleChange}
-    //       className="form-control"
-    //       required>
-    //       <option value="">Select Category</option>
-    //       {categories.map((cat) => (
-    //         <option key={cat.id} value={cat.id}>
-    //           {cat.name}
-    //         </option>
-    //       ))}
-    //     </select>
-    //   </div>
-    //   <div className="mb-3">
-    //     <label htmlFor="stock_quantity" className="form-label">
-    //       Stock Quantity
-    //     </label>
-    //     <input
-    //       type="number"
-    //       id="stock_quantity"
-    //       name="stock_quantity"
-    //       value={product.stock_quantity}
-    //       onChange={handleChange}
-    //       className="form-control"
-    //       placeholder="Enter stock quantity"
-    //       required
-    //     />
-    //   </div>
-    //   <div className="mb-3">
-    //     <label htmlFor="sizes" className="form-label">
-    //       Sizes (comma separated)
-    //     </label>
-    //     <input
-    //       type="text"
-    //       id="sizes"
-    //       name="sizes"
-    //       value={product.sizes || ""}
-    //       onChange={handleChange}
-    //       className="form-control"
-    //       placeholder="Enter sizes"
-    //     />
-    //   </div>
-    //   <div className="mb-3">
-    //     <label htmlFor="colors" className="form-label">
-    //       Colors (comma separated)
-    //     </label>
-    //     <input
-    //       type="text"
-    //       id="colors"
-    //       name="colors"
-    //       value={product.colors || ""}
-    //       onChange={handleChange}
-    //       className="form-control"
-    //       placeholder="Enter colors"
-    //     />
-    //   </div>
-    //   <div className="mb-3">
-    //     <label htmlFor="material" className="form-label">
-    //       Material
-    //     </label>
-    //     <input
-    //       type="text"
-    //       id="material"
-    //       name="material"
-    //       value={product.material || ""}
-    //       onChange={handleChange}
-    //       className="form-control"
-    //       placeholder="Enter material"
-    //     />
-    //   </div>
-    //   <div className="mb-3">
-    //     <label htmlFor="image" className="form-label">
-    //       Product Image
-    //     </label>
-    //     <input
-    //       type="file"
-    //       id="images"
-    //       name="images"
-    //       onChange={handleFileChange}
-    //       multiple
-    //       className="form-control"
-    //     />
-    //   </div>
-    //   <button type="submit" className="btn btn-primary w-100">
-    //     {id ? "Update Product" : "Add Product"}
-    //   </button>
-    // </form>
-
     <form
       onSubmit={handleSubmit}
       className="wrapper p-10 w-3/4 xl:w-1/2 my-10 bg-light rounded shadow-lg shadow-gray-300">
@@ -336,11 +231,26 @@ const ProductForm = ({ existingProduct }) => {
         />
       </div>
 
+      {/* Type */}
+      <div className="mb-5">
+        <label htmlFor="type" className="block mb-2 text-dark font-medium">
+          Type
+        </label>
+        <select
+          id="type"
+          value={selectedType}
+          onChange={handleTypeChange}
+          className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary"
+          required>
+          <option value="">Select Type</option>
+          <option value="women">Women</option>
+          <option value="men">Men</option>
+        </select>
+      </div>
+
       {/* Category */}
       <div className="mb-5">
-        <label
-          htmlFor="category_id"
-          className="block mb-2 text-dark font-medium">
+        <label htmlFor="category_id" className="block mb-2 text-dark font-medium">
           Category
         </label>
         <select
@@ -351,7 +261,7 @@ const ProductForm = ({ existingProduct }) => {
           className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary"
           required>
           <option value="">Select Category</option>
-          {categories.map((cat) => (
+          {filteredCategories.map((cat) => (
             <option key={cat.id} value={cat.id}>
               {cat.name}
             </option>

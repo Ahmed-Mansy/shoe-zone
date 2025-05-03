@@ -20,6 +20,9 @@ import CategoryList from "../pages/admin/CategoryList";
 import Home from "../pages/user/Home";
 import About from "../pages/user/About";
 import Profile from "../pages/ProfilePage";
+import ProfileEdit from "../pages/ProfileEdit.jsx";
+import EditAddress from "../pages/EditAddress.jsx";
+import AccountDelete from "../pages/AccountDelete.jsx";
 import Cart from "../pages/user/Cart";
 import Checkout from "../pages/user/Checkout";
 import Collection from "../pages/user/Collection";
@@ -51,6 +54,9 @@ const AppRouter = () => {
           <Route index element={<Home />} />
           <Route path="about" element={<About />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="/profile/update-address" element={<EditAddress />} />
+          <Route path="/profile/edit" element={<ProfileEdit />} />
+          <Route path="/profile/delete" element={<AccountDelete />} />
           <Route path="cart" element={<Cart />} />
           <Route path="checkout" element={<Checkout />} />
           <Route path="collections/:id" element={<Collection />} />

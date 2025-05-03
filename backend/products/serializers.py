@@ -7,7 +7,7 @@ from reviews.models import Review
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ['id', 'name'] 
+        fields = ['id', 'name', 'type'] 
 
 class ProductImageSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
