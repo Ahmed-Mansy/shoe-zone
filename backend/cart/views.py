@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from .models import Product, Cart, CartItem
+from products.models import ProductImage
 
 
 class AddToCartView(APIView):
@@ -30,7 +31,26 @@ class AddToCartView(APIView):
 class CartItemDetailView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def put(self, request, item_id):  # Use PUT or PATCH for updates
+    def get(self, request, item_id):
+        cart_item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
+        product = cart_item.product
+
+        # احضار أول صورة
+        image_obj = ProductImage.objects.filter(product=product).first()
+        image_url = request.build_absolute_uri(image_obj.image.url) if image_obj and image_obj.image else None
+
+        item_data = {
+            'id': cart_item.id,
+            'product_name': product.name,
+            'product_price': float(product.price),
+            'quantity': cart_item.quantity,
+            'total': float(product.price * cart_item.quantity),
+            'product_image': image_url,
+        }
+
+        return Response(item_data, status=status.HTTP_200_OK)
+
+    def put(self, request, item_id):
         new_quantity = int(request.data.get('quantity', 1))
         cart_item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
 
@@ -42,11 +62,10 @@ class CartItemDetailView(APIView):
             cart_item.delete()
             return Response({'message': 'Item removed because quantity was 0'})
 
-    def delete(self, request, item_id):  # Use DELETE method for deletion
+    def delete(self, request, item_id):
         cart_item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
         cart_item.delete()
         return Response({'message': 'Item removed from cart'}, status=status.HTTP_204_NO_CONTENT)
-
 
 class ViewCartView(APIView):
     permission_classes = [IsAuthenticated]
@@ -55,24 +74,30 @@ class ViewCartView(APIView):
         cart, _ = Cart.objects.get_or_create(user=request.user)
         cart_items = cart.items.select_related('product').all()
         if not cart_items.exists():
-            return Response({"message":"Your cart is empty !"},status=200)
-        
+            return Response({"message": "Your cart is empty!"}, status=200)
+
         items = []
         total_price = 0
 
         for item in cart_items:
-            item_total = item.product.price * item.quantity
+            product = item.product
+            item_total = product.price * item.quantity
             total_price += item_total
+
+            # Get first image for the product (optional: add fallback)
+            image_obj = ProductImage.objects.filter(product=product).first()
+            image_url = request.build_absolute_uri(image_obj.image.url) if image_obj and image_obj.image else None
+
             items.append({
                 'id': item.id,
-                'product_name': item.product.name,
-                'product_price': float(item.product.price),
+                'product_name': product.name,
+                'product_price': float(product.price),
                 'quantity': item.quantity,
-                'total': float(item_total)
+                'total': float(item_total),
+                'product_image': image_url,
             })
 
         return Response({
             'items': items,
             'total_price': float(total_price)
         })
-
