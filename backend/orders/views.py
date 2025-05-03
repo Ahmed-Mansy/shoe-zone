@@ -4,7 +4,7 @@ from django.db.models import Sum
 from users.models import User  
 from orders.models import Order
 from rest_framework.permissions import IsAdminUser ,IsAuthenticated
-from .serializers import OrderSerializer
+from .serializers import OrderSerializer , OrderItemSerializer
 from rest_framework import viewsets, status
 import logging
 from rest_framework.decorators import api_view, permission_classes
@@ -45,3 +45,12 @@ def createOrder(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     logger.error(f"Failed to create order for user {request.user.email}: {serializer.errors}")
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class UserOrderHistoryView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        orders = Order.objects.filter(user=user).order_by('-created_at')
+        serializer = OrderItemSerializer(orders, many=True)
+        return Response(serializer.data)
