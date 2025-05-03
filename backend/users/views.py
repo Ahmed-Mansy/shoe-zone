@@ -15,6 +15,7 @@ from django.contrib.auth import get_user_model
 # from .serializers import SignUpSerializer,UserSerializer
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.decorators import parser_classes
 
 # for sending mails and generate token
 from django.template.loader import render_to_string
@@ -36,8 +37,10 @@ from django.core.mail import send_mail
 
 
 @api_view(['POST'])
+@parser_classes([MultiPartParser, FormParser])
 def registerUser(request):
     data = request.data
+    profile_picture = request.FILES.get('profile_picture')
     try:
         user = User.objects.create(
             first_name=data['first_name'],
@@ -45,6 +48,7 @@ def registerUser(request):
             username=data['email'],
             email=data['email'],
             password=make_password(data['password']),
+            profile_picture=profile_picture,
             is_active=False
         )
         # Generate token for sending mail
