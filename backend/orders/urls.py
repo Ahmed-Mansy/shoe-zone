@@ -7,7 +7,8 @@ router = DefaultRouter()
 router.register('orders', OrderViewSet)
 
 urlpatterns = [
-    path('admin-dashboard/', AdminDashboardView.as_view(), name='admin-dashboard'),
+    path('admin/dashboard/', AdminDashboardView.as_view(), name='admin-dashboard'),
     path('crud/', include(router.urls)),
+    path('my-orders/', UserOrderHistoryView.as_view(), name='user-order-history'),
 
 ]

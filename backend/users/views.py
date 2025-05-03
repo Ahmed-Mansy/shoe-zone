@@ -136,12 +136,16 @@ def getUsers(request):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated, IsAdminUser]  
 
     def get_queryset(self):
         return User.objects.filter(is_superuser=False)
 
     @action(detail=True, methods=['patch'])
     def block(self, request, pk=None):
+        if not request.user.is_staff:
+            return Response({'detail': 'Not authorized to block users.'}, status=status.HTTP_403_FORBIDDEN)
+        
         user = self.get_object()
         user.is_active = False
         user.save()
@@ -149,11 +153,13 @@ class UserViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['patch'])
     def unblock(self, request, pk=None):
+        if not request.user.is_staff:
+            return Response({'detail': 'Not authorized to unblock users.'}, status=status.HTTP_403_FORBIDDEN)
+        
         user = self.get_object()
         user.is_active = True
         user.save()
         return Response({'status': 'user unblocked'}, status=status.HTTP_200_OK)
-
 
 
 class ProfileView(APIView):
