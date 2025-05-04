@@ -1,5 +1,3 @@
-import PropTypes from "prop-types";
-import { Link } from "react-router";
 import ImagesSlider from "./ImagesSlider";
 import { FaStar, FaRegStar } from "react-icons/fa";
 import { Link } from "react-router-dom"; 
@@ -13,7 +11,6 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
 
   return (
 <div className="w-full relative space-y-3 mx-2 my-4 border border-gray-300 rounded-md p-4 shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 ease-in-out">
-
 
       <Link to={`/products/${id}`} state={{ product }}>
         <div className="w-full aspect-square bg-[#f5f5f5] rounded-md overflow-hidden">
@@ -39,21 +36,9 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
             <FaRegStar key={index} />
           );
         })}
+      </div>
     <div className="w-full relative space-y-3 mx-2 my-4">
-      <Link to={`/products/${id}`} state={{ product }}>
-        <div className="w-full aspect-square bg-[#f5f5f5]">
-          <img
-            src={
-              images?.length > 0
-                ? `${isAdmin ? "" : "http://127.0.0.1:8000/"}${images[0].image}`
-                : "/default.jpg" // Fallback image
-            }
-            alt={name}
-            className="w-full h-full object-cover" // إضافة object-cover لتحسين العرض
-          />
-        </div>
-      </Link>
-
+      
       <h3 className="text-md font-semibold mt-2 capitalize">{name}</h3>
 
       <div className="flex-start gap-1">
@@ -103,6 +88,7 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
         </div>
       )}
     </div>
+</div>
   );
 };
 
