@@ -25,24 +25,51 @@ const OrderManagement = () => {
       setOrders([]);
     }
   };
-
   const updateStatus = async (id, status) => {
     try {
-      await axios.patch(
-        `http://127.0.0.1:8000/api/orders/crud/orders/${id}/`, 
-        { status },
+      // الحصول على البيانات الحالية للـ order
+      const orderToUpdate = orders.find((order) => order.id === id);
+      
+      // إرسال جميع بيانات الـ order مع تحديث status
+      const updatedOrder = {
+        ...orderToUpdate,  // إضافة جميع الحقول الأخرى
+        status,  // فقط تحديث الـ status
+      };
+  
+      const res = await axios.patch(
+        `http://127.0.0.1:8000/api/orders/crud/orders/${id}/`,
+        updatedOrder,  // إرسال الـ order بالكامل
         {
           headers: {
-            Authorization: `Bearer ${authToken}`,  
+            Authorization: `Bearer ${authToken}`,
+            'Content-Type': 'application/json',  // التأكد من أن الـ content type صحيح
           },
         }
       );
       fetchOrders();
-      console.log("PATCH response:", res.data);
+      console.log("PATCH response:", res.data); // طباعة الاستجابة
     } catch (error) {
-      console.error("Error updating status:", error);
+      console.error("Error updating status:", error.response ? error.response.data : error);
     }
   };
+  
+  // const updateStatus = async (id, status) => {
+  //   try {
+  //     await axios.patch(
+  //       `http://127.0.0.1:8000/api/orders/crud/orders/${id}/`, 
+  //       { status },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${authToken}`,  
+  //         },
+  //       }
+  //     );
+  //     fetchOrders();
+  //     console.log("PATCH response:", res.data);
+  //   } catch (error) {
+  //     console.error("Error updating status:", error);
+  //   }
+  // };
 
 
   const deleteOrder = async (id) => {
