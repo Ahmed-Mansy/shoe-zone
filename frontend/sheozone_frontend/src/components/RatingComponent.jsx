@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { getProductRatings, submitProductRating } from "../api";
+// import { getProductRatings, submitProductRating } from "../api";
+import api from "../api";
 
 const RatingComponent = ({ productId }) => {
   const [ratings, setRatings] = useState([]);
@@ -10,9 +11,14 @@ const RatingComponent = ({ productId }) => {
   useEffect(() => {
     const fetchRatings = async () => {
       try {
-        const response = await api.get(`/products/${productId}/ratings/`);
-        setRatings(response.data.ratings);
-        setAverageRating(response.data.avg_rating || 0);
+        const response = await api.get(`/products/${productId}/reviews/`);
+        setRatings(response.data);
+        if (response.data.length > 0) {
+          const total = response.data.reduce((sum, r) => sum + r.score, 0);
+          setAverageRating(total / response.data.length);
+        } else {
+          setAverageRating(0);
+        }
         setError(null);
       } catch (err) {
         setError(err.response?.data || "Error fetching ratings");
@@ -23,31 +29,44 @@ const RatingComponent = ({ productId }) => {
   }, [productId]);
 
   const handleSubmitRating = async () => {
+    const currentUser = localStorage.getItem("userId");
+    // ✅ check لو المستخدم عمل قبل كده review
+    if (ratings.some((r) => r.user == currentUser)) {
+      alert("You have already submitted a review for this product.");
+      return;
+    }
     if (newRating < 1 || newRating > 5) {
       alert("Please select a rating between 1 and 5 stars.");
       return;
     }
 
     try {
-      const response = await api.post(`/products/${productId}/ratings/`, {
+      const response = await api.post(`/products/${productId}/reviews/`, {
         score: newRating,
       });
 
-      const updatedRatings = [...ratings, response.data];
-      setRatings(updatedRatings);
+      // const updatedRatings = [...ratings, response.data];
+      // setRatings(updatedRatings);
 
       if (response.data.product_avg_rating !== undefined) {
         setAverageRating(response.data.product_avg_rating);
       } else {
-        const totalScore = updatedRatings.reduce((sum, rating) => sum + rating.score, 0);
+        const totalScore = updatedRatings.reduce(
+          (sum, rating) => sum + rating.score,
+          0
+        );
         const newAvgRating = totalScore / updatedRatings.length;
         setAverageRating(newAvgRating);
       }
 
+      fetchRatings();
       setNewRating(0);
       setError(null);
     } catch (err) {
-      if (err.response?.status === 400 && err.response?.data?.non_field_errors) {
+      if (
+        err.response?.status === 400 &&
+        err.response?.data?.non_field_errors
+      ) {
         setError(err.response.data.non_field_errors[0]);
       } else {
         setError(err.response?.data || "Error submitting rating");
@@ -59,7 +78,10 @@ const RatingComponent = ({ productId }) => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
       stars.push(
-        <span key={i} className={i <= rating ? "text-yellow-400" : "text-gray-400"}>
+        <span
+          key={i}
+          className={i <= rating ? "text-yellow-400" : "text-gray-400"}
+        >
           ★
         </span>
       );
@@ -80,15 +102,21 @@ const RatingComponent = ({ productId }) => {
       {/* Average Rating */}
       <div className="mb-6">
         <h4 className="text-lg font-medium">
-          Average Rating: {averageRating ? averageRating.toFixed(1) : "No ratings yet"} / 5
+          Average Rating:{" "}
+          {averageRating ? averageRating.toFixed(1) : "No ratings yet"} / 5
         </h4>
-        <div className="text-xl mt-1">{renderStars(Math.round(averageRating))}</div>
+        <div className="text-xl mt-1">
+          {renderStars(Math.round(averageRating))}
+        </div>
       </div>
 
       {/* Ratings List */}
       <div className="mb-6 space-y-4">
         {ratings.map((rating) => (
-          <div key={rating.id} className="border border-gray-200 rounded p-4 shadow-sm">
+          <div
+            key={rating.id}
+            className="border border-gray-200 rounded p-4 shadow-sm"
+          >
             <div className="text-lg">{renderStars(rating.score)}</div>
             <p className="text-sm text-gray-600 font-semibold">{rating.user}</p>
           </div>

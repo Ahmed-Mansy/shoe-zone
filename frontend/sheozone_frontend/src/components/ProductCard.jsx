@@ -17,6 +17,13 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
             src={`${isAdmin ? "" : "http://127.0.0.1:8000/"}${images[0].image}`}
             alt={name}
             className="w-full h-full"
+          /> */}
+          <img
+            src={`http://127.0.0.1:8000/${
+              images && images.length > 0 ? images[0].image : "default.jpg"
+            }`}
+            alt={name}
+            className="w-full h-full"
           />
         </div>
       </Link>
@@ -29,7 +36,8 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
             <span
               key={index}
               style={{ backgroundColor: color }}
-              className={`inline-block w-[25px] h-[25px] rounded-full border border-gray-900`}></span>
+              className={`inline-block w-[25px] h-[25px] rounded-full border border-gray-900`}
+            ></span>
           );
         })}
       </div>
@@ -51,7 +59,8 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
 
           <button
             onClick={() => onDelete(id)}
-            className="bg-red-600 text-white w-[80px] text-center cursor-pointer rounded-xs px-3 py-2 hover:bg-red-700 transition">
+            className="bg-red-600 text-white w-[80px] text-center cursor-pointer rounded-xs px-3 py-2 hover:bg-red-700 transition"
+          >
             Delete
           </button>
         </div>
