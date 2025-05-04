@@ -27,6 +27,18 @@ class CategoryViewSet(viewsets.ModelViewSet):
             permission_classes = [IsAuthenticated, IsAdminUser]  
         return [permission() for permission in permission_classes]  
     
+class HomeProductsView(APIView):
+    def get(self, request):
+        top_rated = Product.objects.order_by('-average_rating')[:3]
+        latest = Product.objects.order_by('-created_at')[:3]
+
+        data = {
+            'top_rated': ProductSerializer(top_rated, many=True).data,
+            'latest': ProductSerializer(latest, many=True).data
+        }
+        return Response(data, status=status.HTTP_200_OK)
+    
+       
 # For product search and filtering ONLY
 class ProductListView(ListAPIView):
     queryset = Product.objects.all()

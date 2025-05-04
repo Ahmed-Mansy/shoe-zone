@@ -1,30 +1,46 @@
-import { useState } from "react";
+import { useState , useEffect } from "react";
 import { useNavigate } from "react-router";
+import axios from "axios";
+import ProductCard from "../../components/ProductCard";
+import { toast } from "react-toastify";
 
-const categories = [
-  {
-    id: 1,
-    name: "Category 1",
-    description: "Category 1 Description",
-    image: "/assets/images/cat1.jpg",
-  },
-  {
-    id: 2,
-    name: "Category 2",
-    description: "Category 2 Description",
-    image: "/assets/images/cat2.jpg",
-  },
-  {
-    id: 3,
-    name: "Category 3",
-    description: "Category 3 Description",
-    image: "/assets/images/cat3.jpg",
-  },
-];
+// const categories = [
+//   {
+//     id: 1,
+//     name: "Category 1",
+//     description: "Category 1 Description",
+//     image: "/assets/images/cat1.jpg",
+//   },
+//   {
+//     id: 2,
+//     name: "Category 2",
+//     description: "Category 2 Description",
+//     image: "/assets/images/cat2.jpg",
+//   },
+//   {
+//     id: 3,
+//     name: "Category 3",
+//     description: "Category 3 Description",
+//     image: "/assets/images/cat3.jpg",
+//   },
+// ];
 
 const Home = () => {
-  const [showButton, setShowButton] = useState(false);
+  // const [showButton, setShowButton] = useState(false);
   const navigate = useNavigate();
+
+  const [topRated, setTopRated] = useState([]);
+  const [latest, setLatest] = useState([]);
+
+  useEffect(() => {
+    axios.get('http://127.0.0.1:8000/api/products/home/')
+      .then(res => {
+        setTopRated(res.data.top_rated);
+        setLatest(res.data.latest);
+      })
+      .catch(err => console.error(err));
+  }, []);
+
 
   return (
     <div>
@@ -36,7 +52,30 @@ const Home = () => {
         />
       </div>
 
-      <div className="wrapper mt-10 flex justify-start gap-4">
+      <div className="max-w-7xl mx-5 my-5 px-10 py-10 ">
+        {/* Top Rated Section */}
+        <section className="mb-10 ">
+          <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center ">Top Rated Products</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {topRated.map(product => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </section>
+
+        {/* Latest Products Section */}
+        <section>
+          <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center">Latest Products</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {latest.map(product => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </section>
+      </div>
+
+
+      {/* <div className="wrapper mt-10 flex justify-start gap-4">
         {categories.map((category) => (
           <div
             key={category.id}
@@ -68,7 +107,7 @@ const Home = () => {
             </div>
           </div>
         ))}
-      </div>
+      </div> */}
 
       <div className="w-full mt-10 relative">
         <img src="/assets/images/bg.jpg" className="w-full" />
