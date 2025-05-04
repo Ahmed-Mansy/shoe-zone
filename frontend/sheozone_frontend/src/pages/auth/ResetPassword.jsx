@@ -1,6 +1,8 @@
 import { useState } from "react";
 import Input from "../../components/Input";
-import { Link } from "react-router";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useNavigate, useLocation } from "react-router-dom"; // إضافة useLocation
 
 const ResetPassword = () => {
   const [resetData, setResetData] = useState({
@@ -8,13 +10,87 @@ const ResetPassword = () => {
     confirmPassword: "",
   });
 
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+
+  const location = useLocation(); // استخدام useLocation للحصول على البيانات من state
+  const { uid, token } = location.state || {};
+
+  const navigate = useNavigate();
+
   const handleInputChange = (e) => {
     setResetData({ ...resetData, [e.target.name]: e.target.value });
   };
 
-  const handleResetPassword = (e) => {
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!resetData.password) {
+      newErrors.password = "Password is required";
+    } else if (resetData.password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters";
+    }
+
+    if (!resetData.confirmPassword) {
+      newErrors.confirmPassword = "Please confirm your password";
+    } else if (resetData.password !== resetData.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+    }
+
+    return newErrors;
+  };
+
+  const resetPasswordConfirm = async () => {
+    try {
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/users/password-reset-confirm/",
+        {
+          uid: uid,
+          token: token,
+          new_password: resetData.password,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      toast.success("Password reset successfully");
+      navigate("/login");
+      return response.data;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.detail ||
+        error.message ||
+        "Failed to reset password.";
+      throw new Error(errorMessage);
+    }
+  };
+
+  const handleResetPassword = async (e) => {
     e.preventDefault();
-    console.log(resetData);
+    const validationErrors = validateForm();
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    setLoading(true);
+    setSuccessMessage("");
+
+    try {
+      const response = await resetPasswordConfirm();
+
+      setSuccessMessage("Password reset successfully!");
+      console.log("Success response:", response);
+    } catch (error) {
+      setErrors({ general: error.message });
+      console.log("Error:", error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -25,6 +101,8 @@ const ResetPassword = () => {
           Enter a new password below to change your password
         </p>
       </div>
+      {successMessage && <p className="text-green-500">{successMessage}</p>}
+      {errors.general && <p className="text-red-500">{errors.general}</p>}
       <form className="space-y-6" onSubmit={handleResetPassword}>
         <Input
           label="New Password"
@@ -32,6 +110,7 @@ const ResetPassword = () => {
           name="password"
           value={resetData.password}
           onChange={handleInputChange}
+          error={errors.password}
         />
         <Input
           label="Confirm Password"
@@ -39,11 +118,13 @@ const ResetPassword = () => {
           name="confirmPassword"
           value={resetData.confirmPassword}
           onChange={handleInputChange}
+          error={errors.confirmPassword}
         />
         <button
           type="submit"
-          className="w-full rounded-md cursor-pointer bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none">
-          Reset Password
+          className="w-full py-3 rounded-xs font-semibold transition-all bg-primary hover:bg-dark text-light cursor-pointer"
+          disabled={loading}>
+          {loading ? "Resetting..." : "Reset Password"}
         </button>
       </form>
     </div>

@@ -128,7 +128,7 @@ const CategoryList = () => {
   return (
     <div className="container p-5">
       <ToastContainer />
-      <h2 className="font-bold mb-5 m-4 p-4 text-2xl">Manage Categories</h2>
+      <h2 className="font-bold mb-5 m-4 text-2xl">Manage Categories</h2>
 
       <form onSubmit={handleSaveCategory} className="mx-5 flex gap-2 flex-wrap">
         <input
@@ -136,11 +136,11 @@ const CategoryList = () => {
           value={newCategory}
           onChange={(e) => setNewCategory(e.target.value)}
           placeholder="Enter category name"
-          className="border p-2 rounded w-1/2"
+          className="border-[1px] border-gray-400 p-2 rounded w-1/2"
         />
 
         <select
-          className="form-select w-1/4 mx-4"
+          className="form-select w-1/4 mx-4 border-[1px] border-gray-400 rounded-sm px-2"
           value={categoryType}
           onChange={(e) => setCategoryType(e.target.value)}>
           <option value="">select type</option>
@@ -202,12 +202,12 @@ const CategoryList = () => {
                 {isAdmin && (
                   <div className="flex space-x-2">
                     <button
-                      className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
+                      className="bg-gray-500 text-white w-[80px] px-3 py-2 rounded-sm hover:bg-gray-600 cursor-pointer"
                       onClick={() => handleEditCategory(cat)}>
                       Edit
                     </button>
                     <button
-                      className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
+                      className="bg-red-500 text-white w-[80px] px-3 py-2 rounded-sm hover:bg-red-600 cursor-pointer"
                       onClick={() => handleDeleteCategory(cat.id)}>
                       Delete
                     </button>

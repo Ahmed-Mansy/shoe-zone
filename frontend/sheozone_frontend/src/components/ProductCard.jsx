@@ -1,20 +1,20 @@
 import PropTypes from "prop-types";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 
-const ProductCard = ({ product, onDelete }) => {
+const ProductCard = ({ product, onDelete, onEdit }) => {
   const isAdmin = localStorage.getItem("userRole") === "admin";
 
   const { name, price, discount_price, images, id, available_colors } = product;
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const finalPrice = discount_price || price;
 
   return (
-    <div className="w-[calc(33%-12px)] relative space-y-3 mx-2  my-4">
+    <div className="w-full relative space-y-3 mx-2  my-4">
       <Link to={`/products/${id}`} state={{ product }}>
         <div className="w-full aspect-square bg-[#f5f5f5]">
           <img
-            src={`http://127.0.0.1:8000/${images[0].image}`}
+            src={`${isAdmin ? "" : "http://127.0.0.1:8000/"}${images[0].image}`}
             alt={name}
             className="w-full h-full"
           />
@@ -44,7 +44,7 @@ const ProductCard = ({ product, onDelete }) => {
       {isAdmin && (
         <div className="flex-center gap-2">
           <button
-            onClick={() => navigate(`/products/edit/${product.id}`)}
+            onClick={() => onEdit(id)}
             className="bg-gray-500 text-white w-[80px] text-center cursor-pointer rounded-xs px-3 py-2 mx-2 hover:bg-gray-600 transition">
             Edit
           </button>
@@ -63,6 +63,7 @@ const ProductCard = ({ product, onDelete }) => {
 ProductCard.propTypes = {
   product: PropTypes.object.isRequired,
   onDelete: PropTypes.func.isRequired,
+  onEdit: PropTypes.func.isRequired,
 };
 
 export default ProductCard;
