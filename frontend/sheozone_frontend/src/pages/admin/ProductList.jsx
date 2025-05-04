@@ -16,7 +16,7 @@ export default function ProductList() {
       const response = await axios.get(
         `http://127.0.0.1:8000/api/products/api/products/`
       );
-  
+
       const sortedProducts = response.data.sort((a, b) => a.id - b.id);
       setProducts(sortedProducts);
     } catch (error) {
@@ -45,8 +45,8 @@ export default function ProductList() {
         try {
           const config = {
             headers: {
-              "Content-Type": "application/json", 
-              Authorization: `Bearer ${token}`,  
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
             },
           };
           await axios.delete(
@@ -65,11 +65,12 @@ export default function ProductList() {
   };
 
   const handleEdit = (productId) => {
-    navigate(`products/edit/${productId}`);
+    navigate(`edit/${productId}`);
   };
 
   useEffect(() => {
     fetchProducts();
+    console.log("Component Mounted");
   }, []);
 
   return (
@@ -84,14 +85,15 @@ export default function ProductList() {
           </button>
         </div>
       )}
-      <div className="w-full flex flex-wrap ">
+      <div className="w-full flex flex-wrap gap-4">
         {products.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
+          <div key={product.id} className="w-[calc(25%-16px)]">
+            <ProductCard
+              product={product}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
+          </div>
         ))}
       </div>
     </div>

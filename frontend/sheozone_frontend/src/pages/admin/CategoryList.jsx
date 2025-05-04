@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router";
+import Swal from 'sweetalert2';
 
 const CategoryList = () => {
   const [categories, setCategories] = useState([]);
@@ -10,7 +11,7 @@ const CategoryList = () => {
   const [editingCategoryId, setEditingCategoryId] = useState(null);
   const isEditing = editingCategoryId !== null;
   const [isAdmin, setIsAdmin] = useState(false);
-  const [selectedTab, setSelectedTab] = useState("all"); 
+  const [selectedTab, setSelectedTab] = useState("all");
   const navigate = useNavigate();
 
   const checkIfAdmin = () => {
@@ -31,26 +32,38 @@ const CategoryList = () => {
       toast.error("Error loading categories. Please try again.");
     }
   };
-
   const handleSaveCategory = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("accessToken");
-
+  
     if (!isAdmin) {
       toast.error("You must be an admin to perform this action.");
       return;
     }
-
+  
     if (newCategory.trim() === "") {
       toast.error("Category name cannot be empty.");
       return;
     }
-
+  
+    // تحقق من وجود الكاتيجوري بنفس الاسم والنوع
+    const exists = categories.some(
+      (cat) =>
+        cat.name.toLowerCase() === newCategory.trim().toLowerCase() &&
+        cat.type === categoryType &&
+        (!isEditing || cat.id !== editingCategoryId) // استثناء الحالة اللي بتعدل فيها
+    );
+  
+    if (exists) {
+      toast.error("Category with the same name and type already exists.");
+      return;
+    }
+  
     const categoryData = {
       name: newCategory,
       type: categoryType,
     };
-
+  
     try {
       if (isEditing) {
         await axios.put(
@@ -75,24 +88,48 @@ const CategoryList = () => {
         );
         toast.success("Category added successfully!");
       }
-
+  
       setNewCategory("");
       setCategoryType("women");
       setEditingCategoryId(null);
       fetchCategories();
     } catch (error) {
-      toast.error("Failed to save category.");
+      if (error.response && error.response.status === 400) {
+        const errorData = error.response.data;
+        if (errorData && typeof errorData === 'object') {
+          const errorMessages = Object.values(errorData).flat().join(', ');
+          toast.error(`Error: ${errorMessages}`);
+        } else {
+          toast.error("Invalid category data.");
+        }
+      } else {
+        toast.error("Failed to save category.");
+      }
+  
     }
   };
+  
 
-  const handleDeleteCategory = async (id) => {
-    const token = localStorage.getItem("accessToken");
 
-    if (!isAdmin) {
-      toast.error("You must be an admin to perform this action.");
-      return;
-    }
+const handleDeleteCategory = async (id) => {
+  const token = localStorage.getItem("accessToken");
 
+  if (!isAdmin) {
+    toast.error("You must be an admin to perform this action.");
+    return;
+  }
+
+  const confirmResult = await Swal.fire({
+    title: 'Are you sure?',
+    text: "This action will delete the category permanently!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Yes, delete it!',
+  });
+
+  if (confirmResult.isConfirmed) {
     try {
       await axios.delete(
         `http://127.0.0.1:8000/api/products/crud/categories/${id}/`,
@@ -107,7 +144,9 @@ const CategoryList = () => {
     } catch (error) {
       toast.error("Failed to delete category.");
     }
-  };
+  }
+};
+
 
   const handleEditCategory = (cat) => {
     setNewCategory(cat.name);
@@ -128,32 +167,28 @@ const CategoryList = () => {
   return (
     <div className="container p-5">
       <ToastContainer />
-      <h2 className="font-bold mb-5 m-4 p-4 text-2xl">Manage Categories</h2>
+      <h2 className="font-bold mb-5 m-4 text-2xl">Manage Categories</h2>
 
-      <form
-        onSubmit={handleSaveCategory}
-        className="mx-5 flex gap-2 flex-wrap"
-      >
+      <form onSubmit={handleSaveCategory} className="mx-5 flex gap-2 flex-wrap">
         <input
           type="text"
           value={newCategory}
           onChange={(e) => setNewCategory(e.target.value)}
           placeholder="Enter category name"
-          className="border p-2 rounded w-1/2"
+          className="border-[1px] border-gray-400 p-2 rounded w-1/2"
         />
-        
 
         <select
-          className="form-select w-1/4 mx-4"
+          className="form-select w-1/4 mx-4 border-[1px] border-gray-400 rounded-sm px-2"
           value={categoryType}
-          onChange={(e) => setCategoryType(e.target.value)}
-        >
-          <option value="">select type</option>
+          onChange={(e) => setCategoryType(e.target.value)}>
           <option value="women">Women</option>
           <option value="men">Men</option>
         </select>
 
-        <button type="submit" className="btn bg-blue-500 text-white px-4 py-2 mx-2">
+        <button
+          type="submit"
+          className="btn bg-blue-500 text-white px-4 py-2 mx-2">
           {isEditing ? "Update" : "Add Category"}
         </button>
         {isEditing && (
@@ -164,34 +199,36 @@ const CategoryList = () => {
               setNewCategory("");
               setCategoryType("women");
               setEditingCategoryId(null);
-            }}
-          >
+            }}>
             Cancel
           </button>
         )}
       </form>
 
       <div className="text-center mt-5 mb-4">
-      <div className="inline-flex mb-4 mt-4 w-1/2 shadow rounded overflow-hidden">
-        <button
-          className={`flex-1 px-4 py-2 text-sm font-semibold cursor-pointer ${selectedTab === "all" ? "bg-blue-600 text-white" : "bg-gray-200"}`}
-          onClick={() => setSelectedTab("all")}
-        >
-          All
-        </button>
-        <button
-          className={`flex-1 px-4 py-2 text-sm font-semibold cursor-pointer ${selectedTab === "women" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-          onClick={() => setSelectedTab("women")}
-        >
-          Women
-        </button>
-        <button
-          className={`flex-1 px-4 py-2 text-sm font-semibold cursor-pointer ${selectedTab === "men" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-          onClick={() => setSelectedTab("men")}
-        >
-          Men
-        </button>
-      </div>
+        <div className="inline-flex mb-4 mt-4 w-1/2 shadow rounded overflow-hidden">
+          <button
+            className={`flex-1 px-4 py-2 text-sm font-semibold cursor-pointer ${
+              selectedTab === "all" ? "bg-blue-600 text-white" : "bg-gray-200"
+            }`}
+            onClick={() => setSelectedTab("all")}>
+            All
+          </button>
+          <button
+            className={`flex-1 px-4 py-2 text-sm font-semibold cursor-pointer ${
+              selectedTab === "women" ? "bg-blue-500 text-white" : "bg-gray-200"
+            }`}
+            onClick={() => setSelectedTab("women")}>
+            Women
+          </button>
+          <button
+            className={`flex-1 px-4 py-2 text-sm font-semibold cursor-pointer ${
+              selectedTab === "men" ? "bg-blue-500 text-white" : "bg-gray-200"
+            }`}
+            onClick={() => setSelectedTab("men")}>
+            Men
+          </button>
+        </div>
       </div>
 
       <div className="text-center mt-5 mb-4">
@@ -203,15 +240,13 @@ const CategoryList = () => {
                 {isAdmin && (
                   <div className="flex space-x-2">
                     <button
-                      className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
-                      onClick={() => handleEditCategory(cat)}
-                    >
+                      className="bg-gray-500 text-white w-[80px] px-3 py-2 rounded-sm hover:bg-gray-600 cursor-pointer"
+                      onClick={() => handleEditCategory(cat)}>
                       Edit
                     </button>
                     <button
-                      className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
-                      onClick={() => handleDeleteCategory(cat.id)}
-                    >
+                      className="bg-red-500 text-white w-[80px] px-3 py-2 rounded-sm hover:bg-red-600 cursor-pointer"
+                      onClick={() => handleDeleteCategory(cat.id)}>
                       Delete
                     </button>
                   </div>
