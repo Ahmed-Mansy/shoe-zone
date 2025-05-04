@@ -10,6 +10,8 @@ import logging
 from rest_framework.decorators import api_view, permission_classes
 import stripe
 from django.conf import settings
+from datetime import timedelta
+from django.utils import timezone
 
 
 # Define the logger
@@ -58,24 +60,54 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 def createOrder(request):
     serializer = OrderSerializer(data=request.data, context={'request': request})
     if serializer.is_valid():
+        # Check for duplicate order
+        existing_order = Order.objects.filter(
+            user=request.user,
+            shipping_address=serializer.validated_data['shipping_address'],
+            created_at__gte=timezone.now() - timedelta(minutes=5),  # Within last 5 minutes
+            status='pending'
+        ).first()
+        if existing_order:
+            logger.warning(f"Duplicate order detected for user {request.user.email}")
+            return Response(
+                {"details": "An identical order was recently created. Please check your order history."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         # Create the order and order items
         order = serializer.save()
 
-        # Calculate total price (already handled by OrderItem.save, but ensure it's updated)
+        # Calculate total price
         order.calculate_total()
         
-        # Create a Stripe Payment Intent
+        # Check if total_price is valid
+        if order.total_price <= 0:
+            logger.error(f"Invalid total_price for Order {order.id}: {order.total_price}")
+            return Response(
+                {"details": "Order total must be greater than zero."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Check payment status
+        if order.payment_status == 'cod':
+            logger.info(f"Order {order.id} created with Cash on Delivery for user {request.user.email}")
+            return Response({
+                "order": OrderSerializer(order).data,
+                "message": "Order created with Cash on Delivery.",
+            }, status=status.HTTP_201_CREATED)
+
+        # Create a Stripe Payment Intent for online payments
         try:
             payment_intent = stripe.PaymentIntent.create(
-                amount=int(order.total_price * 100),  # Use the order's total_price
-                currency='usd',
+                amount=int(order.total_price * 100),
+                currency='egp',
                 payment_method_types=['card'],
                 metadata={'user_id': request.user.id, 'order_id': order.id},
             )
         except stripe.error.StripeError as e:
             logger.error(f"Stripe error for user {request.user.email}: {str(e)}")
             return Response(
-                {"details": "Payment processing failed. Please try again."},
+                {"details": f"Payment processing failed: {str(e)}"},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -87,6 +119,7 @@ def createOrder(request):
 
     logger.error(f"Failed to create order for user {request.user.email}: {serializer.errors}")
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -102,9 +135,16 @@ def confirmPayment(request):
         )
 
     try:
+        order = Order.objects.get(id=order_id, user=request.user)
+        if order.payment_status == 'cod':
+            logger.warning(f"Cannot confirm payment for COD Order {order_id} by user {request.user.email}")
+            return Response(
+                {"details": "Cannot confirm payment for Cash on Delivery orders."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
         if payment_intent.status == 'succeeded':
-            order = Order.objects.get(id=order_id, user=request.user)
             order.is_paid = True
             order.status = 'Shipped'
             order.save()
@@ -126,7 +166,7 @@ def confirmPayment(request):
     except Order.DoesNotExist:
         logger.warning(f"Order {order_id} not found for user {request.user.email}")
         return Response({"details": "Order not found."}, status=status.HTTP_404_NOT_FOUND)
-    
+
 
 class UserOrderHistoryView(APIView):
     permission_classes = [IsAuthenticated]
