@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router";
+import { useParams } from "react-router";
 import CollectionSidebar from "../../components/CollectionSidebar";
 import ProductsList from "../../components/ProductsList";
 import { useEffect, useState } from "react";
@@ -47,9 +47,13 @@ const Collection = () => {
           </span>
         </div> */}
       </div>
-      <div className="flex justify-between items-start gap-10">
-        <CollectionSidebar collectionTitle={title} />
-        <ProductsList products={products} />
+      <div className="flex justify-between items-start gap-6">
+        <div className="w-1/4">
+          <CollectionSidebar collectionTitle={title} />
+        </div>
+        <div className="w-3/4">
+          <ProductsList products={products} />
+        </div>
       </div>
     </div>
   );

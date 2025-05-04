@@ -109,21 +109,16 @@ export const deleteOrder = (id) =>
 // Register User
 export const registerUser = async (userData) => {
   try {
-    const response = await axios.post(
-      `${BASE_URL}users/register/`,
-      userData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
+    const response = await axios.post(`${BASE_URL}users/register/`, userData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return response.data;
   } catch (error) {
     throw error.response.data;
   }
 };
-
 
 //Login User
 export const loginUser = async (userData) => {

@@ -37,7 +37,7 @@ const CartItem = ({ item, setCartItems, cartItems }) => {
   //     console.error("Update error", err);
   //   }
   // };
-
+  console.log("ITEM ==> ", item);
   const handleQuantity = (e) => {
     const operand = e.target.innerHTML;
 
@@ -90,7 +90,7 @@ const CartItem = ({ item, setCartItems, cartItems }) => {
       <div className="w-[150px] aspect-auto bg-light-gray">
         <Link to={`/products/${item.id}`}>
           <img
-            src={item.productImage}
+            src={item.product_image}
             alt={item.title}
             className="w-full h-full object-contain"
           />

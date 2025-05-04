@@ -2,15 +2,26 @@ import ImagesSlider from "./ImagesSlider";
 import { FaStar, FaRegStar } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
-const ProductCard = ({ product, onDelete, onEdit, }) => {
+const ProductCard = ({ product, onDelete, onEdit }) => {
   const isAdmin = localStorage.getItem("userRole") === "admin";
 
-  const { name, price, discount_price, images, id, available_colors, average_rating, stock_quantity } = product;
+  const {
+    name,
+    price,
+    discount_price,
+    images,
+    id,
+    available_colors,
+    average_rating,
+    stock_quantity,
+  } = product;
   const finalPrice = discount_price || price;
 
   return (
     <div className="w-full relative space-y-3 mx-2 my-4 border border-gray-300 rounded-md p-4 shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 ease-in-out">
-      <Link to={isAdmin ? `/admin/products/${id}` : `/products/${id}`} state={product}>
+      <Link
+        to={isAdmin ? `/admin/products/${id}` : `/products/${id}`}
+        state={product}>
         <div className="w-full aspect-square bg-[#f5f5f5] rounded-md overflow-hidden">
           {images.length > 0 ? (
             <ImagesSlider images={images} />
@@ -24,7 +35,9 @@ const ProductCard = ({ product, onDelete, onEdit, }) => {
         </div>
       </Link>
 
-      <h3 className="text-md font-semibold mt-2 capitalize text-center">{name}</h3>
+      <h3 className="text-md font-semibold mt-2 capitalize text-center">
+        {name}
+      </h3>
 
       {/* Rating Section */}
       {/* <div className="flex items-center gap-1 text-yellow-500">
@@ -46,8 +59,7 @@ const ProductCard = ({ product, onDelete, onEdit, }) => {
             <span
               key={index}
               style={{ backgroundColor: color }}
-              className="inline-block w-[25px] h-[25px] rounded-full border border-gray-900"
-            ></span>
+              className="inline-block w-[25px] h-[25px] rounded-full border border-gray-900"></span>
           ))}
         </div>
 
@@ -63,7 +75,10 @@ const ProductCard = ({ product, onDelete, onEdit, }) => {
           )}
         </p>
 
-        <span className={`mx-4 my-4 ${stock_quantity <= 0 ? 'text-sm text-red-600 bold' : 'hidden'}`}>
+        <span
+          className={`mx-4 my-4 ${
+            stock_quantity <= 0 ? "text-sm text-red-600 bold" : "hidden"
+          }`}>
           Out of Stock
         </span>
 
@@ -71,15 +86,13 @@ const ProductCard = ({ product, onDelete, onEdit, }) => {
           <div className="flex-center gap-2">
             <button
               onClick={() => onEdit(id)}
-              className="bg-gray-500 text-white w-[80px] text-center cursor-pointer rounded-xs px-3 py-2 mx-2 hover:bg-gray-600 transition"
-            >
+              className="bg-gray-500 text-white w-[80px] text-center cursor-pointer rounded-xs px-3 py-2 mx-2 hover:bg-gray-600 transition">
               Edit
             </button>
 
             <button
               onClick={() => onDelete(id)}
-              className="bg-red-600 text-white w-[80px] text-center cursor-pointer rounded-xs px-3 py-2 hover:bg-red-700 transition"
-            >
+              className="bg-red-600 text-white w-[80px] text-center cursor-pointer rounded-xs px-3 py-2 hover:bg-red-700 transition">
               Delete
             </button>
           </div>
@@ -87,6 +100,12 @@ const ProductCard = ({ product, onDelete, onEdit, }) => {
       </div>
     </div>
   );
+};
+
+ProductCard.propTypes = {
+  product: PropTypes.object.isRequired,
+  onDelete: PropTypes.func.isRequired,
+  onEdit: PropTypes.func.isRequired,
 };
 
 export default ProductCard;
