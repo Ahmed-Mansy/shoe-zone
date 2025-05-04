@@ -13,8 +13,15 @@ const ProductCard = ({ product, onDelete }) => {
     <div className="w-[calc(33%-12px)] relative space-y-3 mx-2  my-4">
       <Link to={`/products/${id}`} state={{ product }}>
         <div className="w-full aspect-square bg-[#f5f5f5]">
-          <img
+          {/* <img
             src={`http://127.0.0.1:8000/${images[0].image}`}
+            alt={name}
+            className="w-full h-full"
+          /> */}
+          <img
+            src={`http://127.0.0.1:8000/${
+              images && images.length > 0 ? images[0].image : "default.jpg"
+            }`}
             alt={name}
             className="w-full h-full"
           />
@@ -29,7 +36,8 @@ const ProductCard = ({ product, onDelete }) => {
             <span
               key={index}
               style={{ backgroundColor: color }}
-              className={`inline-block w-[25px] h-[25px] rounded-full border border-gray-900`}></span>
+              className={`inline-block w-[25px] h-[25px] rounded-full border border-gray-900`}
+            ></span>
           );
         })}
       </div>
@@ -45,13 +53,15 @@ const ProductCard = ({ product, onDelete }) => {
         <div className="flex-center gap-2">
           <button
             onClick={() => navigate(`/products/edit/${product.id}`)}
-            className="bg-gray-500 text-white w-[80px] text-center cursor-pointer rounded-xs px-3 py-2 mx-2 hover:bg-gray-600 transition">
+            className="bg-gray-500 text-white w-[80px] text-center cursor-pointer rounded-xs px-3 py-2 mx-2 hover:bg-gray-600 transition"
+          >
             Edit
           </button>
 
           <button
             onClick={() => onDelete(id)}
-            className="bg-red-600 text-white w-[80px] text-center cursor-pointer rounded-xs px-3 py-2 hover:bg-red-700 transition">
+            className="bg-red-600 text-white w-[80px] text-center cursor-pointer rounded-xs px-3 py-2 hover:bg-red-700 transition"
+          >
             Delete
           </button>
         </div>
