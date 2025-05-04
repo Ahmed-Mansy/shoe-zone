@@ -109,9 +109,6 @@ const ProfilePage = () => {
                 <strong>Mobile:</strong> {user.mobile}
               </p>
               <p>
-                <strong>Country:</strong> {user.country}
-              </p>
-              <p>
                 <strong>Birthday:</strong> {user.birthdate || "-"}
               </p>
             </div>
