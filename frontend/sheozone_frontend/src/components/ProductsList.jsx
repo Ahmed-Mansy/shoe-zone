@@ -21,8 +21,5 @@ const ProductsList = ({ products }) => {
   );
 };
 
-ProductsList.propTypes = {
-  products: PropTypes.array.isRequired,
-};
 
 export default ProductsList;
