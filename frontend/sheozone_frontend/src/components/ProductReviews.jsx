@@ -11,6 +11,7 @@ const myStyles = {
 };
 
 const ProductReviews = ({ name, averageRating, reviews }) => {
+  console.log(reviews)
   return (
     <div className="w-full my-20">
       <div className="flex flex-col items-center mb-10">
@@ -44,11 +45,10 @@ const ProductReviews = ({ name, averageRating, reviews }) => {
                   itemStyles={myStyles}
                   readOnly
                 />
-                <h2 className="text-xl font-semibold">{review.title}</h2>
                 <p className="mt-6">{review.comment}</p>
               </div>
               <div className="font-semibold text-md bg-[#f5f5f5] w-1/4 h-[50px] px-6 flex items-center">
-                {review.user.slice(0, review.user.indexOf("@")).toUpperCase()}
+                {review.full_name}
               </div>
             </div>
           ))

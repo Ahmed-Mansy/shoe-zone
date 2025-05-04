@@ -358,9 +358,11 @@ import { useParams } from "react-router";
 import { Rating, Star } from "@smastrom/react-rating";
 import Loading from "../../components/Loading";
 import axios from "axios";
-import ProductReviews from "../../components/ProductReviews";
+// import ProductReviews from "../../components/ProductReviews";
 import { useCart } from "../../context/CartContext";
 import { toast } from "react-toastify";
+import { IoMdTrash } from "react-icons/io";
+import Swal from "sweetalert2";
 
 const myStyles = {
   itemShapes: Star,
@@ -380,7 +382,7 @@ const Product = () => {
   const [selectedColor, setSelectedColor] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [newReview, setNewReview] = useState({
-    rating: 0,
+    rating: null,
     comment: "",
   });
   const { fetchCartItems } = useCart();
@@ -408,7 +410,7 @@ const Product = () => {
   const fetchReviews = async () => {
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/reviews/products/${id}/reviews/`
+        `http://127.0.0.1:8000/api/products/${id}/reviews/`
       );
       setReviews(response.data);
     } catch (error) {
@@ -486,7 +488,7 @@ const Product = () => {
 
     try {
       await axios.post(
-        `http://127.0.0.1:8000/api/reviews/products/${id}/reviews/`,
+        `http://127.0.0.1:8000/api/products/${id}/reviews/`,
         {
           rating: newReview.rating,
           comment: newReview.comment,
@@ -500,11 +502,57 @@ const Product = () => {
       );
 
       toast.success("Review submitted successfully.");
-      setNewReview({ rating: 0, comment: "" });
+      setNewReview({ rating: null, comment: "" });
       fetchReviews();
     } catch (error) {
       console.error("Error submitting review:", error);
-      toast.error("Failed to submit review.");
+      toast.error("Failed to submit review, error: " + error.response.data[0]);
+      setNewReview({ rating: null, comment: "" });
+    }
+  };
+
+  const currentUserId = localStorage.getItem("userId");
+
+  const handleDeleteReview = async (reviewId) => {
+    const token = localStorage.getItem("access");
+    if (!token) {
+      toast.error("Please login first.");
+      return;
+    }
+
+    // SweetAlert بدل confirm العادي
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Do you really want to delete this review?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      await axios.delete(
+        `http://127.0.0.1:8000/api/products/reviews/${reviewId}/`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      toast.success("Review deleted successfully.");
+
+      setReviews((prevReviews) => prevReviews.filter((r) => r.id !== reviewId));
+    } catch (error) {
+      console.error("Error deleting review:", error);
+      toast.error(
+        "Failed to delete review. " + (error.response?.data?.detail || "")
+      );
     }
   };
 
@@ -513,7 +561,8 @@ const Product = () => {
       <div
         className={`w-full flex flex-col lg:flex-row justify-between lg:gap-4 ${
           images.length <= 1 ? "gap-4" : "gap-16 "
-        }`}>
+        }`}
+      >
         <div className="w-full lg:w-1/2 h-fit flex flex-col-reverse lg:flex-row justify-between gap-4 lg:sticky lg:top-24">
           <div className="flex flex-row lg:flex-col gap-2">
             {images.map((image) => (
@@ -526,7 +575,8 @@ const Product = () => {
                   image.image === currentImage
                     ? "border-[2px] border-gray-700 rounded-xs"
                     : ""
-                }`}>
+                }`}
+              >
                 <img
                   src={`http://127.0.0.1:8000/${image.image}`}
                   alt=""
@@ -579,7 +629,8 @@ const Product = () => {
                     selectedColor === color
                       ? "border-[3px] border-gray-400"
                       : ""
-                  }`}></span>
+                  }`}
+                ></span>
               ))}
             </div>
           </div>
@@ -595,7 +646,8 @@ const Product = () => {
                   onClick={() => handleSizeSelection(size)}
                   className={`block w-[50px] h-[50px] rounded-xs text-[#212121] border-[1px] border-[#212121] flex-center cursor-pointer hover:bg-gray-400 transition-all duration-300 ${
                     size === selectedSize ? "bg-dark text-light" : ""
-                  }`}>
+                  }`}
+                >
                   {size}
                 </span>
               ))}
@@ -610,7 +662,8 @@ const Product = () => {
                 ? "cursor-pointer bg-dark hover:bg-gray-500"
                 : "cursor-not-allowed bg-gray-400 text-yellow-600"
             }`}
-            disabled={!selectedSize}>
+            disabled={!selectedSize}
+          >
             {selectedSize ? `add to cart - ${price} egp` : "select a size"}
           </button>
         </div>
@@ -648,7 +701,8 @@ const Product = () => {
             reviews.map((review) => (
               <div
                 key={review.id}
-                className="flex items-start justify-between py-12">
+                className="flex items-start justify-between py-12"
+              >
                 <div className="space-y-2">
                   <Rating
                     style={{ maxWidth: 130 }}
@@ -658,8 +712,14 @@ const Product = () => {
                   />
                   <p className="mt-6">{review.comment}</p>
                 </div>
-                <div className="font-semibold text-md bg-[#f5f5f5] w-1/4 h-[50px] px-6 flex items-center">
-                  {review.user_name}
+                <div className="font-semibold text-md bg-[#f5f5f5] w-1/4 h-[50px] px-6 flex items-center justify-between">
+                  <span>{review.full_name}</span>
+                  {String(review.user_id) === String(currentUserId) && (
+                    <IoMdTrash
+                      className="text-red-600 cursor-pointer"
+                      onClick={() => handleDeleteReview(review.id)}
+                    />
+                  )}
                 </div>
               </div>
             ))
@@ -675,7 +735,7 @@ const Product = () => {
               type="number"
               name="rating"
               placeholder="Rating (1-5)"
-              value={newReview.rating}
+              value={newReview.rating || ""}
               onChange={handleReviewChange}
               min="1"
               max="5"
@@ -694,7 +754,8 @@ const Product = () => {
 
             <button
               type="submit"
-              className="bg-blue-500 text-white px-4 py-2 rounded-xs hover:bg-blue-600">
+              className="bg-blue-500 text-white px-4 py-2 rounded-xs hover:bg-blue-600"
+            >
               Submit Review
             </button>
           </form>
