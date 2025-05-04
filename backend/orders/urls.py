@@ -10,5 +10,6 @@ urlpatterns = [
     path('admin/dashboard/', AdminDashboardView.as_view(), name='admin-dashboard'),
     path('crud/', include(router.urls)),
     path('my-orders/', UserOrderHistoryView.as_view(), name='user-order-history'),
-
+    path('create/', createOrder, name='create_order'),
+    path('confirm-payment/', confirmPayment, name='confirm_payment'),
 ]
