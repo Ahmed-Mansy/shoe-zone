@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router";
+import Swal from 'sweetalert2';
 
 const CategoryList = () => {
   const [categories, setCategories] = useState([]);
@@ -31,26 +32,38 @@ const CategoryList = () => {
       toast.error("Error loading categories. Please try again.");
     }
   };
-
   const handleSaveCategory = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("accessToken");
-
+  
     if (!isAdmin) {
       toast.error("You must be an admin to perform this action.");
       return;
     }
-
+  
     if (newCategory.trim() === "") {
       toast.error("Category name cannot be empty.");
       return;
     }
-
+  
+    // تحقق من وجود الكاتيجوري بنفس الاسم والنوع
+    const exists = categories.some(
+      (cat) =>
+        cat.name.toLowerCase() === newCategory.trim().toLowerCase() &&
+        cat.type === categoryType &&
+        (!isEditing || cat.id !== editingCategoryId) // استثناء الحالة اللي بتعدل فيها
+    );
+  
+    if (exists) {
+      toast.error("Category with the same name and type already exists.");
+      return;
+    }
+  
     const categoryData = {
       name: newCategory,
       type: categoryType,
     };
-
+  
     try {
       if (isEditing) {
         await axios.put(
@@ -75,24 +88,48 @@ const CategoryList = () => {
         );
         toast.success("Category added successfully!");
       }
-
+  
       setNewCategory("");
       setCategoryType("women");
       setEditingCategoryId(null);
       fetchCategories();
     } catch (error) {
-      toast.error("Failed to save category.");
+      if (error.response && error.response.status === 400) {
+        const errorData = error.response.data;
+        if (errorData && typeof errorData === 'object') {
+          const errorMessages = Object.values(errorData).flat().join(', ');
+          toast.error(`Error: ${errorMessages}`);
+        } else {
+          toast.error("Invalid category data.");
+        }
+      } else {
+        toast.error("Failed to save category.");
+      }
+  
     }
   };
+  
 
-  const handleDeleteCategory = async (id) => {
-    const token = localStorage.getItem("accessToken");
 
-    if (!isAdmin) {
-      toast.error("You must be an admin to perform this action.");
-      return;
-    }
+const handleDeleteCategory = async (id) => {
+  const token = localStorage.getItem("accessToken");
 
+  if (!isAdmin) {
+    toast.error("You must be an admin to perform this action.");
+    return;
+  }
+
+  const confirmResult = await Swal.fire({
+    title: 'Are you sure?',
+    text: "This action will delete the category permanently!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Yes, delete it!',
+  });
+
+  if (confirmResult.isConfirmed) {
     try {
       await axios.delete(
         `http://127.0.0.1:8000/api/products/crud/categories/${id}/`,
@@ -107,7 +144,9 @@ const CategoryList = () => {
     } catch (error) {
       toast.error("Failed to delete category.");
     }
-  };
+  }
+};
+
 
   const handleEditCategory = (cat) => {
     setNewCategory(cat.name);
@@ -143,7 +182,6 @@ const CategoryList = () => {
           className="form-select w-1/4 mx-4 border-[1px] border-gray-400 rounded-sm px-2"
           value={categoryType}
           onChange={(e) => setCategoryType(e.target.value)}>
-          <option value="">select type</option>
           <option value="women">Women</option>
           <option value="men">Men</option>
         </select>

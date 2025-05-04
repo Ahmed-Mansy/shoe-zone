@@ -33,7 +33,7 @@ const ProfilePage = () => {
     <div id="user-profile" className="container mx-auto my-5 py-5">
       <div className="flex flex-wrap">
         <div className="w-1/3 bg-gray-100 p-4">
-          <div className="text-center py-4 rounded bg-gradient-to-r from-blue-500 to-indigo-500 text-white">
+          <div className="text-center py-4 rounded from-white-500 to-indigo-500 text-white">
             <img
               src={
                 user.profile_picture

@@ -65,11 +65,12 @@ export default function ProductList() {
   };
 
   const handleEdit = (productId) => {
-    navigate(`products/edit/${productId}`);
+    navigate(`edit/${productId}`);
   };
 
   useEffect(() => {
     fetchProducts();
+    console.log("Component Mounted");
   }, []);
 
   return (
