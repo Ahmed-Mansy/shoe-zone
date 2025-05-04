@@ -1,16 +1,14 @@
 import PropTypes from "prop-types";
 import { Link } from "react-router";
 import ImagesSlider from "./ImagesSlider";
-
 import { FaStar, FaRegStar } from "react-icons/fa";
+import { Link } from "react-router-dom"; 
 
 
 const ProductCard = ({ product, onDelete, onEdit }) => {
   const isAdmin = localStorage.getItem("userRole") === "admin";
 
   const { name, price, discount_price, images, id, available_colors } = product;
-  // const navigate = useNavigate();
-
   const finalPrice = discount_price || price;
 
   return (
@@ -41,6 +39,31 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
             <FaRegStar key={index} />
           );
         })}
+    <div className="w-full relative space-y-3 mx-2 my-4">
+      <Link to={`/products/${id}`} state={{ product }}>
+        <div className="w-full aspect-square bg-[#f5f5f5]">
+          <img
+            src={
+              images?.length > 0
+                ? `${isAdmin ? "" : "http://127.0.0.1:8000/"}${images[0].image}`
+                : "/default.jpg" // Fallback image
+            }
+            alt={name}
+            className="w-full h-full object-cover" // إضافة object-cover لتحسين العرض
+          />
+        </div>
+      </Link>
+
+      <h3 className="text-md font-semibold mt-2 capitalize">{name}</h3>
+
+      <div className="flex-start gap-1">
+        {available_colors.map((color, index) => (
+          <span
+            key={index}
+            style={{ backgroundColor: color }}
+            className="inline-block w-[25px] h-[25px] rounded-full border border-gray-900"
+          ></span>
+        ))}
       </div>
 
       <p className="text-md space-x-3">
@@ -66,13 +89,15 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
         <div className="flex-center gap-2">
           <button
             onClick={() => onEdit(id)}
-            className="bg-gray-500 text-white w-[80px] text-center cursor-pointer rounded-xs px-3 py-2 mx-2 hover:bg-gray-600 transition">
+            className="bg-gray-500 text-white w-[80px] text-center cursor-pointer rounded-xs px-3 py-2 mx-2 hover:bg-gray-600 transition"
+          >
             Edit
           </button>
 
           <button
             onClick={() => onDelete(id)}
-            className="bg-red-600 text-white w-[80px] text-center cursor-pointer rounded-xs px-3 py-2 hover:bg-red-700 transition">
+            className="bg-red-600 text-white w-[80px] text-center cursor-pointer rounded-xs px-3 py-2 hover:bg-red-700 transition"
+          >
             Delete
           </button>
         </div>
@@ -81,6 +106,6 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
   );
 };
 
-// 
+
 
 export default ProductCard;

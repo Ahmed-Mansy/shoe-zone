@@ -171,7 +171,6 @@ function ProfileEdit() {
           {[
             { label: "First Name", name: "first_name" },
             { label: "Last Name", name: "last_name" },
-            { label: "Country", name: "country" },
             { label: "Birthdate", name: "birthdate", type: "date" },
             { label: "Mobile", name: "mobile" },
             { label: "Facebook Account", name: "facebook_profile" },

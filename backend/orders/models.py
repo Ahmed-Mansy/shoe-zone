@@ -42,11 +42,25 @@ class OrderItem(models.Model):
         # This ensures that if the product price changes, the order item price is updated accordingly
         if not self.price:
             self.price = self.product.price
+        
+        # Check stock availability (already checked in serializer, but double-check here)
+        if self.product.stock_quantity < self.quantity:
+            raise ValueError(f"Not enough stock for {self.product.name}. Available: {self.product.stock_quantity}")
+
+        # Decrease the stock quantity
+        self.product.stock_quantity -= self.quantity
+        self.product.save()
+        
         super().save(*args, **kwargs)
         self.order.calculate_total()
 
     # Override the delete method to update the order total when an item is deleted
     def delete(self, *args, **kwargs):
+        
+        # Increase the stock quantity back if the OrderItem is deleted
+        self.product.stock_quantity += self.quantity
+        self.product.save()
+        
         super().delete(*args, **kwargs)
         self.order.calculate_total()
 

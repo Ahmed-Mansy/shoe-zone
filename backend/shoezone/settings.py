@@ -98,7 +98,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'shoezoneDB',
         'USER': 'postgres',
-        'PASSWORD': '0246813579',
+        'PASSWORD': '2020',
         'HOST': 'localhost',
         'PORT': '5432'
     }
@@ -263,3 +263,7 @@ LOGGING = {
         },
     },
 }
+
+# Stripe settings
+STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY")
+STRIPE_PUBLISHABLE_KEY = config("STRIPE_PUBLISHABLE_KEY")
