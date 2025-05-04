@@ -65,36 +65,38 @@ export default function ProductList() {
   };
 
   const handleEdit = (productId) => {
-    navigate(`products/edit/${productId}`);
+    navigate(`edit/${productId}`);
   };
 
   useEffect(() => {
     fetchProducts();
+    console.log("Component Mounted");
   }, []);
 
   return (
     <div className="wrapper py-8">
-      {isAdmin && (
-        <div className="w-full flex-between">
-          <h2 className="text-2xl font-bold mb-4">Products</h2>
-          <button
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-xs shadow-md transition duration-300 cursor-pointer"
-            onClick={() => navigate("/products/create")}>
-            Create New Product
-          </button>
-        </div>
-      )}
-      <div className="w-full flex flex-wrap gap-4">
-        {products.map((product) => (
-          <div key={product.id} className="w-[calc(25%-16px)]">
-            <ProductCard
-              product={product}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-            />
-          </div>
-        ))}
+    {isAdmin && (
+      <div className="w-full flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">Products</h2>
+        <button
+          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-xs shadow-md transition duration-300 cursor-pointer"
+          onClick={() => navigate("/products/create")}>
+          Create New Product
+        </button>
       </div>
+    )}
+  
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      {products.map((product) => (
+        <ProductCard
+          key={product.id}
+          product={product}
+          onEdit={handleEdit}
+          onDelete={handleDelete} 
+        />
+      ))}
     </div>
+  </div>
+  
   );
 }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const OrderManagement = () => {
   const [orders, setOrders] = useState([]);
@@ -24,47 +25,90 @@ const OrderManagement = () => {
       setOrders([]);
     }
   };
-
   const updateStatus = async (id, status) => {
     try {
-      await axios.patch(
-        `http://127.0.0.1:8000/api/orders/crud/orders/${id}/`, 
-        { status },
+      // الحصول على البيانات الحالية للـ order
+      const orderToUpdate = orders.find((order) => order.id === id);
+      
+      // إرسال جميع بيانات الـ order مع تحديث status
+      const updatedOrder = {
+        ...orderToUpdate,  // إضافة جميع الحقول الأخرى
+        status,  // فقط تحديث الـ status
+      };
+  
+      const res = await axios.patch(
+        `http://127.0.0.1:8000/api/orders/crud/orders/${id}/`,
+        updatedOrder,  // إرسال الـ order بالكامل
         {
           headers: {
-            Authorization: `Bearer ${authToken}`,  
+            Authorization: `Bearer ${authToken}`,
+            'Content-Type': 'application/json',  // التأكد من أن الـ content type صحيح
           },
         }
       );
       fetchOrders();
+      console.log("PATCH response:", res.data); // طباعة الاستجابة
     } catch (error) {
-      console.error("Error updating status:", error);
+      console.error("Error updating status:", error.response ? error.response.data : error);
     }
   };
+  
+  // const updateStatus = async (id, status) => {
+  //   try {
+  //     await axios.patch(
+  //       `http://127.0.0.1:8000/api/orders/crud/orders/${id}/`, 
+  //       { status },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${authToken}`,  
+  //         },
+  //       }
+  //     );
+  //     fetchOrders();
+  //     console.log("PATCH response:", res.data);
+  //   } catch (error) {
+  //     console.error("Error updating status:", error);
+  //   }
+  // };
+
 
   const deleteOrder = async (id) => {
-    try {
-      await axios.delete(
-        `http://127.0.0.1:8000/api/orders/crud/orders/${id}/`,
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,  
-          },
-        }
-      );
-      fetchOrders();
-    } catch (error) {
-      console.error("Error deleting order:", error);
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    });
+  
+    if (result.isConfirmed) {
+      try {
+        await axios.delete(
+          `http://127.0.0.1:8000/api/orders/crud/orders/${id}/`,
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          }
+        );
+        Swal.fire("Deleted!", "The order has been deleted.", "success");
+        fetchOrders();
+      } catch (error) {
+        console.error("Error deleting order:", error);
+        Swal.fire("Error!", "Something went wrong while deleting.", "error");
+      }
     }
   };
-
   useEffect(() => {
     const userRole = localStorage.getItem("userRole"); 
     if (userRole === "admin") {
       setIsAdmin(true);
     }
     fetchOrders();
-  }, [authToken]);  
+  }, []);  
 
   const filteredOrders =
     selectedStatus === "all"
@@ -105,6 +149,7 @@ const OrderManagement = () => {
               <th className="py-3 border">User</th>
               <th className="py-3 border">Address</th>
               <th className="py-3 border">Total</th>
+              <th className="py-3 border"> Is paid </th>
               <th className="py-3 border">Created at</th>
               <th className="py-3 border">Status</th>
               {isAdmin && <th className="py-3 border">Delete</th>}
@@ -117,7 +162,10 @@ const OrderManagement = () => {
                 <td className="py-2 border">{order.user}</td>
                 <td className="py-2 border">{order.shipping_address}</td>
                 <td className="py-2 border">${order.total_price}</td>
-                <td className="py-2 border">{order.created_at}</td>
+                <td className="py-2 border">{order.is_paid ? "✅" : "❌"}</td>
+                <td className="py-2 border">
+                  {new Date(order.created_at).toLocaleString()}
+                </td>
                 <td className="py-2 border">
                   <select
                     value={order.status}

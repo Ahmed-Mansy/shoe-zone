@@ -30,18 +30,33 @@ class ReviewListCreateView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+# class ReviewDeleteView(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def delete(self, request, review_id):
+#         try:
+#             review = Review.objects.get(id=review_id, user=request.user)
+#         except Review.DoesNotExist:
+#             return Response({"detail": "Review not found or not authorized."}, status=status.HTTP_404_NOT_FOUND)
+
+#         review.delete()
+#         return Response({"detail": "Review deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+
 class ReviewDeleteView(APIView):
     permission_classes = [IsAuthenticated]
 
     def delete(self, request, review_id):
         try:
-            review = Review.objects.get(id=review_id, user=request.user)
+            review = Review.objects.get(id=review_id)
+            # التحقق من أن المستخدم هو صاحب المراجعة أو أنه Admin
+            if review.user != request.user and not request.user.is_staff:
+                return Response({"detail": "You do not have permission to delete this review."}, status=status.HTTP_403_FORBIDDEN)
         except Review.DoesNotExist:
-            return Response({"detail": "Review not found or not authorized."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"detail": "Review not found."}, status=status.HTTP_404_NOT_FOUND)
 
         review.delete()
         return Response({"detail": "Review deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
-
+    
 
 class ReportListCreateView(APIView):
     """

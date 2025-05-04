@@ -14,5 +14,7 @@ urlpatterns = [
     path('products/<int:product_id>/ratings/', RatingListCreateView.as_view(), name='rating-list-create'),path('type/<str:type>/', ProductsByTypeView.as_view(), name='products-by-type'),
     path('categories/type/<str:type>/', CategoryByTypeView.as_view(), name='categories-by-type'),
     path('type/<str:type>/<str:category>/', ProductsByTypeAndCategoryView.as_view(), name='products-by-category'),
+    path('home/', HomeProductsView.as_view(), name='home-products'),
+
 ]
 
