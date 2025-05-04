@@ -92,7 +92,7 @@ export default function ProductList() {
           key={product.id}
           product={product}
           onEdit={handleEdit}
-          onDelete={handleDelete}
+          onDelete={handleDelete} 
         />
       ))}
     </div>

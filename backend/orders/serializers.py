@@ -28,6 +28,11 @@ class OrderItemSerializer(serializers.ModelSerializer):
             )
 
         return data
+class Order2Serializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField()
+    class Meta:
+        model = Order
+        fields = '__all__'
 
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True)
@@ -37,7 +42,7 @@ class OrderSerializer(serializers.ModelSerializer):
         model = Order
 
         fields = ['id', 'user', 'total_price', 'status', 'shipping_address', 'is_paid', 'items', 'created_at','payment_status']
-        read_only_fields = ['id', 'user', 'total_price',  'created_at', 'is_paid']
+        read_only_fields = ['id', 'user', 'total_price','status',  'created_at', 'is_paid']
 
     def validate(self, data):
         if not data.get('items'):

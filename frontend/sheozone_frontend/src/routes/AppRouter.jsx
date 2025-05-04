@@ -16,7 +16,7 @@ import OrderManagement from "../pages/admin/OrderManagement";
 import ProductList from "../pages/admin/ProductList";
 import ProductForm from "../pages/admin/ProductForm";
 import CategoryList from "../pages/admin/CategoryList";
-
+import AdminProduct from "../pages/admin/AdminProduct";
 // User Pages
 import Home from "../pages/user/Home";
 import About from "../pages/user/About";
@@ -69,6 +69,8 @@ const AppRouter = () => {
             <Route path="checkout" element={<Checkout />} />
             <Route path="collections/:type/:title" element={<Collection />} />
             <Route path="products/:id" element={<Product />} />
+            <Route path="/admin/products/:id" element={<AdminProduct />} />
+
           </Route>
 
           <Route path="*" element={<Error />} />
