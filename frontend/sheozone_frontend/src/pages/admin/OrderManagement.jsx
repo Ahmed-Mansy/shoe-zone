@@ -64,7 +64,7 @@ const OrderManagement = () => {
       setIsAdmin(true);
     }
     fetchOrders();
-  }, [authToken]);  
+  }, []);  
 
   const filteredOrders =
     selectedStatus === "all"
@@ -117,7 +117,9 @@ const OrderManagement = () => {
                 <td className="py-2 border">{order.user}</td>
                 <td className="py-2 border">{order.shipping_address}</td>
                 <td className="py-2 border">${order.total_price}</td>
-                <td className="py-2 border">{order.created_at}</td>
+                <td className="py-2 border">
+                  {new Date(order.created_at).toLocaleString()}
+                </td>
                 <td className="py-2 border">
                   <select
                     value={order.status}
