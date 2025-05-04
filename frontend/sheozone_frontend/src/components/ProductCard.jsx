@@ -1,66 +1,64 @@
 import PropTypes from "prop-types";
-import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router-dom"; // استخدم react-router-dom بدل react-router
 
-const ProductCard = ({ product, onDelete }) => {
-  const [showMore, setShowMore] = useState(false);
+const ProductCard = ({ product, onDelete, onEdit }) => {
+  const isAdmin = localStorage.getItem("userRole") === "admin";
 
-  // const isAdmin = localStorage.getItem("userRole") === "admin";
-  const isAdmin = true;
-
-  const { name, price, discount_price, images, id } = product;
-  const navigate = useNavigate();
-
+  const { name, price, discount_price, images, id, available_colors } = product;
   const finalPrice = discount_price || price;
 
   return (
-    <div
-      onMouseEnter={() => setShowMore(true)}
-      onMouseLeave={() => setShowMore(false)}
-      className="w-[calc(33%-12px)] relative space-y-2 cursor-pointer mx-2  my-4">
-      <Link to={`/products/${name}`} state={{ product }}>
+    <div className="w-full relative space-y-3 mx-2 my-4">
+      <Link to={`/products/${id}`} state={{ product }}>
         <div className="w-full aspect-square bg-[#f5f5f5]">
-          <img src={images} alt={name} className="" />
+          <img
+            src={
+              images?.length > 0
+                ? `${isAdmin ? "" : "http://127.0.0.1:8000/"}${images[0].image}`
+                : "/default.jpg" // Fallback image
+            }
+            alt={name}
+            className="w-full h-full object-cover" // إضافة object-cover لتحسين العرض
+          />
         </div>
       </Link>
 
-      <h3 className="text-md font-semibold mt-2">{name}</h3>
-
-      <div className="text-gray-700 flex gap-1 text-sm">
-        <span>{finalPrice} EGP</span>
-        {discount_price && <span className="line-through">{price} EGP</span>}
-      </div>
+      <h3 className="text-md font-semibold mt-2 capitalize">{name}</h3>
 
       <div className="flex-start gap-1">
-        {/* {product.colors.map((color, index) => {
-          return (
-            <span
-              key={index}
-              className={`inline-block w-[25px] h-[25px] rounded-full border border-gray-900 bg-[${color}]`}></span>
-          );
-        })} */}
+        {available_colors.map((color, index) => (
+          <span
+            key={index}
+            style={{ backgroundColor: color }}
+            className="inline-block w-[25px] h-[25px] rounded-full border border-gray-900"
+          ></span>
+        ))}
       </div>
+
+      <p className="text-md space-x-3">
+        <span className="sm-semibold">{finalPrice} EGP</span>
+        {discount_price && (
+          <span className="text-gray-600 line-through">{price} EGP</span>
+        )}
+      </p>
 
       {isAdmin && (
         <div className="flex-center gap-2">
           <button
-            onClick={() => navigate(`/products/edit/${product.id}`)}
-            className="bg-gray-500 text-white w-[80px] text-center cursor-pointer rounded-xs px-3 py-2 mx-2 hover:bg-gray-600 transition">
+            onClick={() => onEdit(id)}
+            className="bg-gray-500 text-white w-[80px] text-center cursor-pointer rounded-xs px-3 py-2 mx-2 hover:bg-gray-600 transition"
+          >
             Edit
           </button>
 
           <button
             onClick={() => onDelete(id)}
-            className="bg-red-600 text-white w-[80px] text-center cursor-pointer rounded-xs px-3 py-2 hover:bg-red-700 transition">
+            className="bg-red-600 text-white w-[80px] text-center cursor-pointer rounded-xs px-3 py-2 hover:bg-red-700 transition"
+          >
             Delete
           </button>
         </div>
       )}
-
-      <div
-        className={`w-[calc(100%+60px)] h-[150%] bg-white shadow-lg shadow-gray-900 absolute -z-10 -top-[25px] -left-[25px] ${
-          showMore ? "visible" : "hidden"
-        }`}></div>
     </div>
   );
 };
@@ -68,6 +66,7 @@ const ProductCard = ({ product, onDelete }) => {
 ProductCard.propTypes = {
   product: PropTypes.object.isRequired,
   onDelete: PropTypes.func.isRequired,
+  onEdit: PropTypes.func.isRequired,
 };
 
 export default ProductCard;

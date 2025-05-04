@@ -44,7 +44,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="wrapper bg-dark py-16 text-light divide-y-[1px] divide-[#eeeeee10]">
+    <footer className="wrapper bg-dark pt-16 pb-8 text-light divide-y-[1px] divide-[#eeeeee10]">
       <div className="flex items-start gap-[15%] pb-8">
         {footerLinks.map((link, index) => {
           return (
@@ -71,7 +71,7 @@ const Footer = () => {
       </div>
 
       <div className="py-8">
-        <div className="mx-auto w-1/2 space-y-3 text-center">
+        <div className="mx-auto w-[95%] lg:w-1/2 space-y-4 text-center">
           <h2 className="text-2xl font-extrabold uppercase tracking-wider">
             Be The First To Know!
           </h2>

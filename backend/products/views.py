@@ -65,9 +65,9 @@ class ProductViewSet(viewsets.ModelViewSet):
 # For product details (NEW)
 class ProductDetailView(APIView):
 
-    def get(self, request, pk):
+    def get(self, request, id):
         try:
-            product = Product.objects.get(id=pk)
+            product = Product.objects.get(id=id)
             serializer = ProductSerializer(product, many=False)
             
             product_data = serializer.data
@@ -116,3 +116,33 @@ class RatingListCreateView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+#all products for women or men    
+class ProductsByTypeView(APIView):
+    def get(self, request, type):
+        if type not in ['women', 'men']:
+            return Response({"error": "Invalid type."}, status=status.HTTP_400_BAD_REQUEST)
+
+        products = Product.objects.filter(category__type=type)
+        serializer = ProductSerializer(products, many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+class CategoryByTypeView(APIView):
+    def get(self, request, type):
+        if type not in ['women', 'men']:
+            return Response({"error": "Invalid category type."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        categories = Category.objects.filter(type=type)
+        serializer = CategorySerializer(categories, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class ProductsByTypeAndCategoryView(APIView):
+    def get(self, request, type, category):
+        try:
+            category_obj = Category.objects.get(type=type, name=category)
+        except Category.DoesNotExist:
+            return Response({"detail": "Category not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        products = Product.objects.filter(category=category_obj)
+        serializer = ProductSerializer(products, many=True)
+        return Response(serializer.data)

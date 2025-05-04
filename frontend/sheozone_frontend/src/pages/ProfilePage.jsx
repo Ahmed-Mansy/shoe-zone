@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getUserProfile } from "../api";
+import Loading from "../components/Loading";
 
 const ProfilePage = () => {
   const [profile, setProfile] = useState(null);
@@ -14,6 +15,7 @@ const ProfilePage = () => {
           return;
         }
         const data = await getUserProfile(userId);
+        console.log(userId);
         setProfile(data);
       } catch (error) {
         console.error("Error fetching profile data:", error);
@@ -22,8 +24,7 @@ const ProfilePage = () => {
     fetchProfile();
   }, []);
 
-  if (!profile || !profile.user)
-    return <div className="text-center py-4">Loading...</div>;
+  if (!profile || !profile.user) return <Loading />;
 
   const user = profile.user;
   const addresses = user.addresses || [];
@@ -32,7 +33,7 @@ const ProfilePage = () => {
     <div id="user-profile" className="container mx-auto my-5 py-5">
       <div className="flex flex-wrap">
         <div className="w-1/3 bg-gray-100 p-4">
-          <div className="text-center py-4 rounded bg-gradient-to-r from-blue-500 to-indigo-500 text-white">
+          <div className="text-center py-4 rounded from-white-500 to-indigo-500 text-white">
             <img
               src={
                 user.profile_picture
@@ -106,9 +107,6 @@ const ProfilePage = () => {
               </p>
               <p>
                 <strong>Mobile:</strong> {user.mobile}
-              </p>
-              <p>
-                <strong>Country:</strong> {user.country}
               </p>
               <p>
                 <strong>Birthday:</strong> {user.birthdate || "-"}
