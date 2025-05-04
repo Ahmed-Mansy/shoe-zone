@@ -7,6 +7,7 @@ import MainLayout from "../layouts/MainLayout";
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import ResetPassword from "../pages/auth/ResetPassword";
+import PasswordResetEmail from "../pages/auth/PasswordResetEmail.jsx";
 
 // Admin Pages
 import AdminDashboard from "../pages/admin/AdminDashboard";
@@ -40,6 +41,10 @@ const AppRouter = () => {
           <Route element={<AuthLayout />}>
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
+            <Route
+              path="reset-password-request"
+              element={<PasswordResetEmail />}
+            />
             <Route path="reset-password" element={<ResetPassword />} />
           </Route>
 

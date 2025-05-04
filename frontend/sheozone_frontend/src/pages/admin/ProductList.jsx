@@ -84,14 +84,15 @@ export default function ProductList() {
           </button>
         </div>
       )}
-      <div className="w-full flex flex-wrap ">
+      <div className="w-full flex flex-wrap gap-4">
         {products.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
+          <div key={product.id} className="w-[calc(25%-16px)]">
+            <ProductCard
+              product={product}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
+          </div>
         ))}
       </div>
     </div>

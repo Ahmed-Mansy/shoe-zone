@@ -114,14 +114,19 @@ function ProfileEdit() {
         const backendErrors = err.response.data;
         if (backendErrors.error) {
           setMsg(backendErrors.error);
-        } else if (typeof backendErrors === "object" && backendErrors !== null) {
+        } else if (
+          typeof backendErrors === "object" &&
+          backendErrors !== null
+        ) {
           if (backendErrors.errors?.password) {
             setMsg(backendErrors.errors.password[0]);
           } else {
             setErrors(backendErrors.errors || {});
           }
         } else {
-          setMsg(backendErrors.message || "There was an error updating the profile.");
+          setMsg(
+            backendErrors.message || "There was an error updating the profile."
+          );
         }
       } else {
         setMsg("Something went wrong. Please try again later.");
@@ -133,8 +138,7 @@ function ProfileEdit() {
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div
         style={{ width: "800px" }}
-        className="rounded-2xl overflow-hidden shadow-lg bg-white border border-gray-200 p-6"
-      >
+        className="rounded-2xl overflow-hidden shadow-lg bg-white border border-gray-200 p-6">
         <div className="text-center mb-5">
           <h3 className="text-2xl font-bold mb-3">Edit Profile</h3>
           {msg && (
@@ -143,8 +147,7 @@ function ProfileEdit() {
                 msg.includes("successfully")
                   ? "bg-green-100 text-green-800"
                   : "bg-yellow-100 text-yellow-800"
-              }`}
-            >
+              }`}>
               {msg}
             </div>
           )}
@@ -153,8 +156,7 @@ function ProfileEdit() {
         <form
           onSubmit={handleSubmit}
           encType="multipart/form-data"
-          className="space-y-4"
-        >
+          className="space-y-4">
           {/* صورة البروفايل الحالية */}
           {profilePictureUrl && (
             <div className="mb-4 flex justify-center">
@@ -165,8 +167,6 @@ function ProfileEdit() {
               />
             </div>
           )}
-
-
 
           {[
             { label: "First Name", name: "first_name" },
@@ -187,9 +187,7 @@ function ProfileEdit() {
               />
               {errors[name] && (
                 <p className="text-red-600 text-sm mt-1">
-                  {Array.isArray(errors[name])
-                    ? errors[name][0]
-                    : errors[name]}
+                  {Array.isArray(errors[name]) ? errors[name][0] : errors[name]}
                 </p>
               )}
             </div>
@@ -213,8 +211,7 @@ function ProfileEdit() {
           <div className="text-center">
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-            >
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
               Update
             </button>
           </div>

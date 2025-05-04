@@ -7,7 +7,9 @@ const ProductsList = ({ products }) => {
       {products && products.length > 0 ? (
         <div className="flex justify-between flex-wrap gap-3">
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <div key={product.id} className="w-[calc(33%-12px)]">
+              <ProductCard product={product} />
+            </div>
           ))}
         </div>
       ) : (

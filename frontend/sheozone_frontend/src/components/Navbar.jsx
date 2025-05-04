@@ -85,6 +85,9 @@ const Navbar = () => {
         {isAdmin ? (
           <nav className="w-full flex-between">
             <div className="flex items-center gap-6 font-medium text-lg">
+              <Link to="/dashboard" className=" hover:text-[#39523f]">
+                Dashboard
+              </Link>
               <Link to="/products" className=" hover:text-[#39523f]">
                 Products
               </Link>
@@ -93,9 +96,6 @@ const Navbar = () => {
               </Link>
               <Link to="/admin/orders" className=" hover:text-[#39523f]">
                 Manage Orders
-              </Link>
-              <Link to="/dashboard" className=" hover:text-[#39523f]">
-                Dashboard
               </Link>
             </div>
             <IoIosLogOut

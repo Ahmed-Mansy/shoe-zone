@@ -10,11 +10,11 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
   const finalPrice = discount_price || price;
 
   return (
-    <div className="w-[calc(33%-12px)] relative space-y-3 mx-2  my-4">
+    <div className="w-full relative space-y-3 mx-2  my-4">
       <Link to={`/products/${id}`} state={{ product }}>
         <div className="w-full aspect-square bg-[#f5f5f5]">
           <img
-            src={`http://127.0.0.1:8000/${images[0].image}`}
+            src={`${isAdmin ? "" : "http://127.0.0.1:8000/"}${images[0].image}`}
             alt={name}
             className="w-full h-full"
           />
