@@ -53,14 +53,19 @@ def registerUser(request):
         )
         # Generate token for sending mail
         email_subject = "Activate Your Account"
-        domain = request.build_absolute_uri('/')[:-1]
+        domain = "http://localhost:5173"
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        token = generate_token.make_token(user)
+        activation_url = f"{domain}/activate/{uid}/{token}/"
+        
         message = render_to_string(
             "activate.html",
             {
                 'user': user,
                 'domain': domain,
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                'token': generate_token.make_token(user)
+                'uid': uid,
+                'token': token,
+                'activation_url': activation_url
             }
         )
         email_message = EmailMessage(

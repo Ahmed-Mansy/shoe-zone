@@ -267,7 +267,6 @@ const Checkout = () => {
       setFormData({ ...formData, [name]: value });
     }
   };
-
   const clearCart = async () => {
     const token = localStorage.getItem("token");
     if (!token) return;

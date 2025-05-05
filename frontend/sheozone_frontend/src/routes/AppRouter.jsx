@@ -8,6 +8,7 @@ import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import ResetPassword from "../pages/auth/ResetPassword";
 import PasswordResetEmail from "../pages/auth/PasswordResetEmail.jsx";
+import ActivateAccount from "../pages/auth/ActivateAccount";
 
 // Admin Pages
 import AdminDashboard from "../pages/admin/AdminDashboard";
@@ -45,6 +46,7 @@ const AppRouter = () => {
             <Route path="register" element={<Register />} />
             <Route path="/reset-password-request" element={<PasswordResetEmail />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/activate/:uidb64/:token" element={<ActivateAccount />} />
             {/* <Route
             path="/api/users/password-reset-confirm"
             element={<RedirectToResetPassword />}
