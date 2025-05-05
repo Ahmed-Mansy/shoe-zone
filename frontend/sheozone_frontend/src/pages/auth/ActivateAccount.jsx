@@ -20,7 +20,7 @@ const ActivateAccount = () => {
         const errorMessage =
           err.response?.data?.detail || "Failed to activate account.";
         setError(errorMessage);
-        // toast.error(errorMessage);
+        toast.error(errorMessage);
       }
     };
 
