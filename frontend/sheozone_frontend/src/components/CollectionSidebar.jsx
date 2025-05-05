@@ -1,14 +1,15 @@
+import axios from "axios";
 import PropTypes from "prop-types";
 import { useState } from "react";
 
-const available_sizes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const available_sizes = [41, 42, 43, 44, 45, 46, 47, 48, 9, 10];
 const available_colors = ["red", "yellow", "green", "black", "white", "gray"];
 
 const CollectionSidebar = ({ collectionTitle }) => {
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [selectedColors, setSelectedColors] = useState([]);
 
-  const isReadyToFilter = selectedColors.length > 0 && selectedSizes.length > 0;
+  const isReadyToFilter = selectedColors.length > 0 || selectedSizes.length > 0;
 
   const handleSizeSelection = (size) => {
     setSelectedSizes((prevSizes) =>
@@ -26,9 +27,20 @@ const CollectionSidebar = ({ collectionTitle }) => {
     );
   };
 
-  const handleFilterItems = () => {
-    console.log("SIZES ==> ", selectedSizes);
-    console.log("COLORS ==> ", selectedColors);
+  const handleFilterItems = async () => {
+    const sizeParams = selectedSizes.join(",");
+    const colorParams = selectedColors.join(",");
+
+    const queryString = `?sizes=${sizeParams}&colors=${colorParams}`;
+    const url = `http://127.0.0.1:8000/api/products/products/${queryString}`;
+
+    try {
+      const response = await axios.get(url);
+      console.log("Filtered Products:", response.data);
+      // TODO: Replace this with actual state update or props callback to show data
+    } catch (error) {
+      console.error("Error fetching filtered products:", error);
+    }
   };
 
   return (

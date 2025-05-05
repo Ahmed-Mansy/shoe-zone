@@ -1,14 +1,27 @@
+import Loading from "../../components/Loading";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { FaQuestionCircle } from "react-icons/fa";
 import { loadStripe } from "@stripe/stripe-js";
-import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import {
+  Elements,
+  CardElement,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
 import { useNavigate } from "react-router-dom";
 
 // Load the Stripe key using a Vite environment variable
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
-const CheckoutForm = ({ formData, handleSubmit, paymentMethod, loading, error, success }) => {
+const CheckoutForm = ({
+  formData,
+  handleSubmit,
+  paymentMethod,
+  loading,
+  error,
+  success,
+}) => {
   const stripe = useStripe();
   const elements = useElements();
 
@@ -19,17 +32,29 @@ const CheckoutForm = ({ formData, handleSubmit, paymentMethod, loading, error, s
     // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
-      handleSubmit(e, null, stripe, elements, "Please provide a valid email address.");
+      handleSubmit(
+        e,
+        null,
+        stripe,
+        elements,
+        "Please provide a valid email address."
+      );
       return;
     }
 
-    const totalAmount = parseFloat(formData.items.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2));
+    const totalAmount = parseFloat(
+      formData.items
+        .reduce((sum, item) => sum + item.price * item.quantity, 0)
+        .toFixed(2)
+    );
     const orderData = {
-      shipping_address: `${formData.address}, ${formData.apartment || ""}, ${formData.city}, ${formData.zipCode}, ${formData.countryName}`,
+      shipping_address: `${formData.address}, ${formData.apartment || ""}, ${
+        formData.city
+      }, ${formData.zipCode}, ${formData.countryName}`,
       payment_status: paymentMethod,
-      items: formData.items.map(item => ({
+      items: formData.items.map((item) => ({
         product_id: item.product_id,
-        quantity: item.quantity
+        quantity: item.quantity,
       })),
       total_amount: totalAmount,
     };
@@ -38,7 +63,7 @@ const CheckoutForm = ({ formData, handleSubmit, paymentMethod, loading, error, s
   };
 
   return (
-    <form onSubmit={onSubmit} className="space-y-6">
+    <form onSubmit={onSubmit} className="space-y-6 my-8">
       {paymentMethod === "stripe" && (
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -64,20 +89,24 @@ const CheckoutForm = ({ formData, handleSubmit, paymentMethod, loading, error, s
         <div className="text-red-600 bg-red-50 p-3 rounded-md">{error}</div>
       )}
       {success && (
-        <div className="text-green-600 bg-green-50 p-3 rounded-md">{success}</div>
+        <div className="text-green-600 bg-green-50 p-3 rounded-md">
+          {success}
+        </div>
       )}
       <div className="flex justify-end">
         <button
           type="submit"
-          disabled={loading || (!stripe && paymentMethod === "stripe") || formData.items.length === 0}
-          className={`cursor-pointer bg-dark hover:bg-gray-600 text-white font-medium py-3 px-6 rounded-xs disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center`}
-        >
+          disabled={
+            loading ||
+            (!stripe && paymentMethod === "stripe") ||
+            formData.items.length === 0
+          }
+          className={`cursor-pointer bg-dark hover:bg-gray-600 text-white font-medium py-3 px-6 rounded-xs disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center`}>
           {loading ? (
             <span className="flex items-center">
               <svg
                 className="animate-spin h-5 w-5 mr-2 text-white"
-                viewBox="0 0 24 24"
-              >
+                viewBox="0 0 24 24">
                 <circle
                   className="opacity-25"
                   cx="12"
@@ -186,7 +215,9 @@ const Checkout = () => {
             navigate("/login");
             return;
           }
-          throw new Error(`Failed to fetch cart: ${response.status} - ${errorText}`);
+          throw new Error(
+            `Failed to fetch cart: ${response.status} - ${errorText}`
+          );
         }
 
         const contentType = response.headers.get("content-type");
@@ -212,7 +243,9 @@ const Checkout = () => {
           setFormData((prev) => ({ ...prev, items: [] }));
         }
       } catch (err) {
-        setCartError(`Failed to load cart. Please try again. Details: ${err.message}`);
+        setCartError(
+          `Failed to load cart. Please try again. Details: ${err.message}`
+        );
       } finally {
         setCartLoading(false);
       }
@@ -223,7 +256,9 @@ const Checkout = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name === "country") {
-      const selectedCountry = countries.find((country) => country.name === value);
+      const selectedCountry = countries.find(
+        (country) => country.name === value
+      );
       setFormData({
         ...formData,
         countryName: value,
@@ -254,14 +289,17 @@ const Checkout = () => {
       }
 
       // Create order
-      const response = await fetch(`${import.meta.env.VITE_API_URL}orders/create/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(orderData),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}orders/create/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(orderData),
+        }
+      );
 
       if (!response.ok) {
         const contentType = response.headers.get("content-type");
@@ -283,7 +321,8 @@ const Checkout = () => {
         throw new Error(errorData.error || "Failed to create order");
       }
 
-      const { order, message, client_secret, payment_intent_id } = await response.json();
+      const { order, message, client_secret, payment_intent_id } =
+        await response.json();
 
       if (orderData.payment_status === "cod") {
         setSuccess(message);
@@ -312,17 +351,20 @@ const Checkout = () => {
         if (result.error) {
           setError(result.error.message);
         } else if (result.paymentIntent.status === "succeeded") {
-          const confirmResponse = await fetch(`${import.meta.env.VITE_API_URL}orders/confirm-payment/`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              payment_intent_id,
-              order_id: order.id,
-            }),
-          });
+          const confirmResponse = await fetch(
+            `${import.meta.env.VITE_API_URL}orders/confirm-payment/`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                payment_intent_id,
+                order_id: order.id,
+              }),
+            }
+          );
 
           if (!confirmResponse.ok) {
             const contentType = confirmResponse.headers.get("content-type");
@@ -331,7 +373,10 @@ const Checkout = () => {
               errorData = await confirmResponse.json();
             } else {
               const text = await response.text();
-              console.error("Non-JSON response from orders/confirm-payment:", text);
+              console.error(
+                "Non-JSON response from orders/confirm-payment:",
+                text
+              );
               throw new Error("Received non-JSON response from server");
             }
 
@@ -358,10 +403,7 @@ const Checkout = () => {
   if (cartLoading) {
     return (
       <div className="wrapper my-8 flex justify-center items-center h-screen">
-        <svg
-          className="animate-spin h-8 w-8 text-dark"
-          viewBox="0 0 24 24"
-        >
+        <svg className="animate-spin h-8 w-8 text-dark" viewBox="0 0 24 24">
           <circle
             className="opacity-25"
             cx="12"
@@ -381,9 +423,7 @@ const Checkout = () => {
   }
 
   if (cartError) {
-    return (
-      <div className="wrapper my-8 text-red-600">{cartError}</div>
-    );
+    return <div className="wrapper my-8 text-red-600">{cartError}</div>;
   }
 
   if (formData.items.length === 0) {
@@ -392,8 +432,7 @@ const Checkout = () => {
         <p className="text-gray-600">Your cart is empty.</p>
         <button
           onClick={() => navigate("/products")}
-          className="mt-4 bg-dark text-light py-2 px-4 rounded-xs hover:bg-gray-600"
-        >
+          className="mt-4 bg-dark text-light py-2 px-4 rounded-xs hover:bg-gray-600">
           Shop Now
         </button>
       </div>
@@ -409,13 +448,18 @@ const Checkout = () => {
         <ul className="space-y-2 mb-4">
           {formData.items.map((item, index) => (
             <li key={index} className="flex justify-between text-gray-600">
-              <span>Product #{item.id} (x{item.quantity})</span>
+              <span>
+                Product #{item.id} (x{item.quantity})
+              </span>
               <span>EGP {(item.price * item.quantity).toFixed(2)}</span>
             </li>
           ))}
         </ul>
         <p className="text-lg font-semibold text-gray-800">
-          Total: EGP {formData.items.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2)}
+          Total: EGP{" "}
+          {formData.items
+            .reduce((sum, item) => sum + item.price * item.quantity, 0)
+            .toFixed(2)}
         </p>
       </div>
 
@@ -500,8 +544,7 @@ const Checkout = () => {
           value={formData.countryName}
           onChange={handleChange}
           className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
-          required
-        >
+          required>
           <option value="">Select a country</option>
           {countries.map((country) => (
             <option key={country.code} value={country.name}>
@@ -563,8 +606,7 @@ const Checkout = () => {
         <select
           value={paymentMethod}
           onChange={(e) => setPaymentMethod(e.target.value)}
-          className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
-        >
+          className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer">
           <option value="cod">Cash on Delivery</option>
           <option value="stripe">Credit/Debit Card (Stripe)</option>
         </select>

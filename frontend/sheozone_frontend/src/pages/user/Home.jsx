@@ -11,19 +11,18 @@ const Home = () => {
   const [latest, setLatest] = useState([]);
 
   const isLoggedIn = localStorage.getItem("accessToken");
-    const userRole = localStorage.getItem("userRole");
+  const userRole = localStorage.getItem("userRole");
   useEffect(() => {
-      
-    if (!isLoggedIn || !userRole) 
-      toast.error("Unauthorized: Please login.");
+    // if (!isLoggedIn || !userRole)
+    //   toast.error("Unauthorized: Please login.");
     navigate("/");
-    axios.get('http://127.0.0.1:8000/api/products/home/')
-      .then(res => {
+    axios
+      .get("http://127.0.0.1:8000/api/products/home/")
+      .then((res) => {
         setTopRated(res.data.top_rated);
         setLatest(res.data.latest);
       })
-      .catch(err => console.error(err));
-  
+      .catch((err) => console.error(err));
   }, [navigate]);
 
   return (
@@ -44,7 +43,7 @@ const Home = () => {
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {topRated.map((product) => (
-              <ProductCard key={product.id} product={product}  />
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
         </section>
@@ -56,7 +55,7 @@ const Home = () => {
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {latest.map((product) => (
-              <ProductCard key={product.id} product={product}  />
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
         </section>

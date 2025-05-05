@@ -1,13 +1,7 @@
-import AnnouncementBar from "./AnnouncementBar";
-import NavBar from "./NavBar";
+import Navbar from "./NavBar";
 
 const Header = () => {
-  return (
-    <>
-      <AnnouncementBar />
-      <NavBar />
-    </>
-  );
+  return <Navbar />;
 };
 
 export default Header;
