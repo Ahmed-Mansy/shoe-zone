@@ -84,10 +84,8 @@ const ResetPassword = () => {
       const response = await resetPasswordConfirm();
 
       setSuccessMessage("Password reset successfully!");
-      console.log("Success response:", response);
     } catch (error) {
       setErrors({ general: error.message });
-      console.log("Error:", error.message);
     } finally {
       setLoading(false);
     }

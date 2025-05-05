@@ -401,23 +401,20 @@ const Product = () => {
       }
     };
 
-    fetchProduct();
-  }, [id]);
+    const fetchReviews = async () => {
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:8000/api/products/${id}/reviews/`
+        );
+        setReviews(response.data);
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+      }
+    };
 
-  useEffect(() => {
+    fetchProduct();
     fetchReviews();
   }, [id]);
-
-  const fetchReviews = async () => {
-    try {
-      const response = await axios.get(
-        `http://127.0.0.1:8000/api/products/${id}/reviews/`
-      );
-      setReviews(response.data);
-    } catch (error) {
-      console.error("Error fetching reviews:", error);
-    }
-  };
 
   if (!product) {
     return <Loading />;
@@ -562,8 +559,7 @@ const Product = () => {
       <div
         className={`w-full flex flex-col lg:flex-row justify-between lg:gap-4 ${
           images.length <= 1 ? "gap-4" : "gap-16 "
-        }`}
-      >
+        }`}>
         <div className="w-full lg:w-1/2 h-fit flex flex-col-reverse lg:flex-row justify-between gap-4 lg:sticky lg:top-24">
           <div className="flex flex-row lg:flex-col gap-2">
             {images.map((image) => (
@@ -576,8 +572,7 @@ const Product = () => {
                   image.image === currentImage
                     ? "border-[2px] border-gray-700 rounded-xs"
                     : ""
-                }`}
-              >
+                }`}>
                 <img
                   src={`http://127.0.0.1:8000/${image.image}`}
                   alt=""
@@ -630,8 +625,7 @@ const Product = () => {
                     selectedColor === color
                       ? "border-[3px] border-gray-400"
                       : ""
-                  }`}
-                ></span>
+                  }`}></span>
               ))}
             </div>
           </div>
@@ -647,8 +641,7 @@ const Product = () => {
                   onClick={() => handleSizeSelection(size)}
                   className={`block w-[50px] h-[50px] rounded-xs text-[#212121] border-[1px] border-[#212121] flex-center cursor-pointer hover:bg-gray-400 transition-all duration-300 ${
                     size === selectedSize ? "bg-dark text-light" : ""
-                  }`}
-                >
+                  }`}>
                   {size}
                 </span>
               ))}
@@ -663,8 +656,7 @@ const Product = () => {
                 ? "cursor-pointer bg-dark hover:bg-gray-500"
                 : "cursor-not-allowed bg-gray-400 text-yellow-600"
             }`}
-            disabled={!selectedSize}
-          >
+            disabled={!selectedSize}>
             {selectedSize ? `add to cart - ${price} egp` : "select a size"}
           </button>
         </div>
@@ -702,8 +694,7 @@ const Product = () => {
             reviews.map((review) => (
               <div
                 key={review.id}
-                className="flex items-start justify-between py-12"
-              >
+                className="flex items-start justify-between py-12">
                 <div className="space-y-2">
                   <Rating
                     style={{ maxWidth: 130 }}
@@ -755,8 +746,7 @@ const Product = () => {
 
             <button
               type="submit"
-              className="bg-blue-500 text-white px-4 py-2 rounded-xs hover:bg-blue-600"
-            >
+              className="bg-blue-500 text-white px-4 py-2 rounded-xs hover:bg-blue-600">
               Submit Review
             </button>
           </form>

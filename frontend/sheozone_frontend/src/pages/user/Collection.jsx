@@ -49,7 +49,10 @@ const Collection = () => {
       </div>
       <div className="flex justify-between items-start gap-6">
         <div className="w-1/4">
-          <CollectionSidebar collectionTitle={title} />
+          <CollectionSidebar
+            collectionTitle={title}
+            setProducts={setProducts}
+          />
         </div>
         <div className="w-3/4">
           <ProductsList products={products} />
