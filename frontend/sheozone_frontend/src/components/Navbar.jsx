@@ -187,7 +187,7 @@ const Navbar = () => {
             </div>
 
             {/* Admin links (Desktop Only) */}
-            <div className="hidden lg:flex items-center gap-4 font-medium text-md">
+            <div className="hidden w-1/3 lg:flex items-center gap-4 font-medium text-md">
               {adminNavLinks.map((link) => (
                 <Link
                   key={link.id}
