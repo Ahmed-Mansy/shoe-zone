@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router-dom";
 import CartItem from "../../components/CartItem";
 import { useEffect, useState } from "react";
 import { getCartItems } from "../../api";
@@ -9,7 +9,7 @@ const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
   const [subTotal, setSubTotal] = useState(0);
 
-  const isAuthenticated = localStorage.getItem("userId") ? true : false;
+  const isAuthenticated = localStorage.getItem("token") ? true : false;
 
   useEffect(() => {
     const fetchCartItems = async () => {
