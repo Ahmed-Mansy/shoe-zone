@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router";
 // Layouts
 import AuthLayout from "../layouts/AuthLayout";
 import MainLayout from "../layouts/MainLayout";
@@ -43,11 +43,12 @@ const AppRouter = () => {
           <Route element={<AuthLayout />}>
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
-            <Route
-              path="reset-password-request"
-              element={<PasswordResetEmail />}
-            />
-            <Route path="reset-password" element={<ResetPassword />} />
+            <Route path="/reset-password-request" element={<PasswordResetEmail />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            {/* <Route
+            path="/api/users/password-reset-confirm"
+            element={<RedirectToResetPassword />}
+            /> */}
           </Route>
 
           <Route path="/" element={<MainLayout />}>
@@ -84,4 +85,23 @@ const AppRouter = () => {
   );
 };
 
+// Component to handle the backend reset URL and redirect to /reset-password
+function RedirectToResetPassword() {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const uid = queryParams.get("uid");
+  const token = queryParams.get("token");
+
+  if (uid && token) {
+    return (
+      <Navigate
+        to="/reset-password"
+        state={{ uid, token }}
+        replace
+      />
+    );
+  }
+
+  return <Navigate to="/reset-password-request" replace />;
+}
 export default AppRouter;
