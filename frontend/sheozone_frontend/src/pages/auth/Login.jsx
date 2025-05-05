@@ -64,6 +64,7 @@ import { Link, useNavigate } from "react-router";
 import { useState } from "react";
 import Input from "../../components/Input";
 import { loginUser } from "../../api";
+import Logo from "../../components/Logo";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -117,8 +118,10 @@ const Login = () => {
   };
 
   return (
-    <div className="w-full rounded-2xl text-secondary px-6 py-10 bg-light max-w-md mx-auto">
-      <h2 className="text-center mb-8 text-2xl font-bold">Login</h2>
+    <div className="w-full rounded-2xl text-secondary px-6 py-10 bg-light max-w-md mx-auto ">
+      <div className="justify-self-center text-center py-6">
+              <Logo />
+            </div>
 
       <form className="space-y-6" onSubmit={handleLogin}>
         <Input

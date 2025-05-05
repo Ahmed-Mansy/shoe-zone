@@ -20,6 +20,8 @@ import AdminProduct from "../pages/admin/AdminProduct";
 // User Pages
 import Home from "../pages/user/Home";
 import About from "../pages/user/About";
+import SearchResults from "../pages/user/SearchResults";
+
 // import Profile from "../pages/ProfilePage";
 import ProfileEdit from "../pages/ProfileEdit.jsx";
 import EditAddress from "../pages/EditAddress.jsx";
@@ -57,6 +59,8 @@ const AppRouter = () => {
             <Route path="/products/create" element={<ProductForm />} />
             <Route path="/products/edit/:id" element={<ProductForm />} />
             <Route path="/categories" element={<CategoryList />} />
+            <Route path="/admin/products/:id" element={<AdminProduct />} />
+
 
             {/* User Routes */}
             <Route index element={<Home />} />
@@ -69,7 +73,8 @@ const AppRouter = () => {
             <Route path="checkout" element={<Checkout />} />
             <Route path="collections/:type/:title" element={<Collection />} />
             <Route path="products/:id" element={<Product />} />
-            <Route path="/admin/products/:id" element={<AdminProduct />} />
+            <Route path="/search-results" element={<SearchResults />} />
+
 
           </Route>
 
