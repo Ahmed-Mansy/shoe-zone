@@ -1,5 +1,4 @@
-from rest_framework import viewsets
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework import viewsets, generics
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from .models import Product, Category,Rating, ProductImage
@@ -46,12 +45,47 @@ class HomeProductsView(APIView):
         return Response(data, status=status.HTTP_200_OK)
     
 # For product search and filtering ONLY
-class ProductListView(ListAPIView):
-    queryset = Product.objects.all()
+class ProductListView(generics.ListAPIView):
     serializer_class = ProductSerializer
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_class = ProductFilter
-    search_fields = ['name', 'description', 'material', 'colors']
+
+    def get_queryset(self):
+        queryset = Product.objects.all()
+
+        # Search بالاسم أو الوصف
+        search_query = self.request.query_params.get('search')
+        if search_query:
+            queryset = queryset.filter(
+                Q(name__icontains=search_query) |
+                Q(description__icontains=search_query)
+            )
+
+        # فلترة حسب subcategory المحددة
+        category_id = self.request.query_params.get('category')
+        if category_id:
+            queryset = queryset.filter(category_id=category_id)
+
+        # فلترة حسب النوع (MEN / WOMEN) من داخل الكاتيجوري نفسها
+        type_param = self.request.query_params.get('type')
+        if type_param:
+            queryset = queryset.filter(category__type__iexact=type_param)
+
+        # فلترة حسب اللون
+        color = self.request.query_params.get('color')
+        if color:
+            queryset = queryset.filter(colors__icontains=color)
+
+        # فلترة حسب المقاس
+        size = self.request.query_params.get('size')
+        if size:
+            queryset = queryset.filter(sizes__icontains=size)
+
+        # فلترة حسب الخامة
+        material = self.request.query_params.get('material')
+        if material:
+            queryset = queryset.filter(material__icontains=material)
+
+        return queryset
+
     
 
 # For product CRUD operations (if needed)
