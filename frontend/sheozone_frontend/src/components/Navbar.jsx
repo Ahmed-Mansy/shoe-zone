@@ -5,6 +5,10 @@ import { IoIosMenu, IoMdClose, IoIosLogOut } from "react-icons/io";
 import { useEffect, useRef, useState } from "react";
 import { getSubCategories } from "../api";
 import { useCart } from "../context/CartContext";
+import { toast } from "react-toastify"; // استيراد مكتبة التوست
+
+// تأكد من إضافة هذا التنبيه الخاص بالتوست
+import "react-toastify/dist/ReactToastify.css";
 
 const navLinks = [
   {
@@ -30,6 +34,14 @@ const Navbar = () => {
   const { cartCount, fetchCartItems } = useCart();
 
   const dropdownRef = useRef(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      navigate(`/search-results?search=${encodeURIComponent(searchTerm)}`);
+    }
+  };
 
   useEffect(() => {
     fetchCartItems();
@@ -65,6 +77,14 @@ const Navbar = () => {
       : setActiveDropdown(title);
   };
 
+  const handleAuthRedirect = () => {
+    // عرض رسالة التوست عندما يحاول المستخدم الدخول بدون تسجيل
+    toast.warning("Unauthorized: Please login", {
+      position: toast.POSITION.TOP_CENTER,
+      autoClose: 3000,
+    });
+  };
+
   return (
     <>
       <div
@@ -98,11 +118,30 @@ const Navbar = () => {
                 Manage Orders
               </Link>
             </div>
-            <IoIosLogOut
-              size={24}
-              className="hover:text-[#39523f] cursor-pointer"
-              onClick={handleLogOut}
-            />
+            <div className="justify-self-center text-center">
+              <Logo />
+            </div>
+            <div className="w-1/3 flex items-center justify-end gap-6 uppercase font-semibold text-sm">
+              <form onSubmit={handleSearch} className="relative w-full max-w-xs mx-auto">
+                <input
+                  type="text"
+                  placeholder="Search ..."
+                  className="w-full border border-gray-300 rounded-full py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#39523f] transition-all duration-200 custom-padding"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <button
+                  type="submit"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#39523f]">
+                  <FiSearch size={18} />
+                </button>
+              </form>
+              <IoIosLogOut
+                size={24}
+                className="hover:text-[#39523f] cursor-pointer"
+                onClick={handleLogOut}
+              />
+            </div>
           </nav>
         ) : (
           <div className="relative w-full flex-between">
@@ -156,21 +195,35 @@ const Navbar = () => {
               <Logo />
             </div>
             <div className="w-1/3 flex items-center justify-end gap-6 uppercase font-semibold text-sm">
-              <Link to="">
-                <FiSearch size={24} className="hover:text-[#39523f]" />
-              </Link>
+              <form onSubmit={handleSearch} className="relative w-full max-w-xs mx-auto">
+                <input
+                  type="text"
+                  placeholder="Search ..."
+                  className="w-full border border-gray-300 rounded-full py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#39523f] transition-all duration-200 custom-padding"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <button
+                  type="submit"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#39523f]">
+                  <FiSearch size={18} />
+                </button>
+              </form>
+
               <div className="relative">
-                <Link to="/cart">
+                <Link to={isAuthenticated ? "/cart" : "#"} onClick={!isAuthenticated && handleAuthRedirect}> 
                   <FiShoppingCart
                     size={24}
-                    className="hover:text-[#39523f]z-10"
+                    className="hover:text-[#39523f] z-10"
                   />
                 </Link>
-                <span className="w-5 h-5 rounded-full bg-black absolute -top-3 -right-3 -z-10 text-light flex-center text-sm font-medium">
+                {isAuthenticated && (<span className="w-5 h-5 rounded-full bg-black absolute -top-3 -right-3 -z-10 text-light flex-center text-sm font-medium">
                   {cartCount}
-                </span>
+                </span>)}
+                
               </div>
-              <Link to={isAuthenticated ? "/profile" : "/login"}>
+
+              <Link to={isAuthenticated ? "/profile" : "/login"} onClick={!isAuthenticated && handleAuthRedirect}>
                 <FiUser size={24} className="hover:text-[#39523f]" />
               </Link>
 
@@ -188,4 +241,5 @@ const Navbar = () => {
     </>
   );
 };
+
 export default Navbar;

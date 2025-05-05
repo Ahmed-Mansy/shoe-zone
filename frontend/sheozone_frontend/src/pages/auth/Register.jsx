@@ -115,6 +115,7 @@ import Input from "../../components/Input";
 import ProfilePictureInput from "../../components/ProfilePictureInput";
 import { registerUser } from "../../api";
 import { useNavigate } from "react-router";
+import Logo from "../../components/Logo";
 
 const Register = () => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -196,9 +197,11 @@ const Register = () => {
   };
 
   return (
-    <div className="w-full h-full rounded-2xl text-secondary px-6 py-10 bg-light">
-      <h2 className="w-full text-center mb-14 text-2xl font-bold">Register</h2>
-
+    <div className="w-full h-full rounded-2xl text-secondary px-6 py-10 bg-light ">
+      {/* <h2 className="w-full text-center mb-14 text-2xl font-bold">Register</h2> */}
+<div className="justify-self-center text-center py-6">
+              <Logo />
+            </div>
       <form className="space-y-6" onSubmit={handleRegister}>
         <ProfilePictureInput
           handleImageChange={handleImageChange}
@@ -253,6 +256,13 @@ const Register = () => {
           Register
         </button>
       </form>
+
+      <div className="mt-4 text-center text-sm text-gray-500">
+        Already have an account?{" "}
+        <a href="/login" className="text-primary hover:underline">
+          Login 
+        </a>  
+        </div>
     </div>
   );
 };

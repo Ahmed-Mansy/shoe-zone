@@ -2,15 +2,28 @@ import ImagesSlider from "./ImagesSlider";
 import { FaStar, FaRegStar } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
-const ProductCard = ({ product, onDelete, onEdit, }) => {
+const ProductCard = ({ product, onDelete, onEdit}) => {
   const isAdmin = localStorage.getItem("userRole") === "admin";
+  // const isLoggedIn = localStorage.getItem("accessToken");
+  const userRole = localStorage.getItem("userRole");
 
   const { name, price, discount_price, images, id, available_colors, average_rating, stock_quantity } = product;
   const finalPrice = discount_price || price;
 
   return (
     <div className="w-full relative space-y-3 mx-2 my-4 border border-gray-300 rounded-md p-4 shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 ease-in-out">
-      <Link to={isAdmin ? `/admin/products/${id}` : `/products/${id}`} state={product}>
+      <Link
+        to={userRole ? (isAdmin ? `/admin/products/${id}` : `/products/${id}`):"" }
+        state={product}
+        onClick={() => {
+          if (!LoggedIn) {
+            toast.warning("Unauthorized: Please login", {
+              position: toast.POSITION.TOP_CENTER,
+              autoClose: 3000,
+            });
+          }
+        }}
+      >
         <div className="w-full aspect-square bg-[#f5f5f5] rounded-md overflow-hidden">
           {images.length > 0 ? (
             <ImagesSlider images={images} />
