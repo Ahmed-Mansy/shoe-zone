@@ -51,7 +51,8 @@ const AdminProduct = () => {
   };
 
   const averageRating =
-    reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length || 0;
+    reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length ||
+    0;
 
   const handleDelete = async (productId) => {
     const token = localStorage.getItem("accessToken");
@@ -96,6 +97,12 @@ const AdminProduct = () => {
 
   if (!product) return <Loading />;
 
+  const isValidColor = (color) => {
+    const s = new Option().style;
+    s.color = color;
+    return s.color !== "";
+  };
+
   const {
     name,
     description,
@@ -106,16 +113,17 @@ const AdminProduct = () => {
     available_colors,
   } = product;
 
-  const finalPrice = discount_price || price;
+  const finalPrice =
+    discount_price > 0 ? price - (discount_price * price) / 100 : price;
 
   const handleDeleteReview = async (reviewId) => {
     const token = localStorage.getItem("accessToken");
-  
+
     if (!token) {
       toast.error("Unauthorized: Please login.");
       return;
     }
-  
+
     Swal.fire({
       title: "Are you sure?",
       text: "You want to delete this review?",
@@ -145,7 +153,6 @@ const AdminProduct = () => {
       }
     });
   };
-  
 
   return (
     <div className="wrapper mb-24 mt-10">
@@ -157,12 +164,13 @@ const AdminProduct = () => {
               <div
                 key={image.id}
                 onClick={() => setCurrentImage(image.image)}
-                className={`w-[calc(100%/${images.length})] lg:w-[70px] bg-[#f5f5f5] ${
+                className={`w-[calc(100%/${
+                  images.length
+                })] lg:w-[70px] bg-[#f5f5f5] ${
                   image.image === currentImage
                     ? "border-[2px] border-gray-700 rounded-xs"
                     : ""
-                }`}
-              >
+                }`}>
                 <img
                   src={`http://127.0.0.1:8000/${image.image}`}
                   className="w-full h-full cursor-pointer"
@@ -188,7 +196,7 @@ const AdminProduct = () => {
           <p>{description}</p>
           <p className="text-lg space-x-3">
             <span className="font-semibold">{finalPrice} EGP</span>
-            {discount_price && (
+            {discount_price > 0 && (
               <span className="text-gray-600 line-through">{price} EGP</span>
             )}
           </p>
@@ -203,12 +211,11 @@ const AdminProduct = () => {
           <div className="space-y-2">
             <span className="text-sm font-semibold uppercase">Colors:</span>
             <div className="flex gap-2 flex-wrap">
-              {available_colors.map((color, idx) => (
+              {available_colors.filter(isValidColor).map((color, idx) => (
                 <span
                   key={idx}
                   style={{ backgroundColor: color }}
-                  className="w-[35px] h-[35px] rounded-full border border-gray-400"
-                ></span>
+                  className="w-[35px] h-[35px] rounded-full border border-gray-400"></span>
               ))}
             </div>
           </div>
@@ -219,8 +226,7 @@ const AdminProduct = () => {
               {available_sizes.map((size, idx) => (
                 <span
                   key={idx}
-                  className="block w-[50px] h-[50px] border border-[#212121] flex-center text-[#212121] flex items-center justify-center"
-                >
+                  className="block w-[50px] h-[50px] border border-[#212121] flex-center text-[#212121] flex items-center justify-center">
                   {size}
                 </span>
               ))}
@@ -230,14 +236,12 @@ const AdminProduct = () => {
           <div className="flex gap-4">
             <button
               onClick={() => navigate(`/products/edit/${id}`)}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xs"
-            >
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xs">
               Edit Product
             </button>
             <button
               onClick={() => handleDelete(id)}
-              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xs"
-            >
+              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xs">
               Delete Product
             </button>
           </div>
@@ -249,7 +253,9 @@ const AdminProduct = () => {
         <div className="text-center mb-10">
           <h2 className="text-4xl font-bold">{name}</h2>
           <div className="flex justify-center items-center gap-2 mt-4">
-            <h3 className="text-5xl font-semibold">{averageRating.toFixed(1)}</h3>
+            <h3 className="text-5xl font-semibold">
+              {averageRating.toFixed(1)}
+            </h3>
             <div className="flex flex-col items-start gap-1">
               <Rating
                 style={{ maxWidth: 130 }}
@@ -265,30 +271,30 @@ const AdminProduct = () => {
         <div className="divide-y border-y">
           {reviews.length > 0 ? (
             reviews.map((review) => (
-                <div key={review.id} className="py-8 flex justify-between items-start">
-                    <div className="space-y-2">
-                        <Rating
-                        style={{ maxWidth: 130 }}
-                        value={review.rating}
-                        itemStyles={myStyles}
-                        readOnly
-                        />
-                        <p className="mt-4">{review.comment}</p>
-                    </div>
-
-                    <div className="flex flex-col items-end gap-2">
-                        <div className="bg-[#f5f5f5] px-4 py-2 font-semibold">
-                        {review.full_name}
-                        </div>
-                        <button
-                        onClick={() => handleDeleteReview(review.id)}
-                        className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 text-sm rounded"
-                        >
-                        Delete
-                        </button>
-                    </div>
+              <div
+                key={review.id}
+                className="py-8 flex justify-between items-start">
+                <div className="space-y-2">
+                  <Rating
+                    style={{ maxWidth: 130 }}
+                    value={review.rating}
+                    itemStyles={myStyles}
+                    readOnly
+                  />
+                  <p className="mt-4">{review.comment}</p>
                 </div>
 
+                <div className="flex flex-col items-end gap-2">
+                  <div className="bg-[#f5f5f5] px-4 py-2 font-semibold">
+                    {review.full_name}
+                  </div>
+                  <button
+                    onClick={() => handleDeleteReview(review.id)}
+                    className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 text-sm rounded">
+                    Delete
+                  </button>
+                </div>
+              </div>
             ))
           ) : (
             <p className="text-center py-6 text-gray-500">No reviews yet.</p>

@@ -34,6 +34,12 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
   const finalPrice =
     discount_price > 0 ? price - (discount_price * price) / 100 : price;
 
+  const isValidColor = (color) => {
+    const s = new Option().style;
+    s.color = color;
+    return s.color !== "";
+  };
+
   return (
     <div className="w-full mx-2 my-4 border border-gray-300 rounded-md p-4 shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 ease-in-out">
       <Link
@@ -87,7 +93,7 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
         </div>
 
         <div className="flex justify-center gap-1">
-          {available_colors.map((color, index) => (
+          {available_colors.filter(isValidColor).map((color, index) => (
             <span
               key={index}
               style={{ backgroundColor: color }}

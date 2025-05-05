@@ -1,4 +1,3 @@
-import Loading from "../../components/Loading";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { FaQuestionCircle } from "react-icons/fa";
@@ -54,9 +53,8 @@ const CheckoutForm = ({
       }, ${formData.zipCode}, ${formData.countryName}`,
       payment_status: paymentMethod,
       items: formData.items.map((item) => ({
-        product_id: item.product_id,
+        product_id: item.product_id, // Use product_id,
         quantity: item.quantity,
-
       })),
       total_amount: totalAmount,
     };
@@ -65,7 +63,7 @@ const CheckoutForm = ({
   };
 
   return (
-    <form onSubmit={onSubmit} className="space-y-6 my-8">
+    <form onSubmit={onSubmit} className="space-y-6">
       {paymentMethod === "stripe" && (
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -232,7 +230,7 @@ const Checkout = () => {
           setFormData((prev) => ({
             ...prev,
             items: data.items.map((item) => ({
-              id: item.id,                  // CartItem ID
+              id: item.id, // CartItem ID
               product_id: item.product_id, // Use product_id from API
               quantity: item.quantity,
               price: item.product_price,
@@ -275,11 +273,14 @@ const Checkout = () => {
     if (!token) return;
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}cart/clear/`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}cart/clear/`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (response.ok) {
         let data = null;
@@ -287,7 +288,7 @@ const Checkout = () => {
           data = await response.json();
         }
         if (data && data.items) {
-          const deletePromises = data.items.map(item =>
+          const deletePromises = data.items.map((item) =>
             fetch(`${import.meta.env.VITE_API_URL}cart/item/${item.id}/`, {
               method: "DELETE",
               headers: {
@@ -323,15 +324,17 @@ const Checkout = () => {
         return;
       }
 
-
-      const response = await fetch(`${import.meta.env.VITE_API_URL}orders/create/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(orderData),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}orders/create/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(orderData),
+        }
+      );
 
       if (!response.ok) {
         const contentType = response.headers.get("content-type");
@@ -482,17 +485,17 @@ const Checkout = () => {
         </h3>
         <ul className="space-y-4">
           {formData.items.map((item, index) => (
-
             <li
               key={index}
-              className="flex items-center justify-between border-b pb-4"
-            >
+              className="flex items-center justify-between border-b pb-4">
               <div className="flex items-center space-x-4">
                 <div>
                   <p className="text-sm font-medium text-gray-700">
                     {item.product_name || `Product #${item.product_id}`}
                   </p>
-                  <p className="text-xs text-gray-500">Quantity: {item.quantity}</p>
+                  <p className="text-xs text-gray-500">
+                    Quantity: {item.quantity}
+                  </p>
                 </div>
               </div>
               <p className="text-sm font-semibold text-gray-800">
