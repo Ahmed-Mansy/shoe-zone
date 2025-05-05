@@ -4,6 +4,8 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router";
+import Filters from "../../components/Filters";
+import ProductsList from "../../components/ProductsList";
 
 export default function ProductList() {
   const isAdmin = localStorage.getItem("userRole") === "admin";
@@ -75,28 +77,39 @@ export default function ProductList() {
 
   return (
     <div className="wrapper py-8">
-    {isAdmin && (
-      <div className="w-full flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">Products</h2>
-        <button
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-xs shadow-md transition duration-300 cursor-pointer"
-          onClick={() => navigate("/products/create")}>
-          Create New Product
-        </button>
+      {isAdmin && (
+        <div className="w-full flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold">Products</h2>
+          <button
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-xs shadow-md transition duration-300 cursor-pointer"
+            onClick={() => navigate("/products/create")}>
+            Create New Product
+          </button>
+        </div>
+      )}
+      <div className="flex justify-between items-start gap-6">
+        <div className="w-1/4">
+          <Filters collectionTitle="All Products" setProducts={setProducts} />
+        </div>
+
+        <div className="w-3/4 flex flex-wrap gap-6">
+          {products.length > 0 ? (
+            products.map((product) => (
+              <div key={product.id} className="w-[calc(33%-12px)]">
+                <ProductCard
+                  product={product}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                />
+              </div>
+            ))
+          ) : (
+            <h2 className="w-full text-3xl font-medium text-center justify-self-center mt-32">
+              There are no search results.
+            </h2>
+          )}
+        </div>
       </div>
-    )}
-  
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-      {products.map((product) => (
-        <ProductCard
-          key={product.id}
-          product={product}
-          onEdit={handleEdit}
-          onDelete={handleDelete} 
-        />
-      ))}
     </div>
-  </div>
-  
   );
 }

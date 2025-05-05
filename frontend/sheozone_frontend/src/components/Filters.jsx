@@ -2,10 +2,25 @@ import axios from "axios";
 import PropTypes from "prop-types";
 import { useState } from "react";
 
-const available_sizes = [41, 42, 43, 44, 45, 46, 47, 48, 9, 10];
-const available_colors = ["red", "yellow", "green", "black", "white", "gray"];
+const available_sizes = [35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45];
+const available_colors = [
+  "black",
+  "white",
+  "gray",
+  "brown",
+  "blue",
+  "red",
+  "yellow",
+  "green",
+];
 
-const CollectionSidebar = ({ collectionTitle, setProducts }) => {
+const Filters = ({
+  collectionTitle,
+  setProducts,
+  type,
+  categoryId,
+  searchTerm = "",
+}) => {
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [selectedColors, setSelectedColors] = useState([]);
 
@@ -28,11 +43,18 @@ const CollectionSidebar = ({ collectionTitle, setProducts }) => {
   };
 
   const handleFilterItems = async () => {
-    const sizeParams = selectedSizes.join(",");
-    const colorParams = selectedColors.join(",");
+    const searchParams = searchTerm ? `search=${searchTerm}` : "";
+    const sizeParams =
+      selectedSizes.length > 0 ? `&size=${selectedSizes.join(",")}` : "";
+    const colorParams =
+      selectedColors.length > 0 ? `&color=${selectedColors.join(",")}` : "";
+    const typeParams = type ? `type=${type}` : "";
+    const categoryParams = categoryId ? `&category=${categoryId}` : "";
 
-    const queryString = `?sizes=${sizeParams}&colors=${colorParams}`;
+    const queryString = `?${searchParams}${typeParams}${categoryParams}${sizeParams}${colorParams}`;
+
     const url = `http://127.0.0.1:8000/api/products/api/products/${queryString}`;
+    console.log("URL ==> ", url);
 
     try {
       const response = await axios.get(url);
@@ -107,9 +129,12 @@ const CollectionSidebar = ({ collectionTitle, setProducts }) => {
   );
 };
 
-CollectionSidebar.propTypes = {
+Filters.propTypes = {
   collectionTitle: PropTypes.string.isRequired,
   setProducts: PropTypes.func.isRequired,
+  type: PropTypes.string,
+  categoryId: PropTypes.number,
+  searchTerm: PropTypes.string,
 };
 
-export default CollectionSidebar;
+export default Filters;

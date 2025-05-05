@@ -6,7 +6,7 @@ import { IoChevronDownOutline } from "react-icons/io5";
 import { useEffect, useState, useRef } from "react";
 import { getSubCategories } from "../api";
 import { useCart } from "../context/CartContext";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import SearchForm from "./SearchForm";
 
@@ -87,8 +87,6 @@ const Navbar = () => {
 
   return (
     <>
-      {/* <ToastContainer /> */}
-
       {/* Drawer for user and admin */}
       {isAdmin ? (
         <div
@@ -145,12 +143,15 @@ const Navbar = () => {
                   {subCategories[link.title]?.map((sublink) => (
                     <Link
                       key={sublink.id}
-                      to={link.title === 'men' ? `/collections/men/${sublink.name}` : `/collections/women/${sublink.name}`}
+                      to={
+                        link.title === "men"
+                          ? `/collections/men/${sublink.name}?categoryId=${sublink.id}`
+                          : `/collections/women/${sublink.name}?categoryId=${sublink.id}`
+                      }
                       onClick={() => setActiveDropdown(null)}
                       className="block border-[#EAEAEA] not-last-of-type:border-b py-3 px-3 text-sm hover:underline hover:text-[#39523f]">
                       {sublink.name}
                     </Link>
-                    
                   ))}
                 </ul>
               </div>
@@ -212,12 +213,9 @@ const Navbar = () => {
           <div className="relative w-full flex-between" ref={dropdownRef}>
             {/* Desktop Nav */}
             <nav className="lg:w-1/3 hidden lg:block">
-            
               <ul className="flex items-center justify-start gap-10 uppercase font-semibold text-sm">
-              <li><Link to="/products" className="hover:underline hover:text-[#39523f] cursor-pointe">All-Products</Link></li>
-              {userNavLinks.map((link) => (
+                {userNavLinks.map((link) => (
                   <div key={link.id} className="relative">
-
                     <li
                       onClick={() => handleSubMenu(link.title)}
                       className="hover:underline hover:text-[#39523f] cursor-pointer"
@@ -233,7 +231,7 @@ const Navbar = () => {
                       {subCategories[link.title]?.map((sublink) => (
                         <Link
                           key={sublink.id}
-                          to={`/collections/${link.title}/${sublink.name}`}
+                          to={`/collections/${link.title}/${sublink.name}/?categoryId=${sublink.id}`}
                           onClick={() => setActiveDropdown(null)}
                           className="block border-[#EAEAEA] not-last-of-type:border-b-[1px]">
                           <li className="hover:underline hover:text-[#39523f] py-4">

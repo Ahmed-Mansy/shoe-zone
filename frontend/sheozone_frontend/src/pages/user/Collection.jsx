@@ -1,12 +1,15 @@
-import { useParams } from "react-router";
-import CollectionSidebar from "../../components/CollectionSidebar";
+import { useParams, useSearchParams } from "react-router";
 import ProductsList from "../../components/ProductsList";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import Filters from "../../components/Filters";
 
 const Collection = () => {
   const { type, title } = useParams();
   const [products, setProducts] = useState(null);
+
+  const [searchParams] = useSearchParams();
+  const categoryId = +searchParams.get("categoryId");
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -22,7 +25,7 @@ const Collection = () => {
     };
 
     fetchProducts();
-  }, [title]);
+  }, [title, type]);
 
   return (
     <div className="wrapper py-10">
@@ -49,9 +52,11 @@ const Collection = () => {
       </div>
       <div className="flex justify-between items-start gap-6">
         <div className="w-1/4">
-          <CollectionSidebar
+          <Filters
             collectionTitle={title}
             setProducts={setProducts}
+            type={type}
+            categoryId={categoryId}
           />
         </div>
         <div className="w-3/4">

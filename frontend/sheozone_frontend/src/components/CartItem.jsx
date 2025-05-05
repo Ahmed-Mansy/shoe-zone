@@ -34,7 +34,11 @@ const CartItem = ({ item, setCartItems, cartItems }) => {
           },
         }
       );
-
+      setCartItems(
+        cartItems.map((ci) =>
+          ci.id === item.id ? { ...ci, quantity: newQuantity } : ci
+        )
+      );
       fetchCartItems();
     } catch (err) {
       console.error("Update error", err);
