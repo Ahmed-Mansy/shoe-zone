@@ -12,7 +12,7 @@ const Collection = () => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/products/type/women/${title}/`
+          `http://127.0.0.1:8000/api/products/type/${type}/${title}/`
         );
         setProducts(response.data);
         return response.data;
