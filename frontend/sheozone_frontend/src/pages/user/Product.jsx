@@ -74,6 +74,7 @@ const Product = () => {
     images,
     available_sizes,
     available_colors,
+    stock_quantity,
   } = product;
 
   const finalPrice =
@@ -304,12 +305,16 @@ const Product = () => {
             type="button"
             onClick={() => addToCart(id)}
             className={`w-full h-[50px] text-light uppercase font-medium text-lg tracking-wider rounded-xs transition-colors duration-300 ${
-              selectedSize
+              stock_quantity > 0 && selectedSize
                 ? "cursor-pointer bg-dark hover:bg-gray-500"
                 : "cursor-not-allowed bg-gray-400 text-yellow-600"
             }`}
-            disabled={!selectedSize}>
-            {selectedSize ? `add to cart - ${finalPrice} egp` : "select a size"}
+            disabled={!selectedSize || stock_quantity <= 0}>
+            {stock_quantity <= 0
+              ? "Out of stock"
+              : selectedSize
+              ? `add to cart - ${finalPrice} egp`
+              : "select a size"}
           </button>
         </div>
       </div>
