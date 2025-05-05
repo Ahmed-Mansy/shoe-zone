@@ -81,7 +81,7 @@ class ViewCartView(APIView):
 
         for item in cart_items:
             product = item.product
-            item_total = product.price * item.quantity
+            item_total = (product.discount_price if product.discount_price else product.price) * item.quantity
             total_price += item_total
 
             # Get first image for the product (optional: add fallback)
@@ -91,7 +91,7 @@ class ViewCartView(APIView):
             items.append({
                 'id': item.id,
                 'product_name': product.name,
-                'product_price': float(product.price),
+                'product_price': float(product.discount_price if product.discount_price else product.price),
                 'quantity': item.quantity,
                 'total': float(item_total),
                 'product_image': image_url,
