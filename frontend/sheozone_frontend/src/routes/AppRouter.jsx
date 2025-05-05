@@ -73,9 +73,8 @@ const AppRouter = () => {
             <Route path="checkout" element={<Checkout />} />
             <Route path="collections/:type/:title" element={<Collection />} />
             <Route path="products/:id" element={<Product />} />
+            <Route path="/admin/products/:id" element={<AdminProduct />} />
             <Route path="/search-results" element={<SearchResults />} />
-
-
           </Route>
 
           <Route path="*" element={<Error />} />

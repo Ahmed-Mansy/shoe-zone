@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
 import { FaStar, FaRegStar } from "react-icons/fa";
 import ImagesSlider from "./ImagesSlider";
 import PropTypes from "prop-types"; // Added PropTypes import
