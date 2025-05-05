@@ -16,6 +16,7 @@ const ProfilePage = () => {
         }
         const data = await getUserProfile(userId);
         setProfile(data);
+        console.log("PROFILE DATA:", data);
         console.log(data);
       } catch (error) {
         console.error("Error fetching profile data:", error);
@@ -24,10 +25,13 @@ const ProfilePage = () => {
     fetchProfile();
   }, []);
 
-  if (!profile || !profile.user) return <Loading />;
+  
+  if (!profile) return <Loading />;
 
-  const user = profile.user;
-  const addresses = user.addresses || [];
+
+  const user = profile || {};  
+  const addresses = user?.addresses || [];
+
 
   return (
     <div id="user-profile" className="container mx-auto my-5 py-5">
@@ -36,8 +40,8 @@ const ProfilePage = () => {
           <div className="text-center py-4 rounded from-white-500 to-indigo-500 text-white">
             <img
               src={
-                user.profile_picture
-                  ? `http://127.0.0.1:8000/${user.profile_picture}`
+                user?.profile_picture
+                  ? `http://127.0.0.1:8000${user.profile_picture}`
                   : "/default-profile.png"
               }
               alt="profile"
@@ -50,12 +54,12 @@ const ProfilePage = () => {
                 fontWeight: "600",
                 color: "black",
               }}>
-              {user.first_name} {user.last_name}
+              {user?.first_name || ""} {user?.last_name || ""}
             </h4>
-            <p style={{ fontSize: "0.875rem", color: "black" }}>{user.email}</p>
+            <p style={{ fontSize: "0.875rem", color: "black" }}>{user?.email}</p>
             <div>
               <a
-                href={user.facebook_profile || "#"}
+                href={user?.facebook_profile || "#"}
                 target="_blank"
                 rel="noopener noreferrer">
                 <i
@@ -96,21 +100,12 @@ const ProfilePage = () => {
               <h3 className="mb-4 text-xl font-bold">Profile Details</h3>
             </div>
             <div className="w-3/4 mx-auto mt-4 text-gray-800 space-y-2">
-              <p>
-                <strong>First Name:</strong> {user.first_name}
-              </p>
-              <p>
-                <strong>Last Name:</strong> {user.last_name}
-              </p>
-              <p>
-                <strong>Email:</strong> {user.email}
-              </p>
-              <p>
-                <strong>Mobile:</strong> {user.mobile}
-              </p>
-              <p>
-                <strong>Birthday:</strong> {user.birthdate || "-"}
-              </p>
+              <p><strong>First Name:</strong> {user?.first_name || "-"}</p>
+              <p><strong>Last Name:</strong> {user?.last_name || "-"}</p>
+              <p><strong>Email:</strong> {user?.email || "-"}</p>
+              <p><strong>Mobile:</strong> {user?.mobile || "Not provided"}</p>
+              <p><strong>Birthday:</strong> {user?.birthdate || "Not provided"}</p>
+
             </div>
           </div>
           <div className="w-full md:w-3/4 mt-8">
@@ -127,23 +122,23 @@ const ProfilePage = () => {
                 <div
                   key={address.id}
                   className="text-start px-4 mt-3 text-black w-3/4 mx-auto">
-                  {address.country && (
+                  {address?.country && (
                     <p>
                       <strong>Country:</strong> {address.country}
                     </p>
                   )}
-                  {address.city && (
+                  {address?.city && (
                     <p>
                       <strong>City:</strong> {address.city}
                     </p>
                   )}
-                  {address.address_line_1 && (
+                  {address?.address_line_1 && (
                     <p>
                       <strong>Street, House number:</strong>{" "}
-                      {address.address_line_1}
+                      {address?.address_line_1}
                     </p>
                   )}
-                  {address.postcode && (
+                  {address?.postcode && (
                     <p>
                       <strong>Postcode:</strong> {address.postcode}
                     </p>
