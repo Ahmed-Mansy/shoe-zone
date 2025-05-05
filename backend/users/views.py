@@ -274,8 +274,9 @@ def passwordResetRequest(request):
         uid = urlsafe_base64_encode(force_bytes(user.pk))
 
         # Build the reset link
-        domain = request.build_absolute_uri('/')[:-1]  # e.g., http://127.0.0.1:8000
-        reset_url = f"{domain}/api/users/password-reset-confirm/?uid={uid}&token={token}"
+        # Use the frontend URL for the reset link
+        domain = "http://localhost:5173"  # Update with your frontend URL
+        reset_url = f"{domain}/reset-password?uid={uid}&token={token}"
 
         # Send a plain text email
         email_subject = "Password Reset Request"

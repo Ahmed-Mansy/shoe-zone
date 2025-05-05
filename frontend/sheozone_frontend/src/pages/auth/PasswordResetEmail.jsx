@@ -36,7 +36,6 @@ const PasswordResetEmail = () => {
           },
         }
       );
-
       return response.data;
     } catch (error) {
       throw new Error(
@@ -55,15 +54,10 @@ const PasswordResetEmail = () => {
     }
 
     try {
-      const response = await sendPasswordResetEmail(email);
+      await sendPasswordResetEmail(email);
       toast.success("Check your inbox for the reset instructions!");
-
-      const resetUrl = response.reset_url;
-      const urlParams = new URLSearchParams(new URL(resetUrl).search);
-      const uid = urlParams.get("uid");
-      const token = urlParams.get("token");
-
-      navigate("/reset-password", { state: { uid, token } });
+      // Optionally navigate to a confirmation page or stay on the same page
+      // navigate("/reset-password-sent"); // If you have a confirmation page
     } catch (err) {
       setError({ email: err.message || "Failed to send reset email." });
     }
@@ -88,7 +82,8 @@ const PasswordResetEmail = () => {
         />
         <button
           type="submit"
-          className="w-full py-3 rounded-xs font-semibold transition-all bg-primary hover:bg-dark text-light cursor-pointer">
+          className="w-full py-3 rounded-xs font-semibold transition-all bg-primary hover:bg-dark text-light cursor-pointer"
+        >
           Reset Password
         </button>
       </form>
