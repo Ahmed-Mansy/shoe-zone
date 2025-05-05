@@ -116,10 +116,14 @@ import ProfilePictureInput from "../../components/ProfilePictureInput";
 import { registerUser } from "../../api";
 import { useNavigate } from "react-router";
 import Logo from "../../components/Logo";
+import { toast } from "react-toastify";
+
 
 const Register = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
   const [formData, setFormData] = useState({
     first_name: "",
@@ -190,9 +194,25 @@ const Register = () => {
 
     try {
       await registerUser(formDataToSend);
-      navigate("/login");
+      toast.success("Registration successful! Check your email to activate your account.");
+      // Reset form after successful registration
+      setFormData({
+        first_name: "",
+        last_name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        profilePicture: null,
+      });
+      setSelectedImage(null);
+      setPreviewUrl(null);
+      setErrors({});
     } catch (err) {
       console.error("Registration failed:", err);
+      const errorMessage =
+        err.response?.data?.details || "Registration failed. Please try again.";
+      toast.error(errorMessage);
+      setErrors({ general: errorMessage });
     }
   };
 
