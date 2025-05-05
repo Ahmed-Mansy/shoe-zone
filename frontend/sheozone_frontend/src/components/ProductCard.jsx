@@ -1,9 +1,20 @@
-import { Link } from "react-router-dom";
-import PropTypes from "prop-types";
-import { FaStar, FaRegStar } from "react-icons/fa";
 import ImagesSlider from "./ImagesSlider";
 import { toast } from "react-toastify"; // Added toast import
 import "react-toastify/dist/ReactToastify.css"; // Ensure toast styles are included
+import { FaStar, FaRegStar } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
+import { Rating, Star } from "@smastrom/react-rating";
+
+const myStyles = {
+  itemShapes: Star,
+  itemStrokeWidth: 1,
+  activeFillColor: "#212121",
+  activeStrokeColor: "#212121",
+  inactiveFillColor: "#fff",
+  inactiveStrokeColor: "#212121",
+};
+
 
 const ProductCard = ({ product, onDelete, onEdit }) => {
   const isAdmin = localStorage.getItem("userRole") === "admin"; // Consider server-side validation
@@ -18,6 +29,7 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
     available_colors,
     average_rating,
     stock_quantity,
+    reviews
   } = product;
   const finalPrice = discount_price || price;
 
@@ -57,18 +69,22 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
       <div className="space-y-3 mt-2">
         <h3 className="text-md font-semibold capitalize text-center">{name}</h3>
 
-        {/* Rating Section (Uncommented and Fixed) */}
-        <div
-          className="flex items-center justify-center gap-1 text-yellow-500"
-          aria-label={`Rating: ${average_rating} out of 5`}>
-          {Array.from({ length: 5 }, (_, index) =>
-            index < Math.round(average_rating) ? (
-              <FaStar key={index} />
-            ) : (
-              <FaRegStar key={index} />
-            )
-          )}
-        </div>
+      <div className="flex justify-center items-center gap-2 my-2">
+        <Rating
+          style={{ maxWidth: 100 }}
+          value={average_rating || 0}
+          itemStyles={myStyles}
+          readOnly
+        />
+        <span className="text-sm text-gray-600">
+          {average_rating ? average_rating.toFixed(1) : "No ratings"}
+        </span>
+      </div>
+
+      <div className="text-xs text-gray-500 text-center">
+        {reviews?.length > 0 ? `${reviews.length} Reviews` : "No Reviews Yet"}
+      </div>
+
 
         <div className="flex justify-center gap-1">
           {available_colors.map((color, index) => (

@@ -145,16 +145,12 @@ const Navbar = () => {
                   {subCategories[link.title]?.map((sublink) => (
                     <Link
                       key={sublink.id}
-                      to={`/collections/${link.title}/${sublink.name}`}
-                      onClick={() => {
-                        setActiveDropdown(null);
-                        setShowDrawer(false);
-                      }}
-                      className="block not-last:border-[#EAEAEA] not-last:border-b">
-                      <li className="py-3 px-14 text-base hover:underline hover:text-[#39523f]">
-                        {sublink.name}
-                      </li>
+                      to={link.title === 'men' ? `/collections/men/${sublink.name}` : `/collections/women/${sublink.name}`}
+                      onClick={() => setActiveDropdown(null)}
+                      className="block border-[#EAEAEA] not-last-of-type:border-b py-3 px-3 text-sm hover:underline hover:text-[#39523f]">
+                      {sublink.name}
                     </Link>
+                    
                   ))}
                 </ul>
               </div>
@@ -216,9 +212,12 @@ const Navbar = () => {
           <div className="relative w-full flex-between" ref={dropdownRef}>
             {/* Desktop Nav */}
             <nav className="lg:w-1/3 hidden lg:block">
+            
               <ul className="flex items-center justify-start gap-10 uppercase font-semibold text-sm">
-                {userNavLinks.map((link) => (
+              <li><Link to="/products" className="hover:underline hover:text-[#39523f] cursor-pointe">All-Products</Link></li>
+              {userNavLinks.map((link) => (
                   <div key={link.id} className="relative">
+
                     <li
                       onClick={() => handleSubMenu(link.title)}
                       className="hover:underline hover:text-[#39523f] cursor-pointer"

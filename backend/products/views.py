@@ -1,5 +1,4 @@
-from rest_framework import viewsets
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework import viewsets, generics
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from .models import Product, Category,Rating, ProductImage
@@ -13,6 +12,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser, AllowAny
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
+from django.db.models import Count
+
 
 
 # For category CRUD operations
@@ -29,7 +30,12 @@ class CategoryViewSet(viewsets.ModelViewSet):
     
 class HomeProductsView(APIView):
     def get(self, request):
-        top_rated = Product.objects.order_by('-average_rating')[:3]
+        top_rated = list(Product.objects
+            .annotate(num_reviews=Count('reviews'))
+            .filter(average_rating__gte=3, num_reviews__gte=1)
+            .order_by('-average_rating', '-num_reviews', '-created_at'))
+
+
         latest = Product.objects.order_by('-created_at')[:3]
 
         data = {
@@ -38,40 +44,105 @@ class HomeProductsView(APIView):
         }
         return Response(data, status=status.HTTP_200_OK)
     
-       
 # For product search and filtering ONLY
-class ProductListView(ListAPIView):
-    queryset = Product.objects.all()
+class ProductListView(generics.ListAPIView):
     serializer_class = ProductSerializer
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_class = ProductFilter
-    search_fields = ['name', 'description', 'material', 'colors']
+
+    def get_queryset(self):
+        queryset = Product.objects.all()
+
+        # Search بالاسم أو الوصف
+        search_query = self.request.query_params.get('search')
+        if search_query:
+            queryset = queryset.filter(
+                Q(name__icontains=search_query) |
+                Q(description__icontains=search_query)
+            )
+
+        # فلترة حسب subcategory المحددة
+        category_id = self.request.query_params.get('category')
+        if category_id:
+            queryset = queryset.filter(category_id=category_id)
+
+        # فلترة حسب النوع (MEN / WOMEN) من داخل الكاتيجوري نفسها
+        type_param = self.request.query_params.get('type')
+        if type_param:
+            queryset = queryset.filter(category__type__iexact=type_param)
+
+        # فلترة حسب اللون
+        color = self.request.query_params.get('color')
+        if color:
+            queryset = queryset.filter(colors__icontains=color)
+
+        # فلترة حسب المقاس
+        size = self.request.query_params.get('size')
+        if size:
+            queryset = queryset.filter(sizes__icontains=size)
+
+        # فلترة حسب الخامة
+        material = self.request.query_params.get('material')
+        if material:
+            queryset = queryset.filter(material__icontains=material)
+
+        return queryset
+
     
 
 # For product CRUD operations (if needed)
+# class ProductViewSet(viewsets.ModelViewSet):
+#     queryset = Product.objects.all()
+#     serializer_class = ProductSerializer
+#     permission_classes = [IsAuthenticated,IsAdminUser]  # Only a  dmin can create, update, delete products and all users can view products
+#     parser_classes = [MultiPartParser, FormParser]
+
+#     def perform_create(self, serializer):
+#         # Save the product instance
+#         product = serializer.save()
+
+#         # Add images for the created product
+#         images = self.request.FILES.getlist('images')
+#         for img in images:
+#             ProductImage.objects.create(product=product, image=img)
+
+#     def perform_update(self, serializer):
+#         # Update the product instance
+#         product = serializer.save()
+
+#         # Add new images for the updated product
+#         images = self.request.FILES.getlist('images')
+#         for img in images:
+#             ProductImage.objects.create(product=product, image=img)
+
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [IsAuthenticated,IsAdminUser]  # Only a  dmin can create, update, delete products and all users can view products
+    permission_classes = [IsAuthenticated, IsAdminUser]
     parser_classes = [MultiPartParser, FormParser]
 
     def perform_create(self, serializer):
-        # Save the product instance
         product = serializer.save()
-
-        # Add images for the created product
         images = self.request.FILES.getlist('images')
         for img in images:
             ProductImage.objects.create(product=product, image=img)
 
     def perform_update(self, serializer):
-        # Update the product instance
-        product = serializer.save()
+        # ما نضيفش صور هنا، عشان ما تتكررش في partial_update
+        serializer.save()
 
-        # Add new images for the updated product
-        images = self.request.FILES.getlist('images')
+    def partial_update(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        if request.FILES.getlist('images'):
+            instance.images.all().delete()
+
+        response = super().partial_update(request, *args, **kwargs)
+
+        images = request.FILES.getlist('images')
         for img in images:
-            ProductImage.objects.create(product=product, image=img)
+            ProductImage.objects.create(product=instance, image=img)
+
+        return response
+ 
 
 
 # For product details (NEW)

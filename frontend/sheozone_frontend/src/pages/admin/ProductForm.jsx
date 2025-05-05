@@ -147,8 +147,13 @@ const ProductForm = ({ existingProduct }) => {
   
     const formData = new FormData();
     Object.keys(product).forEach((key) => {
+      // if (key === "images") {
+      //   product.images.forEach((image) => formData.append("images", image));
       if (key === "images") {
-        product.images.forEach((image) => formData.append("images", image));
+        if (product.images.length > 0 && product.images[0] instanceof File) {
+          product.images.forEach((image) => formData.append("images", image));
+        }
+      
       } else {
         formData.append(key, product[key]);
       }
