@@ -7,7 +7,6 @@ from django.shortcuts import get_object_or_404
 from .models import Product, Cart, CartItem
 from products.models import ProductImage
 
-
 class AddToCartView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -19,13 +18,31 @@ class AddToCartView(APIView):
         cart, _ = Cart.objects.get_or_create(user=request.user)
 
         cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
-        if not created:
-            cart_item.quantity += quantity
-        else:
-            cart_item.quantity = quantity
+
+        new_quantity = quantity if created else cart_item.quantity + quantity
+
+        if new_quantity > product.stock_quantity:
+            return Response(
+                {'error': f'Only {product.stock_quantity} items available in stock'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        cart_item.quantity = new_quantity
         cart_item.save()
 
-        return Response({'message': 'Product added to cart'}, status=status.HTTP_200_OK)
+        price = product.discount_price if product.discount_price else product.price
+        total = price * cart_item.quantity
+
+        return Response({
+            'message': 'Product added to cart',
+            'item': {
+                'product_name': product.name,
+                'quantity': cart_item.quantity,
+                'price': float(price),
+                'total': float(total)
+            }
+        }, status=status.HTTP_200_OK)
+
 
 
 class CartItemDetailView(APIView):
@@ -35,16 +52,18 @@ class CartItemDetailView(APIView):
         cart_item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
         product = cart_item.product
 
-        # احضار أول صورة
         image_obj = ProductImage.objects.filter(product=product).first()
         image_url = request.build_absolute_uri(image_obj.image.url) if image_obj and image_obj.image else None
+
+        price = product.discount_price if product.discount_price else product.price
+        total = price * cart_item.quantity
 
         item_data = {
             'id': cart_item.id,
             'product_name': product.name,
-            'product_price': float(product.price),
+            'product_price': float(price),
             'quantity': cart_item.quantity,
-            'total': float(product.price * cart_item.quantity),
+            'total': float(total),
             'product_image': image_url,
         }
 
@@ -53,6 +72,14 @@ class CartItemDetailView(APIView):
     def put(self, request, item_id):
         new_quantity = int(request.data.get('quantity', 1))
         cart_item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
+        product = cart_item.product
+
+        # ✅ تحقق من توفر الكمية في المخزون
+        if new_quantity > product.stock_quantity:
+            return Response(
+                {'error': f'Only {product.stock_quantity} items available in stock'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         if new_quantity > 0:
             cart_item.quantity = new_quantity
@@ -66,34 +93,35 @@ class CartItemDetailView(APIView):
         cart_item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
         cart_item.delete()
         return Response({'message': 'Item removed from cart'}, status=status.HTTP_204_NO_CONTENT)
-
 class ViewCartView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         cart, _ = Cart.objects.get_or_create(user=request.user)
         cart_items = cart.items.select_related('product').all()
+
         if not cart_items.exists():
-            return Response({"message": "Your cart is empty!"}, status=200)
+            return Response({"message": "Your cart is empty!"}, status=status.HTTP_200_OK)
 
         items = []
         total_price = 0
 
         for item in cart_items:
             product = item.product
-            item_total = (product.discount_price if product.discount_price else product.price) * item.quantity
+            price = product.discount_price if product.discount_price else product.price
+            item_total = price * item.quantity
             total_price += item_total
 
-            # Get first image for the product (optional: add fallback)
+            # Get first image for the product
             image_obj = ProductImage.objects.filter(product=product).first()
             image_url = request.build_absolute_uri(image_obj.image.url) if image_obj and image_obj.image else None
 
             items.append({
-                'id': item.id, # CartItem ID
-                'product_id': product.id,  # Add Product ID
+                'id': item.id,
                 'product_name': product.name,
-                'product_price': float(product.discount_price if product.discount_price else product.price),
+                'product_price': float(price),
                 'quantity': item.quantity,
+                'stock_quantity': product.stock_quantity,            
                 'total': float(item_total),
                 'product_image': image_url,
             })
@@ -101,4 +129,5 @@ class ViewCartView(APIView):
         return Response({
             'items': items,
             'total_price': float(total_price)
-        })
+        }, status=status.HTTP_200_OK)
+
