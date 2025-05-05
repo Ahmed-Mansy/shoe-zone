@@ -39,7 +39,8 @@ const Login = () => {
       setLoading(true);
       const response = await loginUser(formData);
       if (response.access) {
-        localStorage.setItem("token", response.access); // تغيير المفتاح من "access" إلى "token"
+        localStorage.setItem("token", response.access); 
+        localStorage.setItem("access", response.access);
         navigate("/");
       } else {
         setServerError("Login failed. Please check your credentials.");
@@ -53,6 +54,7 @@ const Login = () => {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="w-full rounded-2xl text-secondary px-6 py-10 bg-light max-w-md mx-auto">

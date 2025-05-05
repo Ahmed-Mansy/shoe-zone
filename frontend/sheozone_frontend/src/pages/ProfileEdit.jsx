@@ -16,7 +16,7 @@ function ProfileEdit() {
   const [errors, setErrors] = useState({});
   const [msg, setMsg] = useState("");
 
-  // ✅ حالة جديدة مخصوص للصورة الحالية
+  
   const [profilePictureUrl, setProfilePictureUrl] = useState("");
 
   useEffect(() => {
@@ -29,7 +29,7 @@ function ProfileEdit() {
 
     getUserProfile(userId)
       .then((res) => {
-        const user = res.user;
+        const user = res;
         if (!user) throw new Error("User object is missing in response");
         setFormData({
           ...formData,
@@ -43,7 +43,7 @@ function ProfileEdit() {
           username: user.username || "",
         });
 
-        // ✅ نحط رابط الصورة في الحالة الجديدة
+        
         if (user.profile_picture) {
           setProfilePictureUrl(`http://127.0.0.1:8000/${user.profile_picture}`);
         }
@@ -157,7 +157,6 @@ function ProfileEdit() {
           onSubmit={handleSubmit}
           encType="multipart/form-data"
           className="space-y-4">
-          {/* صورة البروفايل الحالية */}
           {profilePictureUrl && (
             <div className="mb-4 flex justify-center">
               <img

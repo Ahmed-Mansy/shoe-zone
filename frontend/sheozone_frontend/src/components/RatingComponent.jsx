@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-// import { getProductRatings, submitProductRating } from "../api";
 import api from "../api";
 
 const RatingComponent = ({ productId }) => {
@@ -30,7 +29,6 @@ const RatingComponent = ({ productId }) => {
 
   const handleSubmitRating = async () => {
     const currentUser = localStorage.getItem("userId");
-    // ✅ check لو المستخدم عمل قبل كده review
     if (ratings.some((r) => r.user == currentUser)) {
       alert("You have already submitted a review for this product.");
       return;
@@ -45,9 +43,6 @@ const RatingComponent = ({ productId }) => {
         score: newRating,
       });
 
-      // const updatedRatings = [...ratings, response.data];
-      // setRatings(updatedRatings);
-
       if (response.data.product_avg_rating !== undefined) {
         setAverageRating(response.data.product_avg_rating);
       } else {
@@ -59,7 +54,6 @@ const RatingComponent = ({ productId }) => {
         setAverageRating(newAvgRating);
       }
 
-      fetchRatings();
       setNewRating(0);
       setError(null);
     } catch (err) {
