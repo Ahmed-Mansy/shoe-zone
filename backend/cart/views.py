@@ -89,7 +89,8 @@ class ViewCartView(APIView):
             image_url = request.build_absolute_uri(image_obj.image.url) if image_obj and image_obj.image else None
 
             items.append({
-                'id': item.id,
+                'id': item.id, # CartItem ID
+                'product_id': product.id,  # Add Product ID
                 'product_name': product.name,
                 'product_price': float(product.discount_price if product.discount_price else product.price),
                 'quantity': item.quantity,

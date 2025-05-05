@@ -28,7 +28,7 @@ const CheckoutForm = ({ formData, handleSubmit, paymentMethod, loading, error, s
       shipping_address: `${formData.address}, ${formData.apartment || ""}, ${formData.city}, ${formData.zipCode}, ${formData.countryName}`,
       payment_status: paymentMethod,
       items: formData.items.map(item => ({
-        product_id: item.product_id,
+        product_id: item.product_id, // Use product_id
         quantity: item.quantity
       })),
       total_amount: totalAmount,
@@ -202,8 +202,8 @@ const Checkout = () => {
           setFormData((prev) => ({
             ...prev,
             items: data.items.map((item) => ({
-              id: item.id,
-              product_id: item.id,
+              id: item.id, // CartItem ID
+              product_id: item.product_id, // Use product_id from API
               quantity: item.quantity,
               price: item.product_price,
             })),
@@ -409,7 +409,7 @@ const Checkout = () => {
         <ul className="space-y-2 mb-4">
           {formData.items.map((item, index) => (
             <li key={index} className="flex justify-between text-gray-600">
-              <span>Product #{item.id} (x{item.quantity})</span>
+              <span>Product #{item.product_id} (x{item.quantity})</span>
               <span>EGP {(item.price * item.quantity).toFixed(2)}</span>
             </li>
           ))}

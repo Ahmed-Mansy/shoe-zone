@@ -54,3 +54,10 @@ class OrderSerializer(serializers.ModelSerializer):
         order.total_price = total_price
         order.save()
         return order
+    
+
+class OrderSerializer2(serializers.ModelSerializer):
+    user = serializers.StringRelatedField()
+    class Meta:
+        model = Order
+        fields = '__all__'
