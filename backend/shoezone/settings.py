@@ -98,7 +98,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'shoezoneDB',
         'USER': 'postgres',
-        'PASSWORD': '9285',
+
+        'PASSWORD': '2020',
         'HOST': 'localhost',
         'PORT': '5432'
     }

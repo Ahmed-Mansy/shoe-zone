@@ -118,7 +118,7 @@ const AdminDashboard = () => {
         {/* Sales Card */}
         <div className="rounded-xl p-6 shadow-lg w-full max-w-md text-center bg-gray-100">
           <div className="text-gray-600 font-bold mb-2">Total Sales</div>
-          <div className="text-2xl font-bold">${stats.total_sales}</div>
+          <div className="text-2xl font-bold">{stats.total_sales} EGP</div>
         </div>
       </div>
     </div>

@@ -139,19 +139,30 @@ export const loginUser = async (userData) => {
   }
 };
 
+
 // Get user profile
 export const getUserProfile = async (userId) => {
   try {
+    const token = localStorage.getItem("access");   
+
     const response = await axios.get(
       `${BASE_URL}users/profile/${userId}/`,
-      config
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,         
+        },
+      }
     );
+
     return response.data.user;
   } catch (error) {
     console.error("Error fetching user profile:", error);
     return null;
   }
 };
+
+
+
 
 export const updateUserProfile = async (userId, updateData) => {
   const response = await axios.put(

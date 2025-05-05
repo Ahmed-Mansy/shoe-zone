@@ -125,7 +125,7 @@ class MyTokenObtainPairView(TokenObtainPairView):
 def  getUserProfiles(request):
     user=request.user
     serializer=UserSerializer(user,many=False)
-    return Response(serializer.data)
+    return Response({"user": serializer.data})
 
 @api_view(['GET'])
 @permission_classes([IsAdminUser])
@@ -167,12 +167,12 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class ProfileView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     def get(self, request, id):
         user = get_object_or_404(User, id=id)
 
-        # if request.user.id != user.id:
-        #     return Response({"error": "You are not authorized to view this profile."}, status=status.HTTP_403_FORBIDDEN)
+        if request.user.id != user.id:
+            return Response({"error": "You are not authorized to view this profile."}, status=status.HTTP_403_FORBIDDEN)
 
         user_data = UserSerializer(user).data
 

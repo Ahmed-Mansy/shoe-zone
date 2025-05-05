@@ -10,6 +10,7 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 // Load the Stripe key using a Vite environment variable
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
@@ -55,6 +56,7 @@ const CheckoutForm = ({
       items: formData.items.map((item) => ({
         product_id: item.product_id,
         quantity: item.quantity,
+
       })),
       total_amount: totalAmount,
     };
@@ -165,7 +167,6 @@ const Checkout = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch countries with both name and ISO code
     fetch("https://restcountries.com/v3.1/all")
       .then((res) => res.json())
       .then((data) => {
@@ -181,7 +182,6 @@ const Checkout = () => {
   }, []);
 
   useEffect(() => {
-    // Fetch cart items
     const fetchCart = async () => {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -193,7 +193,6 @@ const Checkout = () => {
 
       try {
         const apiUrl = `${import.meta.env.VITE_API_URL}cart/view/`;
-        console.log("Fetching cart from:", apiUrl);
         const response = await fetch(apiUrl, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -228,15 +227,17 @@ const Checkout = () => {
         }
 
         const data = await response.json();
-        console.log("Cart data:", data);
+        console.log("Cart API response:", data); // Debug log to check API response
         if (data.items && Array.isArray(data.items)) {
           setFormData((prev) => ({
             ...prev,
             items: data.items.map((item) => ({
-              id: item.id,
-              product_id: item.id,
+              id: item.id,                  // CartItem ID
+              product_id: item.product_id, // Use product_id from API
               quantity: item.quantity,
               price: item.product_price,
+              product_name: item.product_name || `Product #${item.product_id}`,
+              image: item.image || "https://via.placeholder.com/64",
             })),
           }));
         } else {
@@ -269,6 +270,40 @@ const Checkout = () => {
     }
   };
 
+  const clearCart = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}cart/clear/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        let data = null;
+        if (response.status !== 204) {
+          data = await response.json();
+        }
+        if (data && data.items) {
+          const deletePromises = data.items.map(item =>
+            fetch(`${import.meta.env.VITE_API_URL}cart/item/${item.id}/`, {
+              method: "DELETE",
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            })
+          );
+          await Promise.all(deletePromises);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to clear cart:", err);
+      toast.error("Failed to clear cart. Please try again.");
+    }
+  };
+
   const handleSubmit = async (e, orderData, stripe, elements, errorMessage) => {
     e.preventDefault();
     setLoading(true);
@@ -288,18 +323,15 @@ const Checkout = () => {
         return;
       }
 
-      // Create order
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}orders/create/`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(orderData),
-        }
-      );
+
+      const response = await fetch(`${import.meta.env.VITE_API_URL}orders/create/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(orderData),
+      });
 
       if (!response.ok) {
         const contentType = response.headers.get("content-type");
@@ -325,18 +357,18 @@ const Checkout = () => {
         await response.json();
 
       if (orderData.payment_status === "cod") {
+        await clearCart();
         setSuccess(message);
         setTimeout(() => navigate("/orders"), 2000);
         return;
       }
 
-      // Stripe payment
       if (orderData.payment_status === "stripe") {
         const result = await stripe.confirmCardPayment(client_secret, {
           payment_method: {
             card: elements.getElement(CardElement),
             billing_details: {
-              email: formData.email, // Use the validated email
+              email: formData.email,
               name: `${formData.firstName} ${formData.lastName}`,
               address: {
                 line1: formData.address,
@@ -389,12 +421,13 @@ const Checkout = () => {
             throw new Error(errorData.error || "Failed to confirm payment");
           }
 
+          await clearCart();
           setSuccess("Payment confirmed successfully!");
           setTimeout(() => navigate("/orders"), 2000);
         }
       }
     } catch (err) {
-      setError(err.message || "Something went wrong. Please try again.");
+      setError(err.message || " Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -443,24 +476,40 @@ const Checkout = () => {
     <div className="wrapper my-8">
       <h2 className="text-xl font-medium mb-4">Checkout</h2>
 
-      <div className="mb-8">
-        <h3 className="text-lg font-medium mb-4">Order Summary</h3>
-        <ul className="space-y-2 mb-4">
+      <div className="mb-8 p-6 bg-white shadow-md rounded-md">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">
+          Order Summary
+        </h3>
+        <ul className="space-y-4">
           {formData.items.map((item, index) => (
-            <li key={index} className="flex justify-between text-gray-600">
-              <span>
-                Product #{item.id} (x{item.quantity})
-              </span>
-              <span>EGP {(item.price * item.quantity).toFixed(2)}</span>
+
+            <li
+              key={index}
+              className="flex items-center justify-between border-b pb-4"
+            >
+              <div className="flex items-center space-x-4">
+                <div>
+                  <p className="text-sm font-medium text-gray-700">
+                    {item.product_name || `Product #${item.product_id}`}
+                  </p>
+                  <p className="text-xs text-gray-500">Quantity: {item.quantity}</p>
+                </div>
+              </div>
+              <p className="text-sm font-semibold text-gray-800">
+                EGP {(item.price * item.quantity).toFixed(2)}
+              </p>
             </li>
           ))}
         </ul>
-        <p className="text-lg font-semibold text-gray-800">
-          Total: EGP{" "}
-          {formData.items
-            .reduce((sum, item) => sum + item.price * item.quantity, 0)
-            .toFixed(2)}
-        </p>
+        <div className="mt-4 flex justify-between items-center">
+          <p className="text-lg font-semibold text-gray-800">Total:</p>
+          <p className="text-lg font-bold text-green-600">
+            EGP{" "}
+            {formData.items
+              .reduce((sum, item) => sum + item.price * item.quantity, 0)
+              .toFixed(2)}
+          </p>
+        </div>
       </div>
 
       <h2 className="text-xl font-medium mb-4">Shipping Address</h2>

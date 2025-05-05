@@ -25,6 +25,7 @@ const Product = () => {
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
   const [reviews, setReviews] = useState([]);
+  const [refetchReviews, setRefetchReviews] = useState(false);
   const [newReview, setNewReview] = useState({
     rating: null,
     comment: "",
@@ -33,31 +34,35 @@ const Product = () => {
 
   useEffect(() => {
     const fetchProduct = async () => {
-      try {
-        const response = await axios.get(
-          `http://127.0.0.1:8000/api/products/products/${id}/`
-        );
-        setProduct(response.data);
-        setCurrentImage(response.data.images[0]?.image || null);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    const fetchReviews = async () => {
-      try {
-        const response = await axios.get(
-          `http://127.0.0.1:8000/api/products/${id}/reviews/`
-        );
-        setReviews(response.data);
-      } catch (error) {
-        console.error("Error fetching reviews:", error);
-      }
-    };
-
+        try {
+          const response = await axios.get(
+            `http://127.0.0.1:8000/api/products/products/${id}/`
+          );
+          setProduct(response.data);
+          setCurrentImage(response.data.images[0]?.image || null);
+        } catch (error) {
+          console.error(error);
+        }
+      };
     fetchProduct();
-    fetchReviews();
+    
   }, [id]);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+        try {
+          const response = await axios.get(
+            `http://127.0.0.1:8000/api/products/${id}/reviews/`
+          );
+          setReviews(response.data);
+        } catch (error) {
+          console.error("Error fetching reviews:", error);
+        }
+      };
+
+    fetchReviews();
+  }, [id,refetchReviews]);
+
 
   if (!product) {
     return <Loading />;
@@ -145,7 +150,7 @@ const Product = () => {
 
       toast.success("Review submitted successfully.");
       setNewReview({ rating: null, comment: "" });
-      fetchReviews();
+      setRefetchReviews(prev => !prev);
     } catch (error) {
       console.error("Error submitting review:", error);
       toast.error("Failed to submit review, error: " + error.response.data[0]);
@@ -162,7 +167,6 @@ const Product = () => {
       return;
     }
 
-    // SweetAlert بدل confirm العادي
     const result = await Swal.fire({
       title: "Are you sure?",
       text: "Do you really want to delete this review?",

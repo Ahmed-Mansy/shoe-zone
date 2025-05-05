@@ -6,10 +6,11 @@ class OrderItemSerializer(serializers.ModelSerializer):
     product_id = serializers.PrimaryKeyRelatedField(
         queryset=Product.objects.all(), source='product'
     )
+    product_name = serializers.CharField(source='product.name', read_only=True)
 
     class Meta:
         model = OrderItem
-        fields = ['product_id', 'quantity', 'price']
+        fields = ['product_id', 'quantity', 'price','product_name']
         extra_kwargs = {'price': {'required': False}}
 
     def validate(self, data):
@@ -54,3 +55,10 @@ class OrderSerializer(serializers.ModelSerializer):
         order.total_price = total_price
         order.save()
         return order
+    
+
+class OrderSerializer2(serializers.ModelSerializer):
+    user = serializers.StringRelatedField()
+    class Meta:
+        model = Order
+        fields = '__all__'
