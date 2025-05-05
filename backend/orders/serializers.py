@@ -6,10 +6,11 @@ class OrderItemSerializer(serializers.ModelSerializer):
     product_id = serializers.PrimaryKeyRelatedField(
         queryset=Product.objects.all(), source='product'
     )
+    product_name = serializers.CharField(source='product.name', read_only=True)
 
     class Meta:
         model = OrderItem
-        fields = ['product_id', 'quantity', 'price']
+        fields = ['product_id', 'quantity', 'price','product_name']
         extra_kwargs = {'price': {'required': False}}
 
     def validate(self, data):

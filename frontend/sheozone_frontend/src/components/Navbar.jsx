@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import Logo from "./Logo";
-import { FiUser, FiShoppingCart } from "react-icons/fi";
+import { FiUser, FiShoppingCart, FiShoppingBag } from "react-icons/fi";
 import { IoIosMenu, IoMdClose, IoIosLogOut } from "react-icons/io";
 import { IoChevronDownOutline } from "react-icons/io5";
 import { useEffect, useState, useRef } from "react";
@@ -87,28 +87,29 @@ const Navbar = () => {
 
   return (
     <>
-      {/* <ToastContainer /> */}
-
       {/* Drawer for user and admin */}
       {isAdmin ? (
         <div
           className={`${
             showDrawer ? "block" : "hidden"
-          } w-screen h-full absolute top-[60px] left-0 bg-light border-t-[1px] border-[#E5E5E5] shadow-lg z-20 lg:hidden`}>
+          } w-screen h-full absolute top-[60px] left-0 bg-light border-t-[1px] border-[#E5E5E5] shadow-lg z-20 lg:hidden`}
+        >
           <ul className="flex flex-col font-semibold text-lg divide-y-[1px] divide-[#EAEAEA] border-[#EAEAEA] ">
             {adminNavLinks.map((link) => (
               <li key={link.id} className="py-4 px-8">
                 <Link
                   to={link.to}
                   onClick={() => setShowDrawer(false)}
-                  className="hover:text-[#39523f]">
+                  className="hover:text-[#39523f]"
+                >
                   {link.title}
                 </Link>
               </li>
             ))}
             <li
               onClick={handleLogOut}
-              className="py-4 px-8 cursor-pointer hover:text-[#39523f]">
+              className="py-4 px-8 cursor-pointer hover:text-[#39523f]"
+            >
               Log out
             </li>
           </ul>
@@ -118,7 +119,8 @@ const Navbar = () => {
           className={`${
             showDrawer ? "block" : "hidden"
           } w-screen h-full absolute top-[60px] left-0 bg-light border-t-[1px] border-[#E5E5E5] shadow-lg z-20 lg:hidden`}
-          aria-hidden={!showDrawer}>
+          aria-hidden={!showDrawer}
+        >
           <ul className="flex flex-col uppercase font-semibold text-xl divide-y-[1px] divide-[#EAEAEA] border-b-[1px] border-[#EAEAEA]">
             {userNavLinks.map((link) => (
               <div key={link.id} className="relative">
@@ -126,7 +128,8 @@ const Navbar = () => {
                   onClick={() => handleSubMenu(link.title)}
                   className="py-4 px-10 hover:underline hover:text-[#39523f] flex justify-between items-center cursor-pointer"
                   aria-expanded={activeDropdown === link.title}
-                  aria-controls={`submenu-${link.title}`}>
+                  aria-controls={`submenu-${link.title}`}
+                >
                   {link.title}
                   <IoChevronDownOutline
                     size={20}
@@ -141,16 +144,21 @@ const Navbar = () => {
                     activeDropdown === link.title
                       ? "max-h-[500px] py-2"
                       : "max-h-0"
-                  }`}>
+                  }`}
+                >
                   {subCategories[link.title]?.map((sublink) => (
                     <Link
                       key={sublink.id}
-                      to={link.title === 'men' ? `/collections/men/${sublink.name}` : `/collections/women/${sublink.name}`}
+                      to={
+                        link.title === "men"
+                          ? `/collections/men/${sublink.name}`
+                          : `/collections/women/${sublink.name}`
+                      }
                       onClick={() => setActiveDropdown(null)}
-                      className="block border-[#EAEAEA] not-last-of-type:border-b py-3 px-3 text-sm hover:underline hover:text-[#39523f]">
+                      className="block border-[#EAEAEA] not-last-of-type:border-b py-3 px-3 text-sm hover:underline hover:text-[#39523f]"
+                    >
                       {sublink.name}
                     </Link>
-                    
                   ))}
                 </ul>
               </div>
@@ -188,7 +196,8 @@ const Navbar = () => {
                 <Link
                   key={link.id}
                   to={link.to}
-                  className="hover:text-[#39523f]">
+                  className="hover:text-[#39523f]"
+                >
                   {link.title}
                 </Link>
               ))}
@@ -212,30 +221,38 @@ const Navbar = () => {
           <div className="relative w-full flex-between" ref={dropdownRef}>
             {/* Desktop Nav */}
             <nav className="lg:w-1/3 hidden lg:block">
-            
               <ul className="flex items-center justify-start gap-10 uppercase font-semibold text-sm">
-              <li><Link to="/products" className="hover:underline hover:text-[#39523f] cursor-pointe">All-Products</Link></li>
-              {userNavLinks.map((link) => (
+                <li>
+                  <Link
+                    to="/products"
+                    className="hover:underline hover:text-[#39523f] cursor-pointer"
+                  >
+                    All-Products
+                  </Link>
+                </li>
+                {userNavLinks.map((link) => (
                   <div key={link.id} className="relative">
-
                     <li
                       onClick={() => handleSubMenu(link.title)}
                       className="hover:underline hover:text-[#39523f] cursor-pointer"
                       aria-expanded={activeDropdown === link.title}
-                      aria-controls={`desktop-submenu-${link.title}`}>
+                      aria-controls={`desktop-submenu-${link.title}`}
+                    >
                       {link.title}
                     </li>
                     <ul
                       id={`desktop-submenu-${link.title}`}
                       className={`absolute bg-light shadow-md shadow-gray-300 rounded-xs w-[300px] px-2 py-2 top-10 ${
                         activeDropdown === link.title ? "block" : "hidden"
-                      }`}>
+                      }`}
+                    >
                       {subCategories[link.title]?.map((sublink) => (
                         <Link
                           key={sublink.id}
                           to={`/collections/${link.title}/${sublink.name}`}
                           onClick={() => setActiveDropdown(null)}
-                          className="block border-[#EAEAEA] not-last-of-type:border-b-[1px]">
+                          className="block border-[#EAEAEA] not-last-of-type:border-b-[1px]"
+                        >
                           <li className="hover:underline hover:text-[#39523f] py-4">
                             {sublink.name}
                           </li>
@@ -278,10 +295,11 @@ const Navbar = () => {
                 <Link
                   to={"/cart"}
                   onClick={!isAuthenticated ? handleAuthRedirect : undefined}
-                  aria-label="Shopping cart">
+                  aria-label="Shopping cart"
+                >
                   <FiShoppingCart
                     size={24}
-                    className={`hover:text-[#39523f] z-10 `}
+                    className={`hover:text-[#39523f] z-10`}
                   />
                 </Link>
                 {isAuthenticated && cartCount > 0 && (
@@ -291,9 +309,20 @@ const Navbar = () => {
                 )}
               </div>
               <Link
+                to={"/orders"}
+                onClick={!isAuthenticated ? handleAuthRedirect : undefined}
+                aria-label="Orders"
+              >
+                <FiShoppingBag
+                  size={24}
+                  className={`hover:text-[#39523f]`}
+                />
+              </Link>
+              <Link
                 to={isAuthenticated ? "/profile" : "/login"}
                 onClick={!isAuthenticated ? handleAuthRedirect : undefined}
-                aria-label={isAuthenticated ? "User profile" : "Log in"}>
+                aria-label={isAuthenticated ? "User profile" : "Log in"}
+              >
                 <FiUser size={24} className={`hover:text-[#39523f]`} />
               </Link>
               {isAuthenticated && (
