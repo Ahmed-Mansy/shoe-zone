@@ -49,29 +49,60 @@ class ProductListView(ListAPIView):
     
 
 # For product CRUD operations (if needed)
+# class ProductViewSet(viewsets.ModelViewSet):
+#     queryset = Product.objects.all()
+#     serializer_class = ProductSerializer
+#     permission_classes = [IsAuthenticated,IsAdminUser]  # Only a  dmin can create, update, delete products and all users can view products
+#     parser_classes = [MultiPartParser, FormParser]
+
+#     def perform_create(self, serializer):
+#         # Save the product instance
+#         product = serializer.save()
+
+#         # Add images for the created product
+#         images = self.request.FILES.getlist('images')
+#         for img in images:
+#             ProductImage.objects.create(product=product, image=img)
+
+#     def perform_update(self, serializer):
+#         # Update the product instance
+#         product = serializer.save()
+
+#         # Add new images for the updated product
+#         images = self.request.FILES.getlist('images')
+#         for img in images:
+#             ProductImage.objects.create(product=product, image=img)
+
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [IsAuthenticated,IsAdminUser]  # Only a  dmin can create, update, delete products and all users can view products
+    permission_classes = [IsAuthenticated, IsAdminUser]
     parser_classes = [MultiPartParser, FormParser]
 
     def perform_create(self, serializer):
-        # Save the product instance
         product = serializer.save()
-
-        # Add images for the created product
         images = self.request.FILES.getlist('images')
         for img in images:
             ProductImage.objects.create(product=product, image=img)
 
     def perform_update(self, serializer):
-        # Update the product instance
-        product = serializer.save()
+        # ما نضيفش صور هنا، عشان ما تتكررش في partial_update
+        serializer.save()
 
-        # Add new images for the updated product
-        images = self.request.FILES.getlist('images')
+    def partial_update(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        if request.FILES.getlist('images'):
+            instance.images.all().delete()
+
+        response = super().partial_update(request, *args, **kwargs)
+
+        images = request.FILES.getlist('images')
         for img in images:
-            ProductImage.objects.create(product=product, image=img)
+            ProductImage.objects.create(product=instance, image=img)
+
+        return response
+ 
 
 
 # For product details (NEW)
