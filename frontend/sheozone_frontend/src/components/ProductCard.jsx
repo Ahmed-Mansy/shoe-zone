@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { FaStar, FaRegStar } from "react-icons/fa";
 import ImagesSlider from "./ImagesSlider";
-import PropTypes from "prop-types"; // Added PropTypes import
 import { toast } from "react-toastify"; // Added toast import
 import "react-toastify/dist/ReactToastify.css"; // Ensure toast styles are included
 
@@ -25,7 +24,13 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
   return (
     <div className="w-full mx-2 my-4 border border-gray-300 rounded-md p-4 shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 ease-in-out">
       <Link
-        to={isAuthenticated ? (isAdmin ? `/admin/products/${id}` : `/products/${id}`) : "/login"}
+        to={
+          isAuthenticated
+            ? isAdmin
+              ? `/admin/products/${id}`
+              : `/products/${id}`
+            : "/login"
+        }
         state={product}
         onClick={() => {
           if (!isAuthenticated) {
@@ -35,8 +40,7 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
             });
           }
         }}
-        aria-label={`View details for ${name}`}
-      >
+        aria-label={`View details for ${name}`}>
         <div className="w-full aspect-square bg-[#f5f5f5] rounded-md overflow-hidden">
           {images.length > 0 ? (
             <ImagesSlider images={images} />
@@ -54,14 +58,16 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
         <h3 className="text-md font-semibold capitalize text-center">{name}</h3>
 
         {/* Rating Section (Uncommented and Fixed) */}
-        <div className="flex items-center justify-center gap-1 text-yellow-500" aria-label={`Rating: ${average_rating} out of 5`}>
-          {Array.from({ length: 5 }, (_, index) => (
+        <div
+          className="flex items-center justify-center gap-1 text-yellow-500"
+          aria-label={`Rating: ${average_rating} out of 5`}>
+          {Array.from({ length: 5 }, (_, index) =>
             index < Math.round(average_rating) ? (
               <FaStar key={index} />
             ) : (
               <FaRegStar key={index} />
             )
-          ))}
+          )}
         </div>
 
         <div className="flex justify-center gap-1">
@@ -70,14 +76,15 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
               key={index}
               style={{ backgroundColor: color }}
               className="inline-block w-[25px] h-[25px] rounded-full border border-gray-900"
-              aria-label={`Color: ${color}`}
-            ></span>
+              aria-label={`Color: ${color}`}></span>
           ))}
         </div>
 
         <div className="text-md flex justify-center items-center space-x-3">
           {discount_price !== 0 && (
-            <span className="bg-red-500 text-white text-xs px-2 py-1 rounded" aria-label="On sale">
+            <span
+              className="bg-red-500 text-white text-xs px-2 py-1 rounded"
+              aria-label="On sale">
               Sale
             </span>
           )}
@@ -88,11 +95,15 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
         </div>
 
         {stock_quantity <= 0 ? (
-          <span className="block text-center text-sm text-red-600 font-bold" aria-label="Out of stock">
+          <span
+            className="block text-center text-sm text-red-600 font-bold"
+            aria-label="Out of stock">
             Out of Stock
           </span>
         ) : stock_quantity <= 5 ? (
-          <span className="block text-center text-sm text-orange-600 font-bold" aria-label={`Low stock: ${stock_quantity} left`}>
+          <span
+            className="block text-center text-sm text-orange-600 font-bold"
+            aria-label={`Low stock: ${stock_quantity} left`}>
             Only {stock_quantity} left!
           </span>
         ) : null}
@@ -102,15 +113,13 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
             <button
               onClick={() => onEdit(id)}
               className="bg-gray-500 text-white w-[80px] text-center cursor-pointer rounded-xs px-3 py-2 hover:bg-gray-600 transition"
-              aria-label={`Edit product ${name}`}
-            >
+              aria-label={`Edit product ${name}`}>
               Edit
             </button>
             <button
               onClick={() => onDelete(id)}
               className="bg-red-600 text-white w-[80px] text-center cursor-pointer rounded-xs px-3 py-2 hover:bg-red-700 transition"
-              aria-label={`Delete product ${name}`}
-            >
+              aria-label={`Delete product ${name}`}>
               Delete
             </button>
           </div>
