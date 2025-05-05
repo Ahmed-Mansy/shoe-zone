@@ -15,6 +15,7 @@ const Cart = () => {
     const fetchCartItems = async () => {
       const items = await getCartItems();
       setCartItems(items);
+      console.log(items);
     };
 
     fetchCartItems();
@@ -85,3 +86,4 @@ const Cart = () => {
 };
 
 export default Cart;
+// TODO  ==============================================================
