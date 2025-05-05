@@ -34,35 +34,33 @@ const Product = () => {
 
   useEffect(() => {
     const fetchProduct = async () => {
-        try {
-          const response = await axios.get(
-            `http://127.0.0.1:8000/api/products/products/${id}/`
-          );
-          setProduct(response.data);
-          setCurrentImage(response.data.images[0]?.image || null);
-        } catch (error) {
-          console.error(error);
-        }
-      };
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:8000/api/products/products/${id}/`
+        );
+        setProduct(response.data);
+        setCurrentImage(response.data.images[0]?.image || null);
+      } catch (error) {
+        console.error(error);
+      }
+    };
     fetchProduct();
-    
   }, [id]);
 
   useEffect(() => {
     const fetchReviews = async () => {
-        try {
-          const response = await axios.get(
-            `http://127.0.0.1:8000/api/products/${id}/reviews/`
-          );
-          setReviews(response.data);
-        } catch (error) {
-          console.error("Error fetching reviews:", error);
-        }
-      };
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:8000/api/products/${id}/reviews/`
+        );
+        setReviews(response.data);
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+      }
+    };
 
     fetchReviews();
-  }, [id,refetchReviews]);
-
+  }, [id, refetchReviews]);
 
   if (!product) {
     return <Loading />;
@@ -150,7 +148,7 @@ const Product = () => {
 
       toast.success("Review submitted successfully.");
       setNewReview({ rating: null, comment: "" });
-      setRefetchReviews(prev => !prev);
+      setRefetchReviews((prev) => !prev);
     } catch (error) {
       console.error("Error submitting review:", error);
       toast.error("Failed to submit review, error: " + error.response.data[0]);
@@ -200,6 +198,12 @@ const Product = () => {
         "Failed to delete review. " + (error.response?.data?.detail || "")
       );
     }
+  };
+
+  const isValidColor = (color) => {
+    const s = new Option().style;
+    s.color = color;
+    return s.color !== "";
   };
 
   return (
@@ -264,7 +268,7 @@ const Product = () => {
               select color :
             </span>
             <div className="flex gap-2 flex-wrap">
-              {available_colors.map((color, index) => (
+              {available_colors.filter(isValidColor).map((color, index) => (
                 <span
                   key={index}
                   style={{ backgroundColor: color }}

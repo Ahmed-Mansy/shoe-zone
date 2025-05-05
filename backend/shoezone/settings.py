@@ -99,7 +99,7 @@ DATABASES = {
         'NAME': 'shoezoneDB',
         'USER': 'postgres',
 
-        'PASSWORD': '2020',
+        'PASSWORD': '9285',
         'HOST': 'localhost',
         'PORT': '5432'
     }
