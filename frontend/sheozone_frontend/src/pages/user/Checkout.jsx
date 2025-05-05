@@ -246,16 +246,21 @@ const Checkout = () => {
       });
 
       if (response.ok) {
-        const data = await response.json();
-        const deletePromises = data.items.map(item =>
-          fetch(`${import.meta.env.VITE_API_URL}cart/item/${item.id}/`, {
-            method: "DELETE",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          })
-        );
-        await Promise.all(deletePromises);
+        let data = null;
+        if (response.status !== 204) {
+          data = await response.json();
+        }
+        if (data && data.items) {
+          const deletePromises = data.items.map(item =>
+            fetch(`${import.meta.env.VITE_API_URL}cart/item/${item.id}/`, {
+              method: "DELETE",
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            })
+          );
+          await Promise.all(deletePromises);
+        }
       }
     } catch (err) {
       console.error("Failed to clear cart:", err);
