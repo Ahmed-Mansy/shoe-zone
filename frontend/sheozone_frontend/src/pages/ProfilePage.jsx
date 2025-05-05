@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getUserProfile } from "../api";
+import Loading from "../components/Loading";
 
 const ProfilePage = () => {
   const [profile, setProfile] = useState(null);
@@ -15,6 +16,7 @@ const ProfilePage = () => {
         }
         const data = await getUserProfile(userId);
         setProfile(data);
+        console.log(data);
       } catch (error) {
         console.error("Error fetching profile data:", error);
       }
@@ -22,8 +24,7 @@ const ProfilePage = () => {
     fetchProfile();
   }, []);
 
-  if (!profile || !profile.user)
-    return <div className="text-center py-4">Loading...</div>;
+  if (!profile || !profile.user) return <Loading />;
 
   const user = profile.user;
   const addresses = user.addresses || [];
@@ -32,7 +33,7 @@ const ProfilePage = () => {
     <div id="user-profile" className="container mx-auto my-5 py-5">
       <div className="flex flex-wrap">
         <div className="w-1/3 bg-gray-100 p-4">
-          <div className="text-center py-4 rounded bg-gradient-to-r from-blue-500 to-indigo-500 text-white">
+          <div className="text-center py-4 rounded from-white-500 to-indigo-500 text-white">
             <img
               src={
                 user.profile_picture
@@ -48,8 +49,7 @@ const ProfilePage = () => {
                 fontSize: "1.125rem",
                 fontWeight: "600",
                 color: "black",
-              }}
-            >
+              }}>
               {user.first_name} {user.last_name}
             </h4>
             <p style={{ fontSize: "0.875rem", color: "black" }}>{user.email}</p>
@@ -57,12 +57,10 @@ const ProfilePage = () => {
               <a
                 href={user.facebook_profile || "#"}
                 target="_blank"
-                rel="noopener noreferrer"
-              >
+                rel="noopener noreferrer">
                 <i
                   className="fa-brands fa-facebook mx-1 text-xl"
-                  style={{ color: "#1877F2" }}
-                ></i>
+                  style={{ color: "black" }}></i>
               </a>
             </div>
           </div>
@@ -70,24 +68,21 @@ const ProfilePage = () => {
             <li className="py-2 px-4">
               <Link
                 to="/profile/edit"
-                className="text-blue-600 hover:underline inline-block"
-              >
+                className="text-blue-600 hover:underline inline-block">
                 Edit Profile
               </Link>
             </li>
             <li className="py-2 px-4">
               <Link
                 to="/profile/update-address"
-                className="text-blue-600 hover:underline inline-block"
-              >
+                className="text-blue-600 hover:underline inline-block">
                 Edit Address
               </Link>
             </li>
             <li className="py-2 px-4">
               <Link
                 to="/profile/delete"
-                className="text-red-600 hover:underline inline-block"
-              >
+                className="text-red-600 hover:underline inline-block">
                 Delete Account
               </Link>
             </li>
@@ -97,8 +92,7 @@ const ProfilePage = () => {
           <div className="w-full md:w-3/4">
             <div
               className="w-3/4 mx-auto shadow-lg text-black rounded px-5 py-4 flex flex-col items-center"
-              style={{ backgroundColor: "#d0ebff" }}
-            >
+              style={{ backgroundColor: "#d0ebff" }}>
               <h3 className="mb-4 text-xl font-bold">Profile Details</h3>
             </div>
             <div className="w-3/4 mx-auto mt-4 text-gray-800 space-y-2">
@@ -115,9 +109,6 @@ const ProfilePage = () => {
                 <strong>Mobile:</strong> {user.mobile}
               </p>
               <p>
-                <strong>Country:</strong> {user.country}
-              </p>
-              <p>
                 <strong>Birthday:</strong> {user.birthdate || "-"}
               </p>
             </div>
@@ -125,8 +116,7 @@ const ProfilePage = () => {
           <div className="w-full md:w-3/4 mt-8">
             <div
               className="w-3/4 mx-auto shadow-lg text-black rounded px-5 py-4 flex flex-col items-center"
-              style={{ backgroundColor: "#d0ebff" }}
-            >
+              style={{ backgroundColor: "#d0ebff" }}>
               <h3 className="mb-4 text-center w-full text-xl font-bold">
                 Home Address
               </h3>
@@ -136,8 +126,7 @@ const ProfilePage = () => {
               addresses.map((address) => (
                 <div
                   key={address.id}
-                  className="text-start px-4 mt-3 text-black w-3/4 mx-auto"
-                >
+                  className="text-start px-4 mt-3 text-black w-3/4 mx-auto">
                   {address.country && (
                     <p>
                       <strong>Country:</strong> {address.country}

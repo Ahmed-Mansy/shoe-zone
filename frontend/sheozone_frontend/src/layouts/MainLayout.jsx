@@ -6,7 +6,7 @@ const MainLayout = () => {
   return (
     <div>
       <Header />
-      <div className="scroll-smooth">
+      <div className="scroll-smooth min-h-[500px]">
         <Outlet />
       </div>
       <Footer />

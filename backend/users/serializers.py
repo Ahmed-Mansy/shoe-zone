@@ -30,6 +30,7 @@ class UserSerializer(serializers.ModelSerializer):
             'facebook_profile',
             'country',
             'addresses',
+            'is_staff','is_active'
         ]
         
     def get_name(self,obj):
@@ -55,7 +56,7 @@ class UserSerializerWithToken(UserSerializer):
     token=serializers.SerializerMethodField(read_only=True)
     class Meta:
         model=User
-        fields=['id','_id','username','email','name','isAdmin','token']
+        fields=['id','_id','username','email','name','isAdmin','token','is_staff','is_active']
     
     def get_token(self,obj):
         token=RefreshToken.for_user(obj)
@@ -79,6 +80,8 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             'birthdate',
             'facebook_profile',
             'country',
+            'is_staff',
+            'is_active',
         ]
         extra_kwargs = {
             'profile_picture': {'required': False, 'allow_null': True},
@@ -129,7 +132,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         return instance
     
 class DeleteAccountSerializer(serializers.Serializer):
-    user_id = serializers.IntegerField()
+    # user_id = serializers.IntegerField()
     password = serializers.CharField(write_only=True)
     def validate(self, attrs):
         password = attrs.get('password')
@@ -147,11 +150,10 @@ class AddressSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class AddressUpdateSerializer(serializers.ModelSerializer):
-    country = serializers.CharField(source='country')
-    city = serializers.CharField(source='city')
     street = serializers.CharField(source='address_line_1')
-    postcode = serializers.CharField(source='postcode')
 
     class Meta:
         model = Address
         fields = ['country', 'city', 'street', 'postcode']
+
+

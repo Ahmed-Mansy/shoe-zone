@@ -18,11 +18,13 @@ urlpatterns = [
 
     path('users/crud/', include(router.urls)),
     path('users/user/<int:id>/', views.User_Update_Delete.as_view()),
+    path('users/delete-account/', views.DeleteByEmailAndPassword.as_view()),
     path('users/profile/<int:id>/', views.ProfileView.as_view(), name='user_profile'),
     path('addresses/', AddressListView.as_view(), name='address-list'),
     path('addresses/create/', AddressCreateView.as_view(), name='address-create'),
     path('addresses/<int:pk>/', AddressDetailView.as_view(), name='address-detail'),
     path('addresses/update/', views.update_address, name='address-update'),
+    path('addresses/detail/', views.get_my_address, name='address-detail'),
     path('users/password-reset-request/', views.passwordResetRequest, name='password-reset-request'),
     path('users/password-reset-confirm/', views.passwordResetConfirm, name='password-reset-confirm'),
 

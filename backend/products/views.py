@@ -10,7 +10,7 @@ from .serializers import RatingSerializer
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser, AllowAny
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
 
@@ -19,8 +19,26 @@ from rest_framework.parsers import MultiPartParser, FormParser
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
 
+    def get_permissions(self):
+        if self.action == 'list' or self.action == 'retrieve':  # GET requests
+            permission_classes = [AllowAny] 
+        else:
+            permission_classes = [IsAuthenticated, IsAdminUser]  
+        return [permission() for permission in permission_classes]  
+    
+class HomeProductsView(APIView):
+    def get(self, request):
+        top_rated = Product.objects.order_by('-average_rating')[:3]
+        latest = Product.objects.order_by('-created_at')[:3]
+
+        data = {
+            'top_rated': ProductSerializer(top_rated, many=True).data,
+            'latest': ProductSerializer(latest, many=True).data
+        }
+        return Response(data, status=status.HTTP_200_OK)
+    
+       
 # For product search and filtering ONLY
 class ProductListView(ListAPIView):
     queryset = Product.objects.all()
@@ -34,7 +52,7 @@ class ProductListView(ListAPIView):
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]  # Only a  dmin can create, update, delete products and all users can view products
+    permission_classes = [IsAuthenticated,IsAdminUser]  # Only a  dmin can create, update, delete products and all users can view products
     parser_classes = [MultiPartParser, FormParser]
 
     def perform_create(self, serializer):
@@ -59,9 +77,9 @@ class ProductViewSet(viewsets.ModelViewSet):
 # For product details (NEW)
 class ProductDetailView(APIView):
 
-    def get(self, request, pk):
+    def get(self, request, id):
         try:
-            product = Product.objects.get(id=pk)
+            product = Product.objects.get(id=id)
             serializer = ProductSerializer(product, many=False)
             
             product_data = serializer.data
@@ -110,3 +128,33 @@ class RatingListCreateView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+#all products for women or men    
+class ProductsByTypeView(APIView):
+    def get(self, request, type):
+        if type not in ['women', 'men']:
+            return Response({"error": "Invalid type."}, status=status.HTTP_400_BAD_REQUEST)
+
+        products = Product.objects.filter(category__type=type)
+        serializer = ProductSerializer(products, many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+class CategoryByTypeView(APIView):
+    def get(self, request, type):
+        if type not in ['women', 'men']:
+            return Response({"error": "Invalid category type."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        categories = Category.objects.filter(type=type)
+        serializer = CategorySerializer(categories, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class ProductsByTypeAndCategoryView(APIView):
+    def get(self, request, type, category):
+        try:
+            category_obj = Category.objects.get(type=type, name=category)
+        except Category.DoesNotExist:
+            return Response({"detail": "Category not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        products = Product.objects.filter(category=category_obj)
+        serializer = ProductSerializer(products, many=True)
+        return Response(serializer.data)

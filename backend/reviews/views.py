@@ -11,23 +11,52 @@ class ReviewListCreateView(APIView):
     """
     Handles listing all reviews for a product and creating a new review.
     """
-    permission_classes = [IsAuthenticated]
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return []  # يعني مفيش قيود، أي حد يقدر يعمل GET
+        return [IsAuthenticated()]  # POST يحتاج يكون المستخدم مسجل دخول
 
     def get(self, request, product_id):
         product = Product.objects.get(id=product_id)
-
-        
         reviews = Review.objects.filter(product=product)
         serializer = ReviewSerializer(reviews, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request, product_id):
-        serializer = ReviewSerializer(data=request.data, context={'product_id': product_id})
+        serializer = ReviewSerializer(data=request.data, context={'product_id': product_id,'user': request.user})
         if serializer.is_valid():
-            
-            serializer.save(user=request.user)
+            serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# class ReviewDeleteView(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def delete(self, request, review_id):
+#         try:
+#             review = Review.objects.get(id=review_id, user=request.user)
+#         except Review.DoesNotExist:
+#             return Response({"detail": "Review not found or not authorized."}, status=status.HTTP_404_NOT_FOUND)
+
+#         review.delete()
+#         return Response({"detail": "Review deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+
+class ReviewDeleteView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, review_id):
+        try:
+            review = Review.objects.get(id=review_id)
+            # التحقق من أن المستخدم هو صاحب المراجعة أو أنه Admin
+            if review.user != request.user and not request.user.is_staff:
+                return Response({"detail": "You do not have permission to delete this review."}, status=status.HTTP_403_FORBIDDEN)
+        except Review.DoesNotExist:
+            return Response({"detail": "Review not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        review.delete()
+        return Response({"detail": "Review deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+    
 
 class ReportListCreateView(APIView):
     """
