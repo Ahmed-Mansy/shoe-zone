@@ -108,7 +108,9 @@ class ViewCartView(APIView):
 
         for item in cart_items:
             product = item.product
-            price = product.discount_price if product.discount_price else product.price
+            # price = product.discount_price if product.discount_price else product.price
+            price = product.price * (1 - product.discount_price / 100) if product.discount_price else product.price
+
             item_total = price * item.quantity
             total_price += item_total
 
