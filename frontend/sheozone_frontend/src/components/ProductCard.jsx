@@ -1,6 +1,7 @@
 import ImagesSlider from "./ImagesSlider";
 import { FaStar, FaRegStar } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
 
 const ProductCard = ({ product, onDelete, onEdit }) => {
   const isAdmin = localStorage.getItem("userRole") === "admin";

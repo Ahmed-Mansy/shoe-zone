@@ -73,7 +73,6 @@ const EditAddress = () => {
         }
       );
 
-      console.log(response.data);
       toast.success("Address updated successfully.");
       navigate("/profile");
     } catch (error) {
@@ -86,14 +85,12 @@ const EditAddress = () => {
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div
         style={{ width: "800px" }}
-        className="rounded-2xl overflow-hidden shadow-lg bg-white border border-gray-200 p-6"
-      >
+        className="rounded-2xl overflow-hidden shadow-lg bg-white border border-gray-200 p-6">
         <h2 className="text-center text-2xl font-bold mb-6">Update Address</h2>
 
         <form
           onSubmit={handleSubmit}
-          className="w-full max-w-md mx-auto space-y-4"
-        >
+          className="w-full max-w-md mx-auto space-y-4">
           <div>
             <label className="block text-gray-700 mb-1">Country</label>
             <select
@@ -101,8 +98,7 @@ const EditAddress = () => {
               value={formData.country}
               onChange={handleChange}
               required
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            >
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
               <option value="">Select Country</option>
               <option value="Egypt">Egypt</option>
             </select>
@@ -115,8 +111,7 @@ const EditAddress = () => {
               value={formData.city}
               onChange={handleChange}
               required
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            >
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
               <option value="">Select City</option>
               <option value="Alexandria">Alexandria</option>
               <option value="Aswan">Aswan</option>
@@ -172,15 +167,13 @@ const EditAddress = () => {
           <div className="flex gap-2">
             <button
               type="submit"
-              className="w-1/2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-            >
+              className="w-1/2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
               Save Changes
             </button>
             <button
               type="button"
               className="w-1/2 border border-blue-500 text-blue-500 px-4 py-2 rounded hover:bg-blue-50 transition"
-              onClick={() => navigate("/profile")}
-            >
+              onClick={() => navigate("/profile")}>
               Cancel
             </button>
           </div>

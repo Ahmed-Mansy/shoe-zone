@@ -70,7 +70,6 @@ const AppRouter = () => {
             <Route path="collections/:type/:title" element={<Collection />} />
             <Route path="products/:id" element={<Product />} />
             <Route path="/admin/products/:id" element={<AdminProduct />} />
-
           </Route>
 
           <Route path="*" element={<Error />} />
