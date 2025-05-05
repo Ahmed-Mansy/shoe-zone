@@ -66,7 +66,7 @@ class ProductSerializer(serializers.ModelSerializer):
     reviews = ReviewSerializer(many=True, read_only=True)
     ratings = RatingSerializer(many=True, read_only=True)
 
-    # Add calculated fields for frontend
+    # Calculated / formatted fields
     has_discount = serializers.SerializerMethodField()
     available_sizes = serializers.SerializerMethodField()
     available_colors = serializers.SerializerMethodField()
@@ -78,12 +78,10 @@ class ProductSerializer(serializers.ModelSerializer):
             'stock_quantity', 'category', 'category_id', 'images',
             'average_rating', 'material', 'sizes', 'colors',
             'has_discount', 'available_sizes', 'available_colors',
-            'reviews','ratings'
+            'reviews', 'ratings'
         ]
-        extra_kwargs = {
-            'sizes': {'write_only': True},  # Hide raw sizes from responses
-            'colors': {'write_only': True}   # Hide raw colors from responses
-        }
+        # ❌ Remove write_only from sizes and colors so they show in response
+        # You can keep them write_only if you only want to return the parsed version
 
     def get_has_discount(self, obj):
         return obj.discount_price is not None and obj.discount_price < obj.price
