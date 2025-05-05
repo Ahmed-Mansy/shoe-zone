@@ -78,7 +78,7 @@ class ProductSerializer(serializers.ModelSerializer):
             'stock_quantity', 'category', 'category_id', 'images',
             'average_rating', 'material', 'sizes', 'colors',
             'has_discount', 'available_sizes', 'available_colors',
-            'reviews','ratings'
+            'reviews','ratings', 'average_rating',
         ]
         extra_kwargs = {
             'sizes': {'write_only': True},  # Hide raw sizes from responses
@@ -93,3 +93,8 @@ class ProductSerializer(serializers.ModelSerializer):
 
     def get_available_colors(self, obj):
         return [color.strip() for color in obj.colors.split(',')] if obj.colors else []
+    average_rating = serializers.SerializerMethodField()
+
+    def get_average_rating(self, obj):
+        ratings = obj.reviews.all().values_list('rating', flat=True)
+        return round(sum(ratings) / len(ratings), 1) if ratings else None

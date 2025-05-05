@@ -1,6 +1,18 @@
 import ImagesSlider from "./ImagesSlider";
 import { FaStar, FaRegStar } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
+import { Rating, Star } from "@smastrom/react-rating";
+
+const myStyles = {
+  itemShapes: Star,
+  itemStrokeWidth: 1,
+  activeFillColor: "#212121",
+  activeStrokeColor: "#212121",
+  inactiveFillColor: "#fff",
+  inactiveStrokeColor: "#212121",
+};
+
 
 const ProductCard = ({ product, onDelete, onEdit }) => {
   const isAdmin = localStorage.getItem("userRole") === "admin";
@@ -14,6 +26,7 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
     available_colors,
     average_rating,
     stock_quantity,
+    reviews
   } = product;
   const finalPrice = discount_price || price;
 
@@ -21,7 +34,8 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
     <div className="w-full relative space-y-3 mx-2 my-4 border border-gray-300 rounded-md p-4 shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 ease-in-out">
       <Link
         to={isAdmin ? `/admin/products/${id}` : `/products/${id}`}
-        state={product}>
+        state={product}
+      >
         <div className="w-full aspect-square bg-[#f5f5f5] rounded-md overflow-hidden">
           {images.length > 0 ? (
             <ImagesSlider images={images} />
@@ -38,6 +52,24 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
       <h3 className="text-md font-semibold mt-2 capitalize text-center">
         {name}
       </h3>
+
+      <div className="flex justify-center items-center gap-2 my-2">
+        <Rating
+          style={{ maxWidth: 100 }}
+          value={average_rating || 0}
+          itemStyles={myStyles}
+          readOnly
+        />
+        <span className="text-sm text-gray-600">
+          {average_rating ? average_rating.toFixed(1) : "No ratings"}
+        </span>
+      </div>
+
+      <div className="text-xs text-gray-500 text-center">
+        {reviews?.length > 0 ? `${reviews.length} Reviews` : "No Reviews Yet"}
+        {/* {reviews?.length > 0 ? reviews.length + " Reviews" : "No Reviews Yet"}
+        {reviews && reviews.length > 0 ? `${reviews.length} Reviews` : "No Reviews Yet"} */}
+      </div>
 
       {/* Rating Section */}
       {/* <div className="flex items-center gap-1 text-yellow-500">
@@ -59,7 +91,8 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
             <span
               key={index}
               style={{ backgroundColor: color }}
-              className="inline-block w-[25px] h-[25px] rounded-full border border-gray-900"></span>
+              className="inline-block w-[25px] h-[25px] rounded-full border border-gray-900"
+            ></span>
           ))}
         </div>
 
@@ -78,7 +111,8 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
         <span
           className={`mx-4 my-4 ${
             stock_quantity <= 0 ? "text-sm text-red-600 bold" : "hidden"
-          }`}>
+          }`}
+        >
           Out of Stock
         </span>
 
@@ -86,13 +120,15 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
           <div className="flex-center gap-2">
             <button
               onClick={() => onEdit(id)}
-              className="bg-gray-500 text-white w-[80px] text-center cursor-pointer rounded-xs px-3 py-2 mx-2 hover:bg-gray-600 transition">
+              className="bg-gray-500 text-white w-[80px] text-center cursor-pointer rounded-xs px-3 py-2 mx-2 hover:bg-gray-600 transition"
+            >
               Edit
             </button>
 
             <button
               onClick={() => onDelete(id)}
-              className="bg-red-600 text-white w-[80px] text-center cursor-pointer rounded-xs px-3 py-2 hover:bg-red-700 transition">
+              className="bg-red-600 text-white w-[80px] text-center cursor-pointer rounded-xs px-3 py-2 hover:bg-red-700 transition"
+            >
               Delete
             </button>
           </div>

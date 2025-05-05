@@ -49,12 +49,15 @@ class Product(models.Model):
         return self.name
     
     def update_avg_rating(self):
-        ratings = self.ratings.all()
-        if ratings.exists():
-            total_score = sum(rating.score for rating in ratings)
-            avg_rating = total_score / ratings.count()
-            self.avg_rating = avg_rating
-            self.save()
+        reviews = self.reviews.filter(rating__isnull=False).exclude(rating=0)
+        if reviews.exists():
+            total_score = sum(review.rating for review in reviews)
+            avg_rating = total_score / reviews.count()
+        else:
+            avg_rating = 0
+        self.average_rating = avg_rating
+        self.save()
+
 
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, related_name='images', on_delete=models.CASCADE)
