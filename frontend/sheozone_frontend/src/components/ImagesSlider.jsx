@@ -1,3 +1,5 @@
+// components/ImagesSlider.jsx
+
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation } from "swiper/modules";
 import "swiper/css";
@@ -16,6 +18,7 @@ const ImagesSlider = ({ images }) => {
       pagination={{ clickable: true }}
       navigation={true}
       modules={[Pagination, Navigation]}
+
       className="w-full h-full rounded-md">
       {images.map((img, index) => (
         <SwiperSlide key={index}>
@@ -37,4 +40,6 @@ const ImagesSlider = ({ images }) => {
 ImagesSlider.propTypes = {
   images: PropTypes.array.isRequired,
 };
+
 export default ImagesSlider;
+
