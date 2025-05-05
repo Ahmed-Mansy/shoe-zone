@@ -13,6 +13,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser, AllowAny
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
+from django.db.models import Count
+
 
 
 # For category CRUD operations
@@ -29,7 +31,12 @@ class CategoryViewSet(viewsets.ModelViewSet):
     
 class HomeProductsView(APIView):
     def get(self, request):
-        top_rated = Product.objects.order_by('-average_rating')[:3]
+        top_rated = list(Product.objects
+            .annotate(num_reviews=Count('reviews'))
+            .filter(average_rating__gte=3, num_reviews__gte=1)
+            .order_by('-average_rating', '-num_reviews', '-created_at'))
+
+
         latest = Product.objects.order_by('-created_at')[:3]
 
         data = {
@@ -38,7 +45,6 @@ class HomeProductsView(APIView):
         }
         return Response(data, status=status.HTTP_200_OK)
     
-       
 # For product search and filtering ONLY
 class ProductListView(ListAPIView):
     queryset = Product.objects.all()

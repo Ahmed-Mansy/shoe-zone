@@ -15,6 +15,11 @@ class Review(models.Model):
 
     def __str__(self):
         return f"Review by {self.user} on {self.product}"
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.product.update_avg_rating()
+
 
 class ReviewReply(models.Model):
     review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name='replies')
