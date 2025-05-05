@@ -129,5 +129,16 @@ class ViewCartView(APIView):
         return Response({
             'items': items,
             'total_price': float(total_price)
-        }, status=status.HTTP_200_OK)
+        })
 
+class ClearCartView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request):
+        cart, _ = Cart.objects.get_or_create(user=request.user)
+        cart_items = cart.items.all()
+        if not cart_items.exists():
+            return Response({"message": "Cart is already empty!"}, status=status.HTTP_200_OK)
+
+        cart_items.delete()
+        return Response({"message": "Cart cleared successfully"}, status=status.HTTP_204_NO_CONTENT)

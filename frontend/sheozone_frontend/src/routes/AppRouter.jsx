@@ -30,7 +30,7 @@ import Cart from "../pages/user/Cart";
 import Checkout from "../pages/user/Checkout";
 import Collection from "../pages/user/Collection";
 import Product from "../pages/user/Product";
-
+import Orders from "../pages/user/Orders";
 import Error from "../pages/user/Error";
 import ProfilePage from "../pages/ProfilePage";
 import { CartProvider } from "../context/CartContext.jsx";
@@ -73,8 +73,8 @@ const AppRouter = () => {
             <Route path="checkout" element={<Checkout />} />
             <Route path="collections/:type/:title" element={<Collection />} />
             <Route path="products/:id" element={<Product />} />
-            <Route path="/admin/products/:id" element={<AdminProduct />} />
             <Route path="/search-results" element={<SearchResults />} />
+            <Route path="orders" element={<Orders />} />
           </Route>
 
           <Route path="*" element={<Error />} />
