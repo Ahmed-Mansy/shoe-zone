@@ -146,7 +146,7 @@ export const getUserProfile = async (userId) => {
       `${BASE_URL}users/profile/${userId}/`,
       config
     );
-    return response.data;
+    return response.data.user;
   } catch (error) {
     console.error("Error fetching user profile:", error);
     return null;

@@ -11,7 +11,6 @@ const myStyles = {
 };
 
 const ProductReviews = ({ name, averageRating, reviews }) => {
-  console.log(reviews)
   return (
     <div className="w-full my-20">
       <div className="flex flex-col items-center mb-10">

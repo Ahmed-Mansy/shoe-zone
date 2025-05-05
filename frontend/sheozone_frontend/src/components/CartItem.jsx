@@ -7,37 +7,7 @@ import { useCart } from "../context/CartContext";
 const CartItem = ({ item, setCartItems, cartItems }) => {
   const [quantity, setQuantity] = useState(item.quantity);
   const { fetchCartItems } = useCart();
-  //   let newQuantity = quantity;
 
-  //   if (operand === "+") {
-  //     newQuantity = quantity + 1;
-  //     setQuantity(newQuantity);
-  //   } else if (operand === "-" && quantity > 1) {
-  //     newQuantity = quantity - 1;
-  //     setQuantity(newQuantity);
-  //   }
-  //   console.log(quantity);
-  //   updateQuantity();
-  // };
-
-  // const updateQuantity = async () => {
-  //   try {
-  //     await axios.put(
-  //       `http://127.0.0.1:8000/api/cart/item/${item.id}/`,
-  //       { quantity: quantity },
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-  //         },
-  //       }
-  //     );
-
-  //     fetchCartItems();
-  //   } catch (err) {
-  //     console.error("Update error", err);
-  //   }
-  // };
-  console.log("ITEM ==> ", item);
   const handleQuantity = (e) => {
     const operand = e.target.innerHTML;
 
