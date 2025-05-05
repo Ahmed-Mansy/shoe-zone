@@ -1,10 +1,14 @@
-import ImagesSlider from "./ImagesSlider";
-import { FaStar, FaRegStar } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
+import { FaStar, FaRegStar } from "react-icons/fa";
+import ImagesSlider from "./ImagesSlider";
+import PropTypes from "prop-types"; // Added PropTypes import
+import { toast } from "react-toastify"; // Added toast import
+import "react-toastify/dist/ReactToastify.css"; // Ensure toast styles are included
 
 const ProductCard = ({ product, onDelete, onEdit }) => {
-  const isAdmin = localStorage.getItem("userRole") === "admin";
+  const isAdmin = localStorage.getItem("userRole") === "admin"; // Consider server-side validation
+  const isAuthenticated = !!localStorage.getItem("userId"); // Align with Navbar
 
   const {
     name,
@@ -19,10 +23,20 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
   const finalPrice = discount_price || price;
 
   return (
-    <div className="w-full relative space-y-3 mx-2 my-4 border border-gray-300 rounded-md p-4 shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 ease-in-out">
+    <div className="w-full mx-2 my-4 border border-gray-300 rounded-md p-4 shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 ease-in-out">
       <Link
-        to={isAdmin ? `/admin/products/${id}` : `/products/${id}`}
-        state={product}>
+        to={isAuthenticated ? (isAdmin ? `/admin/products/${id}` : `/products/${id}`) : "/login"}
+        state={product}
+        onClick={() => {
+          if (!isAuthenticated) {
+            toast.warning("Unauthorized: Please login", {
+              position: toast.POSITION.TOP_CENTER,
+              autoClose: 3000,
+            });
+          }
+        }}
+        aria-label={`View details for ${name}`}
+      >
         <div className="w-full aspect-square bg-[#f5f5f5] rounded-md overflow-hidden">
           {images.length > 0 ? (
             <ImagesSlider images={images} />
@@ -36,37 +50,34 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
         </div>
       </Link>
 
-      <h3 className="text-md font-semibold mt-2 capitalize text-center">
-        {name}
-      </h3>
+      <div className="space-y-3 mt-2">
+        <h3 className="text-md font-semibold capitalize text-center">{name}</h3>
 
-      {/* Rating Section */}
-      {/* <div className="flex items-center gap-1 text-yellow-500">
-        {Array.from({ length: 5 }, (_, index) => {
-          const rating = Math.round(average_rating); 
-          return index < rating ? (
-            <FaStar key={index} />
-          ) : (
-            <FaRegStar key={index} />
-          );
-        })}
-      </div> */}
+        {/* Rating Section (Uncommented and Fixed) */}
+        <div className="flex items-center justify-center gap-1 text-yellow-500" aria-label={`Rating: ${average_rating} out of 5`}>
+          {Array.from({ length: 5 }, (_, index) => (
+            index < Math.round(average_rating) ? (
+              <FaStar key={index} />
+            ) : (
+              <FaRegStar key={index} />
+            )
+          ))}
+        </div>
 
-      <div className="w-full relative space-y-3 mx-2 my-4">
-        <h3 className="text-md font-semibold mt-2 capitalize">{name}</h3>
-
-        <div className="flex-start gap-1">
+        <div className="flex justify-center gap-1">
           {available_colors.map((color, index) => (
             <span
               key={index}
               style={{ backgroundColor: color }}
-              className="inline-block w-[25px] h-[25px] rounded-full border border-gray-900"></span>
+              className="inline-block w-[25px] h-[25px] rounded-full border border-gray-900"
+              aria-label={`Color: ${color}`}
+            ></span>
           ))}
         </div>
 
-        <p className="text-md space-x-3">
+        <div className="text-md flex justify-center items-center space-x-3">
           {discount_price !== 0 && (
-            <span className="top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
+            <span className="bg-red-500 text-white text-xs px-2 py-1 rounded" aria-label="On sale">
               Sale
             </span>
           )}
@@ -74,26 +85,32 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
           {discount_price && (
             <span className="text-gray-600 line-through">{price} EGP</span>
           )}
-        </p>
+        </div>
 
-        <span
-          className={`mx-4 my-4 ${
-            stock_quantity <= 0 ? "text-sm text-red-600 bold" : "hidden"
-          }`}>
-          Out of Stock
-        </span>
+        {stock_quantity <= 0 ? (
+          <span className="block text-center text-sm text-red-600 font-bold" aria-label="Out of stock">
+            Out of Stock
+          </span>
+        ) : stock_quantity <= 5 ? (
+          <span className="block text-center text-sm text-orange-600 font-bold" aria-label={`Low stock: ${stock_quantity} left`}>
+            Only {stock_quantity} left!
+          </span>
+        ) : null}
 
         {isAdmin && (
-          <div className="flex-center gap-2">
+          <div className="flex justify-center gap-2 mt-3">
             <button
               onClick={() => onEdit(id)}
-              className="bg-gray-500 text-white w-[80px] text-center cursor-pointer rounded-xs px-3 py-2 mx-2 hover:bg-gray-600 transition">
+              className="bg-gray-500 text-white w-[80px] text-center cursor-pointer rounded-xs px-3 py-2 hover:bg-gray-600 transition"
+              aria-label={`Edit product ${name}`}
+            >
               Edit
             </button>
-
             <button
               onClick={() => onDelete(id)}
-              className="bg-red-600 text-white w-[80px] text-center cursor-pointer rounded-xs px-3 py-2 hover:bg-red-700 transition">
+              className="bg-red-600 text-white w-[80px] text-center cursor-pointer rounded-xs px-3 py-2 hover:bg-red-700 transition"
+              aria-label={`Delete product ${name}`}
+            >
               Delete
             </button>
           </div>
@@ -104,7 +121,16 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
 };
 
 ProductCard.propTypes = {
-  product: PropTypes.object.isRequired,
+  product: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    price: PropTypes.number.isRequired,
+    discount_price: PropTypes.number,
+    images: PropTypes.arrayOf(PropTypes.string).isRequired,
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    available_colors: PropTypes.arrayOf(PropTypes.string).isRequired,
+    average_rating: PropTypes.number.isRequired,
+    stock_quantity: PropTypes.number.isRequired,
+  }).isRequired,
   onDelete: PropTypes.func.isRequired,
   onEdit: PropTypes.func.isRequired,
 };
