@@ -161,7 +161,7 @@ const OrderManagement = () => {
                 
                 <td className="py-2 border">{order.user}</td>
                 <td className="py-2 border">{order.shipping_address}</td>
-                <td className="py-2 border">${order.total_price}</td>
+                <td className="py-2 border">{order.total_price} EGP</td>
                 <td className="py-2 border">{order.is_paid ? "✅" : "❌"}</td>
                 <td className="py-2 border">
                   {new Date(order.created_at).toLocaleString()}

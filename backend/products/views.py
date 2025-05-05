@@ -195,3 +195,21 @@ class ProductsByTypeAndCategoryView(APIView):
         products = Product.objects.filter(category=category_obj)
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data)
+    
+    
+
+from rest_framework import viewsets, generics
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
+from .models import Product, Category,Rating, ProductImage
+from .serializers import ProductSerializer, CategorySerializer
+from .filters import ProductFilter
+from django.db.models import Q
+from .serializers import RatingSerializer
+from django.shortcuts import render
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser, AllowAny
+from rest_framework import status
+from rest_framework.parsers import MultiPartParser, FormParser
+from django.db.models import Count

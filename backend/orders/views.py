@@ -4,7 +4,7 @@ from django.db.models import Sum
 from users.models import User
 from orders.models import Order, OrderItem
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
-from .serializers import OrderSerializer
+from .serializers import OrderSerializer , OrderSerializer2
 from rest_framework import status
 from rest_framework import viewsets
 import logging
@@ -39,7 +39,7 @@ class AdminDashboardView(APIView):
 
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all().order_by('-created_at')
-    serializer_class = OrderSerializer
+    serializer_class = OrderSerializer2
     permission_classes = [IsAdminUser]
 
 
