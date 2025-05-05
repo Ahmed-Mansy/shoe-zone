@@ -5,7 +5,7 @@ import { useState } from "react";
 const available_sizes = [41, 42, 43, 44, 45, 46, 47, 48, 9, 10];
 const available_colors = ["red", "yellow", "green", "black", "white", "gray"];
 
-const CollectionSidebar = ({ collectionTitle }) => {
+const CollectionSidebar = ({ collectionTitle, setProducts }) => {
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [selectedColors, setSelectedColors] = useState([]);
 
@@ -32,12 +32,12 @@ const CollectionSidebar = ({ collectionTitle }) => {
     const colorParams = selectedColors.join(",");
 
     const queryString = `?sizes=${sizeParams}&colors=${colorParams}`;
-    const url = `http://127.0.0.1:8000/api/products/products/${queryString}`;
+    const url = `http://127.0.0.1:8000/api/products/api/products/${queryString}`;
 
     try {
       const response = await axios.get(url);
       console.log("Filtered Products:", response.data);
-      // TODO: Replace this with actual state update or props callback to show data
+      setProducts(response.data);
     } catch (error) {
       console.error("Error fetching filtered products:", error);
     }
@@ -109,6 +109,7 @@ const CollectionSidebar = ({ collectionTitle }) => {
 
 CollectionSidebar.propTypes = {
   collectionTitle: PropTypes.string.isRequired,
+  setProducts: PropTypes.func.isRequired,
 };
 
 export default CollectionSidebar;
