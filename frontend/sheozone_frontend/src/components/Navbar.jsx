@@ -291,7 +291,7 @@ const Navbar = () => {
                 )}
               </div>
               <Link
-                to={"/orders"}
+                to={isAuthenticated ? "/orders" : "/login"}
                 onClick={!isAuthenticated ? handleAuthRedirect : undefined}
                 aria-label="Orders">
                 <FiShoppingBag size={24} className={`hover:text-[#39523f]`} />

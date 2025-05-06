@@ -81,21 +81,23 @@ export default function ProductList() {
         <div className="w-full flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold">Products</h2>
           <button
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-xs shadow-md transition duration-300 cursor-pointer"
+            className="bg-[#39523F] hover:opacity-90 text-white font-semibold py-2 px-6 rounded-xs shadow-md transition duration-300 cursor-pointer"
             onClick={() => navigate("/products/create")}>
             Create New Product
           </button>
         </div>
       )}
       <div className="flex justify-between items-start gap-6">
-        <div className="w-1/4">
+        <div className="w-1/2 lg:w-1/5">
           <Filters collectionTitle="All Products" setProducts={setProducts} />
         </div>
 
-        <div className="w-3/4 flex flex-wrap gap-6">
+        <div className="w-1/2 lg:w-4/5 flex flex-wrap gap-6">
           {products.length > 0 ? (
             products.map((product) => (
-              <div key={product.id} className="w-[calc(33%-12px)]">
+              <div
+                key={product.id}
+                className="w-full lg:w-[calc(33%-24px)] xl:w-[calc(25%-16px)]">
                 <ProductCard
                   product={product}
                   onEdit={handleEdit}

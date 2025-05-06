@@ -41,7 +41,7 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
   };
 
   return (
-    <div className="w-full mx-2 my-4 border border-gray-300 rounded-md p-4 shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 ease-in-out">
+    <div className="w-full mx-2 my-4 border border-gray-300 rounded-md shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 ease-in-out relative">
       <Link
         to={
           isAuthenticated
@@ -60,7 +60,7 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
           }
         }}
         aria-label={`View details for ${name}`}>
-        <div className="w-full aspect-square bg-[#f5f5f5] rounded-md overflow-hidden">
+        <div className="w-full aspect-square bg-[#f5f5f5] rounded-t-md overflow-hidden relative">
           {images.length > 0 ? (
             <ImagesSlider images={images} />
           ) : (
@@ -70,13 +70,37 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
               className="w-full h-full object-cover"
             />
           )}
+
+          <div className="absolute bottom-0 left-0 z-8">
+            {discount_price !== 0 && (
+              <span
+                className="bg-red-500 text-white text-md px-3 py-1 rounded-xs animate-flash-red"
+                aria-label="On sale">
+                Sale
+              </span>
+            )}
+          </div>
+
+          {stock_quantity <= 0 ? (
+            <span
+              className="absolute top-2 left-0 z-8 bg-black block text-center text-sm text-white font-medium p-1 "
+              aria-label="Out of stock">
+              Out of Stock
+            </span>
+          ) : stock_quantity <= 5 ? (
+            <span
+              className="absolute top-2 left-0 z-8 bg-black block text-center text-sm text-white font-medium p-1 "
+              aria-label={`Low stock: ${stock_quantity} left`}>
+              Only {stock_quantity} left!
+            </span>
+          ) : null}
         </div>
       </Link>
 
-      <div className="space-y-3 mt-2">
-        <h3 className="text-md font-semibold capitalize text-center">{name}</h3>
+      <div className="space-y-3 pt-2 pb-6 px-4">
+        <h3 className="text-md font-semibold capitalize ">{name}</h3>
 
-        <div className="flex justify-center items-center gap-2 my-2">
+        <div className="flex items-center gap-2">
           <Rating
             style={{ maxWidth: 100 }}
             value={average_rating || 0}
@@ -84,15 +108,14 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
             readOnly
           />
           <span className="text-sm text-gray-600">
-            {average_rating ? average_rating.toFixed(1) : "No ratings"}
+            {average_rating ? average_rating.toFixed(1) : "0.0"}
+          </span>
+          <span className="text-sm text-gray-500 text-center">
+            ({reviews?.length > 0 ? `${reviews.length}` : 0})
           </span>
         </div>
 
-        <div className="text-xs text-gray-500 text-center">
-          {reviews?.length > 0 ? `${reviews.length} Reviews` : "No Reviews Yet"}
-        </div>
-
-        <div className="flex justify-center gap-1">
+        <div className="flex gap-1">
           {available_colors.filter(isValidColor).map((color, index) => (
             <span
               key={index}
@@ -102,39 +125,18 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
           ))}
         </div>
 
-        <div className="text-md flex justify-center items-center space-x-3">
-          {discount_price !== 0 && (
-            <span
-              className="bg-red-500 text-white text-xs px-2 py-1 rounded"
-              aria-label="On sale">
-              Sale
-            </span>
-          )}
-          <span className="sm-semibold">{finalPrice} EGP</span>
+        <div className="text-md flex items-center space-x-3">
+          <span className=" font-semibold">{finalPrice} EGP</span>
           {discount_price > 0 && (
             <span className="text-gray-600 line-through">{price} EGP</span>
           )}
         </div>
 
-        {stock_quantity <= 0 ? (
-          <span
-            className="block text-center text-sm text-red-600 font-bold"
-            aria-label="Out of stock">
-            Out of Stock
-          </span>
-        ) : stock_quantity <= 5 ? (
-          <span
-            className="block text-center text-sm text-orange-600 font-bold"
-            aria-label={`Low stock: ${stock_quantity} left`}>
-            Only {stock_quantity} left!
-          </span>
-        ) : null}
-
         {isAdmin && (
           <div className="flex justify-center gap-2 mt-3">
             <button
               onClick={() => onEdit(id)}
-              className="bg-gray-500 text-white w-[80px] text-center cursor-pointer rounded-xs px-3 py-2 hover:bg-gray-600 transition"
+              className="bg-blue-500 text-white w-[80px] text-center cursor-pointer rounded-xs px-3 py-2 hover:bg-blue-600 transition"
               aria-label={`Edit product ${name}`}>
               Edit
             </button>

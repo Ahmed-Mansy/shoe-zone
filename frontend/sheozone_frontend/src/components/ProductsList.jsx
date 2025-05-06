@@ -5,9 +5,11 @@ const ProductsList = ({ products }) => {
   return (
     <div className="w-full">
       {products && products.length > 0 ? (
-        <div className="flex justify-between flex-wrap gap-3">
+        <div className="flex flex-wrap gap-6">
           {products.map((product) => (
-            <div key={product.id} className="w-[calc(33%-12px)]">
+            <div
+              key={product.id}
+              className="w-full lg:w-[calc(33%-24px)] xl:w-[calc(25%-16px)]">
               <ProductCard product={product} />
             </div>
           ))}
@@ -21,5 +23,8 @@ const ProductsList = ({ products }) => {
   );
 };
 
+ProductsList.propTypes = {
+  products: PropTypes.array.isRequired,
+};
 
 export default ProductsList;
