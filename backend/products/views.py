@@ -36,7 +36,7 @@ class HomeProductsView(APIView):
             .order_by('-average_rating', '-num_reviews', '-created_at'))
 
 
-        latest = Product.objects.order_by('-created_at')[:3]
+        latest = Product.objects.order_by('-created_at')[:10]
 
         data = {
             'top_rated': ProductSerializer(top_rated, many=True).data,
@@ -232,18 +232,3 @@ class ProductsByTypeAndCategoryView(APIView):
     
     
 
-from rest_framework import viewsets, generics
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters
-from .models import Product, Category,Rating, ProductImage
-from .serializers import ProductSerializer, CategorySerializer
-from .filters import ProductFilter
-from django.db.models import Q
-from .serializers import RatingSerializer
-from django.shortcuts import render
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser, AllowAny
-from rest_framework import status
-from rest_framework.parsers import MultiPartParser, FormParser
-from django.db.models import Count

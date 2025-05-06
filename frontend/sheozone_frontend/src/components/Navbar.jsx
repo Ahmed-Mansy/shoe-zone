@@ -69,6 +69,8 @@ const Navbar = () => {
   const handleLogOut = () => {
     localStorage.removeItem("userId");
     localStorage.removeItem("userRole");
+    localStorage.removeItem("token");
+    localStorage.removeItem("access");
     toast.success("Logged out successfully");
     navigate("/");
   };
@@ -316,5 +318,10 @@ const Navbar = () => {
     </>
   );
 };
+
+
+
+
+
 
 export default Navbar;
