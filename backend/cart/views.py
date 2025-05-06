@@ -118,6 +118,7 @@ class ViewCartView(APIView):
 
             items.append({
                 'id': item.id,
+                'product_id': product.id,
                 'product_name': product.name,
                 'product_price': float(price),
                 'quantity': item.quantity,
