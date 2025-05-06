@@ -108,7 +108,9 @@ class ViewCartView(APIView):
 
         for item in cart_items:
             product = item.product
-            price = product.discount_price if product.discount_price else product.price
+            # price = product.discount_price if product.discount_price else product.price
+            price = product.price * (1 - product.discount_price / 100) if product.discount_price else product.price
+
             item_total = price * item.quantity
             total_price += item_total
 
@@ -117,8 +119,8 @@ class ViewCartView(APIView):
             image_url = request.build_absolute_uri(image_obj.image.url) if image_obj and image_obj.image else None
 
             items.append({
-                'id': item.id,
-                'product_id': product.id,
+                'id': item.id, # CartItem ID
+                'product_id': product.id,  # Add Product ID
                 'product_name': product.name,
                 'product_price': float(price),
                 'quantity': item.quantity,
@@ -130,5 +132,16 @@ class ViewCartView(APIView):
         return Response({
             'items': items,
             'total_price': float(total_price)
-        }, status=status.HTTP_200_OK)
+        })
 
+class ClearCartView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request):
+        cart, _ = Cart.objects.get_or_create(user=request.user)
+        cart_items = cart.items.all()
+        if not cart_items.exists():
+            return Response({"message": "Cart is already empty!"}, status=status.HTTP_200_OK)
+
+        cart_items.delete()
+        return Response({"message": "Cart cleared successfully"}, status=status.HTTP_204_NO_CONTENT)

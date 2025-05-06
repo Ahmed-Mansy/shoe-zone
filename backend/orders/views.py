@@ -4,7 +4,7 @@ from django.db.models import Sum
 from users.models import User
 from orders.models import Order, OrderItem
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
-from .serializers import OrderSerializer , OrderSerializer2
+from .serializers import OrderSerializer, OrderSerializer2
 from rest_framework import status
 from rest_framework import viewsets
 import logging
@@ -14,6 +14,7 @@ from django.conf import settings
 from datetime import timedelta
 from django.utils import timezone
 import uuid
+from cart.models import Cart, CartItem
 
 # Define the logger
 logger = logging.getLogger(__name__)
@@ -41,9 +42,6 @@ class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all().order_by('-created_at')
     serializer_class = OrderSerializer2
     permission_classes = [IsAdminUser]
-
-
-
 
 
 @api_view(['POST'])
@@ -76,6 +74,14 @@ def createOrder(request):
                 {"error": "Order total must be greater than zero."},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+        # Clear the user's cart
+        try:
+            cart = Cart.objects.get(user=request.user)
+            cart.items.all().delete()
+            logger.info(f"Cart cleared for user {request.user.email} after order {order.id}")
+        except Cart.DoesNotExist:
+            logger.warning(f"No cart found for user {request.user.email}")
 
         payment_status = serializer.validated_data.get('payment_status', 'cod')
         response_data = {"order": OrderSerializer(order).data}

@@ -2,7 +2,7 @@ import { useState } from "react";
 import Input from "../../components/Input";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { useNavigate, useLocation } from "react-router-dom"; // إضافة useLocation
+import { useNavigate, useLocation, Navigate } from "react-router-dom";
 
 const ResetPassword = () => {
   const [resetData, setResetData] = useState({
@@ -14,10 +14,17 @@ const ResetPassword = () => {
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
 
-  const location = useLocation(); // استخدام useLocation للحصول على البيانات من state
-  const { uid, token } = location.state || {};
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const uid = queryParams.get("uid");
+  const token = queryParams.get("token");
 
   const navigate = useNavigate();
+
+  // Redirect to reset request page if uid or token is missing
+  if (!uid || !token) {
+    return <Navigate to="/reset-password-request" replace />;
+  }
 
   const handleInputChange = (e) => {
     setResetData({ ...resetData, [e.target.name]: e.target.value });
@@ -81,8 +88,7 @@ const ResetPassword = () => {
     setSuccessMessage("");
 
     try {
-      const response = await resetPasswordConfirm();
-
+      await resetPasswordConfirm();
       setSuccessMessage("Password reset successfully!");
     } catch (error) {
       setErrors({ general: error.message });
@@ -121,7 +127,8 @@ const ResetPassword = () => {
         <button
           type="submit"
           className="w-full py-3 rounded-xs font-semibold transition-all bg-primary hover:bg-dark text-light cursor-pointer"
-          disabled={loading}>
+          disabled={loading}
+        >
           {loading ? "Resetting..." : "Reset Password"}
         </button>
       </form>

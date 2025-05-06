@@ -15,7 +15,6 @@ const myStyles = {
   inactiveStrokeColor: "#212121",
 };
 
-
 const ProductCard = ({ product, onDelete, onEdit }) => {
   const isAdmin = localStorage.getItem("userRole") === "admin"; // Consider server-side validation
   const isAuthenticated = !!localStorage.getItem("userId"); // Align with Navbar
@@ -29,9 +28,17 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
     available_colors,
     average_rating,
     stock_quantity,
-    reviews
+    reviews,
   } = product;
-  const finalPrice = discount_price || price;
+
+  const finalPrice =
+    discount_price > 0 ? price - (discount_price * price) / 100 : price;
+
+  const isValidColor = (color) => {
+    const s = new Option().style;
+    s.color = color;
+    return s.color !== "";
+  };
 
   return (
     <div className="w-full mx-2 my-4 border border-gray-300 rounded-md p-4 shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 ease-in-out">
@@ -69,25 +76,24 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
       <div className="space-y-3 mt-2">
         <h3 className="text-md font-semibold capitalize text-center">{name}</h3>
 
-      <div className="flex justify-center items-center gap-2 my-2">
-        <Rating
-          style={{ maxWidth: 100 }}
-          value={average_rating || 0}
-          itemStyles={myStyles}
-          readOnly
-        />
-        <span className="text-sm text-gray-600">
-          {average_rating ? average_rating.toFixed(1) : "No ratings"}
-        </span>
-      </div>
+        <div className="flex justify-center items-center gap-2 my-2">
+          <Rating
+            style={{ maxWidth: 100 }}
+            value={average_rating || 0}
+            itemStyles={myStyles}
+            readOnly
+          />
+          <span className="text-sm text-gray-600">
+            {average_rating ? average_rating.toFixed(1) : "No ratings"}
+          </span>
+        </div>
 
-      <div className="text-xs text-gray-500 text-center">
-        {reviews?.length > 0 ? `${reviews.length} Reviews` : "No Reviews Yet"}
-      </div>
-
+        <div className="text-xs text-gray-500 text-center">
+          {reviews?.length > 0 ? `${reviews.length} Reviews` : "No Reviews Yet"}
+        </div>
 
         <div className="flex justify-center gap-1">
-          {available_colors.map((color, index) => (
+          {available_colors.filter(isValidColor).map((color, index) => (
             <span
               key={index}
               style={{ backgroundColor: color }}
@@ -105,7 +111,7 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
             </span>
           )}
           <span className="sm-semibold">{finalPrice} EGP</span>
-          {discount_price && (
+          {discount_price > 0 && (
             <span className="text-gray-600 line-through">{price} EGP</span>
           )}
         </div>

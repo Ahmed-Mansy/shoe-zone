@@ -13,7 +13,7 @@ const CartItem = ({ item, setCartItems, cartItems }) => {
 
     let newQuantity = quantity;
 
-    if (operand === "+") {
+    if (operand === "+" && quantity < item.stock_quantity) {
       newQuantity = quantity + 1;
     } else if (operand === "-" && quantity > 1) {
       newQuantity = quantity - 1;
@@ -34,7 +34,11 @@ const CartItem = ({ item, setCartItems, cartItems }) => {
           },
         }
       );
-
+      setCartItems(
+        cartItems.map((ci) =>
+          ci.id === item.id ? { ...ci, quantity: newQuantity } : ci
+        )
+      );
       fetchCartItems();
     } catch (err) {
       console.error("Update error", err);
@@ -81,22 +85,29 @@ const CartItem = ({ item, setCartItems, cartItems }) => {
           </button>
         </div>
 
-        <div className="flex flex-col items-center gap-10">
-          <div className="w-[90px] flex-center">
-            <span
-              onClick={handleQuantity}
-              className="w-[30px] h-[30px] flex-center cursor-pointer hover:bg-gray-100">
-              +
-            </span>
-            <span className="w-[30px] h-[30px] flex-center border-[1px] border-gray-300 rounded-xs text-sm">
-              {quantity}
-            </span>
-            <span
-              onClick={handleQuantity}
-              className="w-[30px] h-[30px] flex-center cursor-pointer hover:bg-gray-100">
-              -
-            </span>
+        <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center">
+            <div className="w-[90px] flex-center">
+              <span
+                onClick={handleQuantity}
+                className="w-[30px] h-[30px] flex-center cursor-pointer hover:bg-gray-100">
+                +
+              </span>
+              <span className="w-[30px] h-[30px] flex-center border-[1px] border-gray-300 rounded-xs text-sm">
+                {quantity}
+              </span>
+              <span
+                onClick={handleQuantity}
+                className="w-[30px] h-[30px] flex-center cursor-pointer hover:bg-gray-100">
+                -
+              </span>
+            </div>
+            <p className="h-[30px] w-[250px] mt-2 mb-3 text-center text-red-500 text-sm ">
+              {quantity === item.stock_quantity &&
+                "You have reached maximum quantity."}
+            </p>
           </div>
+
           <div>
             <h3>
               Total : <span>{(quantity * item.product_price).toFixed(2)}</span>{" "}

@@ -31,7 +31,7 @@ const SearchForm = () => {
       />
       <button
         type="submit"
-        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#39523f]"
+        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#39523f] cursor-pointer"
         aria-label="Submit search">
         <FiSearch size={18} />
       </button>
