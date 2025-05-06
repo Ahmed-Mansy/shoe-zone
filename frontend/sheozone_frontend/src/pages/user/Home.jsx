@@ -35,13 +35,13 @@ const Home = () => {
         />
       </div>
 
-      <div className="max-w-7xl mx-5 my-5 px-10 py-10">
+      <div className="wrapper my-5 py-10">
         {/* Top Rated Section */}
         <section className="mb-10">
-          <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center">
+          <h2 className="text-3xl font-bold mb-6 text-gray-800">
             Top Rated Products
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {topRated.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -50,10 +50,10 @@ const Home = () => {
 
         {/* Latest Products Section */}
         <section>
-          <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center">
+          <h2 className="text-3xl font-bold mb-6 text-gray-800">
             Latest Products
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {latest.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

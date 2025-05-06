@@ -50,8 +50,8 @@ const Collection = () => {
           </span>
         </div> */}
       </div>
-      <div className="flex justify-between items-start gap-6">
-        <div className="w-1/4">
+      <div className="flex items-start gap-6">
+        <div className="w-1/2 lg:w-1/5">
           <Filters
             collectionTitle={title}
             setProducts={setProducts}
@@ -59,7 +59,7 @@ const Collection = () => {
             categoryId={categoryId}
           />
         </div>
-        <div className="w-3/4">
+        <div className="w-1/2 lg:w-4/5">
           <ProductsList products={products} />
         </div>
       </div>

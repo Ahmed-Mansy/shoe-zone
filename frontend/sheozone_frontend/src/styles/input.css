@@ -55,3 +55,17 @@ font-courgette {
 .text-primary {
   color: #39523f;
 }
+
+@keyframes flash-red {
+  0%,
+  100% {
+    background-color: #ef4444; /* red-500 */
+  }
+  50% {
+    background-color: #b91c1c; /* red-700 */
+  }
+}
+
+.animate-flash-red {
+  animation: flash-red 1s infinite;
+}

@@ -9,7 +9,8 @@ const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
   const [subTotal, setSubTotal] = useState(0);
 
-  const isAuthenticated = localStorage.getItem("token") ? true : false;
+  // const isAuthenticated = localStorage.getItem("token") ? true : false;
+  const isAuthenticated = localStorage.getItem("userID") ? true : false;
 
   useEffect(() => {
     const fetchCartItems = async () => {
