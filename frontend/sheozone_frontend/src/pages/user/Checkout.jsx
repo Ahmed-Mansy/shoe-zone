@@ -267,6 +267,7 @@ const Checkout = () => {
       setFormData({ ...formData, [name]: value });
     }
   };
+
   const clearCart = async () => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -361,6 +362,7 @@ const Checkout = () => {
       if (orderData.payment_status === "cod") {
         await clearCart();
         setSuccess(message);
+        window.location.reload();
         setTimeout(() => navigate("/orders"), 2000);
         return;
       }
@@ -463,11 +465,11 @@ const Checkout = () => {
 
   if (formData.items.length === 0) {
     return (
-      <div className="wrapper my-8">
-        <p className="text-gray-600">Your cart is empty.</p>
+      <div className="wrapper w-full mt-32 text-center">
+        <p className="text-gray-600 text-3xl font-bold">Your cart is empty.</p>
         <button
           onClick={() => navigate("/products")}
-          className="mt-4 bg-dark text-light py-2 px-4 rounded-xs hover:bg-gray-600">
+          className="mt-10 bg-dark text-light py-2 px-4 w-[250px] rounded-xs hover:bg-gray-600 cursor-pointer">
           Shop Now
         </button>
       </div>
